@@ -1,0 +1,29 @@
+# microcontrolleur à programmer
+MCU=atmega324pa
+
+# executable qui programme le microcontrolleur 
+AVRDUDE=avrdude
+
+# programmeur utilisé pour avrdude
+PROGRAMMERID=usbasp
+
+# niveau d'optimisation
+OPTLEVEL=s
+
+INC=../include
+
+CC=avr-gcc
+CFLAGS=-Wall -g -mmcu=$(MCU) -O$(OPTLEVEL) -I$(INC)
+
+CXX=avr-g++
+CXXFLAGS=$(CFLAGS)
+
+LDFLAGS=-Wl,-Map,$(TRG).map -mmcu=$(MCU)
+
+all:
+
+clean:
+	rm -f *.o
+
+
+
