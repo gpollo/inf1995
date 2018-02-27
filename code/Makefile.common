@@ -1,6 +1,7 @@
 # microcontrolleur à programmer
 MCU=atmega324pa
 
+# fréquence du microcontrolleur
 FREQUENCY=8000000
 
 # executable qui programme le microcontrolleur 
@@ -15,18 +16,27 @@ OPTLEVEL=s
 # répertoire contenant les headers
 INC=../include
 
+# configuration du compilateur C
 CC=avr-gcc
 CFLAGS=-mmcu=$(MCU) -Wall -Wextra -g -O$(OPTLEVEL) -I$(INC) -DF_CPU=$(FREQUENCY)
 
+# configuration du compilatuer C++
 CXX=avr-g++
 CXXFLAGS=$(CFLAGS)
 
+# configuration de l'éditeur de liens
 LD=$(CC)
 LDFLAGS=-mmcu=$(MCU) -Wall -Wl,-Map,$(TRG).map
 
+# configuration de l'archiveur
 AR=avr-ar
 ARFLAGS=crs
 
+# configuration pour supprimer des fichiers
+REM=rm
+REMOPTS=-f
+
+# on n'exécute aucune règle lors de l'inclusion de ce Makefile
 all:
 
 # règle générale pour compiler les fichiers *.c
@@ -39,8 +49,8 @@ all:
 
 # règle pour nettoyer le répertoire
 clean:
-	rm -f *.o
+	$(REM) $(REMOPTS) *.o
 
 # règle pour enlever tout fichiers autogénérés
 mrproper: clean
-	rm -f $(EXEC)
+	$(REM) $(REMOPTS) -f $(EXEC)
