@@ -54,3 +54,5 @@ clean:
 # règle pour enlever tout fichiers autogénérés
 mrproper: clean
 	$(REM) $(REMOPTS) -f $(EXEC)
+
+.PHONY: all clean mrproper
