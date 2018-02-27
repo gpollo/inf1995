@@ -1,6 +1,8 @@
 # microcontrolleur à programmer
 MCU=atmega324pa
 
+FREQUENCY=8000000
+
 # executable qui programme le microcontrolleur 
 AVRDUDE=avrdude
 
@@ -10,20 +12,35 @@ PROGRAMMERID=usbasp
 # niveau d'optimisation
 OPTLEVEL=s
 
+# répertoire contenant les headers
 INC=../include
 
 CC=avr-gcc
-CFLAGS=-Wall -g -mmcu=$(MCU) -O$(OPTLEVEL) -I$(INC)
+CFLAGS=-mmcu=$(MCU) -Wall -Wextra -g -O$(OPTLEVEL) -I$(INC) -DF_CPU=$(FREQUENCY)
 
 CXX=avr-g++
 CXXFLAGS=$(CFLAGS)
 
-LDFLAGS=-Wl,-Map,$(TRG).map -mmcu=$(MCU)
+LD=$(CC)
+LDFLAGS=-mmcu=$(MCU) -Wall -Wl,-Map,$(TRG).map
+
+AR=avr-ar
+ARFLAGS=crs
 
 all:
 
+# règle générale pour compiler les fichiers *.c
+%.o: %.c
+	$(CC) -o $@ -c $< $(CFLAGS)
+
+# règle générale pour compiler les fichiers *.cpp
+%.o: %.cpp
+	$(CXX) -o $@ -c $< $(CXXFLAGS)
+
+# règle pour nettoyer le répertoire
 clean:
 	rm -f *.o
 
-
-
+# règle pour enlever tout fichiers autogénérés
+mrproper: clean
+	rm -f $(EXEC)
