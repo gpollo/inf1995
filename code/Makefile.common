@@ -47,12 +47,4 @@ all:
 %.o: %.cpp
 	$(CXX) -o $@ -c $< $(CXXFLAGS)
 
-# règle pour nettoyer le répertoire
-clean:
-	$(REM) $(REMOPTS) *.o
-
-# règle pour enlever tout fichiers autogénérés
-mrproper: clean
-	$(REM) $(REMOPTS) -f $(EXEC)
-
-.PHONY: all clean mrproper
+.PHONY: all
