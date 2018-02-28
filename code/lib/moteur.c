@@ -7,12 +7,8 @@
 #endif
 
 void motor_init() {
-    /* on reset la configuration du compteur */
-    TCCR0A = 0;
-
     /* clear au match du compteur et set au bas du compteur*/
-    TCCR0A |= _BV(COM0A1);
-    TCCR0A |= _BV(COM0B1);
+    TCCR0A = _BV(COM0A1) | _BV(COM0B1);
 
     /* on configure le compteur en fast PWM */
     TCCR0A |= _BV(WGM01) | _BV(WGM00);
