@@ -2,10 +2,13 @@
 MCU=atmega324pa
 
 # fréquence du microcontrolleur
-FREQUENCY=8000000
+FREQUENCY=8000000UL
 
 # vitesse de la connexion UART
 BAUD=2400
+
+# horloge du bus I2C/TWI
+TWI_CLOCK=100000UL
 
 # executable qui programme le microcontrolleur 
 AVRDUDE=avrdude
@@ -24,6 +27,7 @@ CC=avr-gcc
 CFLAGS=-mmcu=$(MCU) -Wall -Wextra -g -O$(OPTLEVEL) -I$(INC)
 
 CFLAGS += -DF_CPU=$(FREQUENCY)
+CFLAGS += -DF_SCL=$(TWI_CLOCK)
 CFLAGS += -DBAUD=$(BAUD)
 
 # configuration du compilatuer C++

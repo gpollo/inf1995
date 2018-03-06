@@ -2,7 +2,7 @@ include ../Makefile.common
 include ../Makefile.clean
 
 EXEC=libstatique
-OBJECTS=moteur.o uart.o memoire.o adc.o
+OBJECTS=moteur.o uart.o memory.o adc.o
 
 all: $(EXEC)
 
@@ -13,6 +13,6 @@ moteur.o: $(INC)/moteur.h
 
 uart.o: $(INC)/uart.h
 
-memoire.o: $(INC)/memoire.h
+memory.o: $(INC)/memory.h
 
 adc.o: $(INC)/adc.h
