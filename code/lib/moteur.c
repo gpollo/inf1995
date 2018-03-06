@@ -2,8 +2,8 @@
 #include <moteur.h>
 
 /* valeur par défaut du prescaler */
-#ifndef PRESCALER
-    #define PRESCALER 1
+#ifndef MOTEUR_PRESCALER
+    #define MOTEUR_PRESCALER 1
 #endif
 
 void motor_init() {
@@ -14,15 +14,15 @@ void motor_init() {
     TCCR0A |= _BV(WGM01) | _BV(WGM00);
 
     /* on configure le prescaler des moteurs */
-#if   PRESCALER == 1
+#if   MOTEUR_PRESCALER == 1
     TCCR0B = _BV(CS00);
-#elif PRESCALER == 8
+#elif MOTEUR_PRESCALER == 8
     TCCR0B = _BV(CS01);
-#elif PRESCALER == 64
+#elif MOTEUR_PRESCALER == 64
     TCCR0B = _BV(CS01) | _BV(CS00);
-#elif PRESCALER == 256
+#elif MOTEUR_PRESCALER == 256
     TCCR0B = _BV(CS02);
-#elif PRESCALER == 1024
+#elif MOTEUR_PRESCALER == 1024
     TCCR0B = _BV(CS02) | _BV(CS00);
 #else
     #error "Invalid prescaled value"
