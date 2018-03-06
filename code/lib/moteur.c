@@ -1,5 +1,5 @@
 #include <avr/io.h>
-#include <motor.h>
+#include <moteur.h>
 
 /* valeur par défaut du prescaler */
 #ifndef PRESCALER

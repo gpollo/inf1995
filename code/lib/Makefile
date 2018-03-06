@@ -9,7 +9,7 @@ all: $(EXEC)
 $(EXEC): $(OBJECTS)
 	$(AR) $(ARFLAGS) $(EXEC).a $(OBJECTS)
 
-main.o: $(INC)/moteur.h
+moteur.o: $(INC)/moteur.h
 
 memoire.o: $(INC)/memoire.h
 
