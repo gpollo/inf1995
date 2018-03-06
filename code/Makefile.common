@@ -4,6 +4,9 @@ MCU=atmega324pa
 # fréquence du microcontrolleur
 FREQUENCY=8000000
 
+# vitesse de la connexion UART
+BAUD=2400
+
 # executable qui programme le microcontrolleur 
 AVRDUDE=avrdude
 
@@ -18,7 +21,10 @@ INC=../include
 
 # configuration du compilateur C
 CC=avr-gcc
-CFLAGS=-mmcu=$(MCU) -Wall -Wextra -g -O$(OPTLEVEL) -I$(INC) -DF_CPU=$(FREQUENCY)
+CFLAGS=-mmcu=$(MCU) -Wall -Wextra -g -O$(OPTLEVEL) -I$(INC)
+
+CFLAGS += -DF_CPU=$(FREQUENCY)
+CFLAGS += -DBAUD=$(BAUD)
 
 # configuration du compilatuer C++
 CXX=avr-g++
