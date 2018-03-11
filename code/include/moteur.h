@@ -1,7 +1,7 @@
 #ifndef INCLUDE_MOTEUR_H
 #define INCLUDE_MOTEUR_H
 
-#ifdef _cplusplus
+#ifdef __cplusplus
 extern "C" {
 #endif
 
@@ -14,7 +14,7 @@ extern "C" {
  */
 void motor_init();
 
-#ifdef _cplusplus
+#ifdef __cplusplus
 }
 #endif
 

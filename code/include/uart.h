@@ -1,7 +1,7 @@
 #ifndef INCLUDE_UART_H
 #define INCLUDE_UART_H
 
-#ifdef _cplusplus
+#ifdef __cplusplus
 extern "C" {
 #endif
 
@@ -32,7 +32,7 @@ void uart_putchar(char octet);
  */
 int8_t uart_printf(char* format, ...);
 
-#ifdef _cplusplus
+#ifdef __cplusplus
 }
 #endif
 

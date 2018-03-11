@@ -1,7 +1,7 @@
 #ifndef INCLUDE_MEMORY_H
 #define INCLUDE_MEMORY_H
 
-#ifdef _cplusplus
+#ifdef __cplusplus
 extern "C" {
 #endif
 
@@ -56,7 +56,7 @@ void memory_write_byte(uint8_t puce, uint16_t addr, uint8_t data);
  */
 uint8_t memory_write_block(uint8_t puce, uint16_t addr, uint8_t len, uint8_t* data);
 
-#ifdef _cplusplus
+#ifdef __cplusplus
 }
 #endif
 

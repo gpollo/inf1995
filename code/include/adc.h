@@ -1,7 +1,7 @@
 #ifndef INCLUDE_CAN_H
 #define INCLUDE_CAN_H
 
-#ifdef _cplusplus
+#ifdef __cplusplus
 extern "C" {
 #endif
 
@@ -30,7 +30,7 @@ void adc_terminate(void);
  */
 uint16_t adc_read(uint8_t pin);
 
-#ifdef _cplusplus
+#ifdef __cplusplus
 }
 #endif
 
