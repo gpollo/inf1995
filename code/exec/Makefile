@@ -1,15 +1,25 @@
 include ../Makefile.common
-include ../Makefile.clean
 
-EXEC=robot
 OBJECTS=main.o
 
-all: $(EXEC)
+all: $(MAIN_TARGET)
 
-$(EXEC): $(OBJECTS)
-	$(AR) $(ARFLAGS) $(EXEC).a $(OBJECTS)
+$(MAIN_NAME).out: $(OBJECTS)
+	@(cd ../$(LIB_DIR) && $(MAKE))
+	$(CC) $(LDFLAGS) -o $(MAIN_NAME).out $^ $(LDLIBS)
 
-main.o: $(INC)/motor.h
+main.o: $(INC)/moteur.h
 
+install: $(MAIN_TARGET)
+	$(AVRDUDE) -c $(PROGRAMMERID) -p $(MCU) -P -e -U flash:w:$(MAIN_TARGET)
 
+clean:
+	$(REM) $(REMOPTS) *.o
+	$(REM) $(REMOPTS) $(MAIN_NAME).out
+	$(REM) $(REMOPTS) $(MAIN_NAME).map
+
+mrproper: clean
+	$(REM) $(REMOPTS) $(MAIN_TARGET)
+
+.PHONY: clean mrproper
 

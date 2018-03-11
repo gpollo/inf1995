@@ -1,13 +1,11 @@
 include ../Makefile.common
-include ../Makefile.clean
 
-EXEC=libstatique
 OBJECTS=moteur.o uart.o memory.o adc.o
 
-all: $(EXEC)
+all: $(LIB_TARGET)
 
-$(EXEC): $(OBJECTS)
-	$(AR) $(ARFLAGS) $(EXEC).a $(OBJECTS)
+$(LIB_TARGET): $(OBJECTS)
+	$(AR) $(ARFLAGS) $(LIB_TARGET) $(OBJECTS)
 
 moteur.o: $(INC)/moteur.h
 
@@ -16,3 +14,11 @@ uart.o: $(INC)/uart.h
 memory.o: $(INC)/memory.h
 
 adc.o: $(INC)/adc.h
+
+clean:
+	$(REM) $(REMOPTS) *.o
+
+mrproper: clean
+	$(REM) $(REMOPTS) -f $(LIB_TARGET)
+
+.PHONY: clean mrproper
