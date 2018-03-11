@@ -1,10 +1,6 @@
 include Makefile.common
 
-TARGET=robot
-
-all: $(TARGET)
-
-$(TARGET):
+all:
 	@(cd $(MAIN_DIR) && $(MAKE))
 	
 install:
