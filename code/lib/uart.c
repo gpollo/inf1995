@@ -24,6 +24,9 @@ void uart_init(void) {
     UBRR0H = UBRRH_VALUE;
     UBRR0L = UBRRL_VALUE;
 
+	/* permet la reception (RX) et la transmission (TX) complète par le USART0 */
+	UCSR0A = _BV(RXC0) | _BV(TXC0) ;
+	
     /* on activate la réception (RX) et la transmission (TX) */
     UCSR0B = _BV(RXEN0) | _BV(TXEN0);
 
@@ -56,4 +59,12 @@ int8_t uart_printf(char* format, ...) {
 
     /* on retourne le nombre de caractère écrit */
     return len;
+}
+
+uint8_t USART_Receive (void) {
+	/* On attend que les données sont reçues */
+	while ( !(UCSR0A & (_BV(RXC0)) );
+	
+	/* Prend et retourne les données reçues provenant du buffer */
+	return UDR0;
 }
