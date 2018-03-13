@@ -127,8 +127,12 @@ uint8_t memory_read_byte(uint8_t puce, uint16_t addr) {
     /* on envoit l'entête à la puce */
     send_header(puce, addr, CONTROL_START);
 
+    /* on transmet la condition de départ */
+    TWCR = _BV(TWINT) | _BV(TWSTA) | _BV(TWEN);
+    while((TWCR & _BV(TWINT)) == 0);
+
     /* on transmet la code de controle (adresse de la puce en lecture) */
-    TWDR = GET_ADDR(puce, CONTROL_START);
+    TWDR = GET_ADDR(puce, CONTROL_READ);
     TWCR = _BV(TWINT) | _BV(TWEN);
     while((TWCR & _BV(TWINT)) == 0);
 
@@ -149,6 +153,10 @@ uint8_t memory_read_block(uint8_t puce, uint16_t addr, uint8_t len, uint8_t* dat
 
     /* on envoit l'entête à la puce */
     send_header(puce, addr, CONTROL_START);
+
+    /* on transmet la condition de départ */
+    TWCR = _BV(TWINT) | _BV(TWSTA) | _BV(TWEN);
+    while((TWCR & _BV(TWINT)) == 0);
 
     /* on transmet la code de controle (adresse de la puce en lecture) */
     TWDR = GET_ADDR(puce, CONTROL_READ);
@@ -253,10 +261,6 @@ void send_header(uint8_t puce, uint16_t addr, uint8_t control) {
     /* on transmet le poids faible de l'adresse */
     TWDR = addr;
     TWCR = _BV(TWINT) | _BV(TWEN);
-    while((TWCR & _BV(TWINT)) == 0);
-
-    /* on transmet la condition de départ */
-    TWCR = _BV(TWINT) | _BV(TWSTA) | _BV(TWEN);
     while((TWCR & _BV(TWINT)) == 0);
 }
 
