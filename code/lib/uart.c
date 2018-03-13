@@ -63,7 +63,7 @@ int8_t uart_printf(char* format, ...) {
 
 uint8_t uart_receive(void) {
 	/* on attend que les données sont reçues */
-	while ( !(UCSR0A & (_BV(RXC0)) );
+	while(!(UCSR0A & _BV(RXC0)));
 	
 	/* prend et retourne les données reçues provenant du buffer */
 	return UDR0;
