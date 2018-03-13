@@ -33,7 +33,13 @@ void uart_putchar(char octet);
 int8_t uart_printf(char* format, ...);
 
 /**
- * Cette fonction reçoit les données.   
+ * Cette fonction reçoit les données. 
+ *
+ * NOTE: Les données ne peuvent pas dépasser 8 bits.
+ *
+ *@param octet L'octet à lire.
+ *
+ *@return Les données reçues provenant du buffer.
  */
 
 uint8_t USART_Receive(void);
