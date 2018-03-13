@@ -22,7 +22,7 @@ void uart_putchar(char octet);
  * Cette fonction envoit une chaîne formattée de caractères sur le port UART0
  * du microcontrolleur.
  *
- * NOTE: La taille de la chaîne de caractères formattée ne peut pas dépasser
+ * Note: La taille de la chaîne de caractères formattée ne peut pas dépasser
  *       une valeur de 255 caractères.
  *
  * @param format Le format de la chaîne de caractères.
@@ -35,14 +35,11 @@ int8_t uart_printf(char* format, ...);
 /**
  * Cette fonction reçoit les données. 
  *
- * NOTE: Les données ne peuvent pas dépasser 8 bits.
+ * Note: Les données ne peuvent pas dépasser 8 bits.
  *
- *@param octet L'octet à lire.
- *
- *@return Les données reçues provenant du buffer.
+ * @return Les données reçues provenant du buffer.
  */
-
-uint8_t USART_Receive(void);
+uint8_t uart_receive(void);
 
 #ifdef __cplusplus
 }
