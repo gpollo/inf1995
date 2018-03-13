@@ -32,6 +32,12 @@ void uart_putchar(char octet);
  */
 int8_t uart_printf(char* format, ...);
 
+/**
+ * Cette fonction reçoit les données.   
+ */
+
+uint8_t USART_Receive(void);
+
 #ifdef __cplusplus
 }
 #endif
