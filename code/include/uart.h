@@ -1,6 +1,8 @@
 #ifndef INCLUDE_UART_H
 #define INCLUDE_UART_H
 
+#include <stdint.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
