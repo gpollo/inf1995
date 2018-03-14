@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <interpreter.h>
+#include <util/delay.h>
 
 void** instructions[256];
 
@@ -9,6 +10,9 @@ struct loop {
 };
 
 void execute(uint8_t* code, uint16_t len) {
+    /* les instructions inconnues sont considérées comme des NOP */
+    for(uint16_t i = 0; i < 256; i++) instructions[i] = &&CMD_NOP;
+
     /* on initialise la table d'instructions */
     instructions[0b00000001] = &&CMD_DBT;
     instructions[0b00000010] = &&CMD_ATT;
@@ -40,6 +44,7 @@ void execute(uint8_t* code, uint16_t len) {
 
     /* on boucle jusqu'à la fin du programme */
     while(1) {
+        /* on termine le programme si la prochaine adresse est trop grande */
         if(addr >= len) break;
 
         /* on obtient la prochaine instruction */
@@ -54,13 +59,18 @@ void execute(uint8_t* code, uint16_t len) {
         /* sinon, on avance dans la mémoire */
         continue;
 
+CMD_NOP:
+        /* on ne fait rien */
+        continue;
+
 CMD_DBT:
         /* on active le flag qui dit que le programme s'exécute */
         running = 1;
         continue;
 
 CMD_ATT:
-
+        /* on attend 25 fois le nombre en paramètre */
+        _delay_ms(25*code[addr++]);
         continue;
 
 CMD_DAL:
@@ -117,5 +127,4 @@ CMD_FIN:
         running = 0;
         break;
     }
-
 }
