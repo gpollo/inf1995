@@ -18,7 +18,6 @@ struct callback CALLBACK_IGNORE = {
     .repeat = 0,
 };
 
-
 /** Le callback pour le canal A du timer. */
 struct callback* callbackA;
 
@@ -121,7 +120,7 @@ ISR(TIMER1_COMPB_vect) {
 }
 
 /** Cette macro génère les fonctions pour configurer les interruptions. */
-#define conf_interrupt(channel)                                       \
+#define CONF_INTERRUPT(channel)                                       \
 void configure_interrupt##channel(struct callback* ncallback) {       \
     /* on enlève le callback si aucune est spécifié */                \
     if(ncallback == NULL) {                                           \
@@ -143,5 +142,5 @@ void configure_interrupt##channel(struct callback* ncallback) {       \
 }
 
 /* on génère les fonctions */
-conf_interrupt(A)
-conf_interrupt(B)
+CONF_INTERRUPT(A)
+CONF_INTERRUPT(B)
