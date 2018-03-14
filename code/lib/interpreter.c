@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <interpreter.h>
 #include <util/delay.h>
+#include <son.h>
 
 void** instructions[256];
 
@@ -9,7 +10,12 @@ struct loop {
     uint8_t cntr;
 };
 
-void execute(uint8_t* code, uint16_t len) {
+void interpreter_init(void) {
+    /* on initialise le son */
+    son_init();
+}
+
+void interpreter_execute(uint8_t* code, uint16_t len) {
     /* les instructions inconnues sont considérées comme des NOP */
     for(uint16_t i = 0; i < 256; i++) instructions[i] = &&CMD_NOP;
 
@@ -82,7 +88,8 @@ CMD_DET:
         continue;
 
 CMD_SGO:
-
+        /* on joue le son */
+        son_jouer(code[addr++]);
         continue;
 
 CMD_SAR:
@@ -124,6 +131,7 @@ CMD_FBC:
         continue;
 
 CMD_FIN:
+        /* on quitte la boucle */
         running = 0;
         break;
     }
