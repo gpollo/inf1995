@@ -27,6 +27,11 @@ MAIN_NAME=robot
 MAIN_TARGET=$(MAIN_NAME).hex
 MAIN_DIR=exec
 
+# configuration pour effectuer des tests
+TEST_NAME=tests
+TEST_TARGET=$(TEST_NAME).hex
+TEST_DIR=tests
+
 # configuration pour la librarie
 LIB_NAME=statique
 LIB_TARGET=lib$(LIB_NAME).a
