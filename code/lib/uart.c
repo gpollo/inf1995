@@ -24,9 +24,6 @@ void uart_init(void) {
     UBRR0H = UBRRH_VALUE;
     UBRR0L = UBRRL_VALUE;
 
-	/* permet la reception (RX) et la transmission (TX) complète par le USART0 */
-	UCSR0A = _BV(RXC0) | _BV(TXC0) ;
-	
     /* on activate la réception (RX) et la transmission (TX) */
     UCSR0B = _BV(RXEN0) | _BV(TXEN0);
 
@@ -62,9 +59,36 @@ int8_t uart_printf(char* format, ...) {
 }
 
 uint8_t uart_receive(void) {
-	/* on attend que les données sont reçues */
-	while(!(UCSR0A & _BV(RXC0)));
-	
-	/* prend et retourne les données reçues provenant du buffer */
-	return UDR0;
+    /* on attend que les données sont reçues */
+    loop_until_bit_is_set(UCSR0A, RXC0);
+
+    /* prend et retourne les données reçues provenant du buffer */
+    return UDR0;
+}
+
+uint8_t uart_getline(uint8_t len, uint8_t* buffer) {
+    uint8_t pos = 0;
+
+    while(pos < len-1) {
+        /* on lit un octet */
+        uint8_t byte = uart_receive();
+
+        /* on renvoit le caractère pour echo */
+        uart_printf("%c", byte);
+        
+        /* on quitte à une nouvelle ligne */
+        if(byte == '\n' || byte == '\r') break;
+
+        /* on ajoute l'octet au buffer */
+        buffer[pos++] = byte;
+    }
+
+    /* on change de ligne */
+    uart_printf("\n\r");
+
+    /* on termine la ligne */
+    buffer[pos] = '\0';
+
+    /* on retourne la taille de la ligne */
+    return pos;
 }

@@ -8,6 +8,14 @@ void uart_test(void) {
     /* on test l'écriture d'un string */
     uart_printf("\n\r");
     uart_printf("Hello World!\n\r");
+
+    /* buffer pour l'entrée */
+    uint8_t buffer[255];
+
+    /* on demande une entrée par UART */
+    uart_printf("Veuillez entrer une ligne: ");
+    uart_getline(sizeof(buffer), buffer);
+    uart_printf("Vous avez écrit: %s\n\r", buffer);
 }
 
 void memory_test(void) {

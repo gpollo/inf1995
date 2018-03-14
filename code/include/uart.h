@@ -43,6 +43,18 @@ int8_t uart_printf(char* format, ...);
  */
 uint8_t uart_receive(void);
 
+/**
+ * Cette fonction lit une ligne en entrée.
+ *
+ * Note: La ligne lue est terminée par un caractère null.
+ *
+ * @param len    La taille du buffer dans lequel on écrit la ligne.
+ * @param buffer Le buffer dans lequel on écrit la ligne.
+ *
+ * @return La taille de la ligne lue.
+ */
+uint8_t uart_getline(uint8_t len, uint8_t* buffer);
+
 #ifdef __cplusplus
 }
 #endif
