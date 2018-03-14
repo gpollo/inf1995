@@ -64,14 +64,15 @@ void adc_test(void) {
     uart_printf("Reading all ADC pins...\n\r");
     while(1) {
         /* on lit tout les pins */
-        uart_printf("%4d ",   adc_read(0));
-        uart_printf("%4d ",   adc_read(1));
-        uart_printf("%4d ",   adc_read(2));
-        uart_printf("%4d ",   adc_read(3));
-        uart_printf("%4d ",   adc_read(4));
-        uart_printf("%4d ",   adc_read(5));
-        uart_printf("%4d ",   adc_read(6));
-        uart_printf("%d\n\r", adc_read(7));
+        uart_printf("%4d ", adc_read(0));
+        uart_printf("%4d ", adc_read(1));
+        uart_printf("%4d ", adc_read(2));
+        uart_printf("%4d ", adc_read(3));
+        uart_printf("%4d ", adc_read(4));
+        uart_printf("%4d ", adc_read(5));
+        uart_printf("%4d ", adc_read(6));
+        uart_printf("%4d ", adc_read(7));
+        uart_printf("\n\r");
 
         /* on attend une demi seconde */
         _delay_ms(500);
