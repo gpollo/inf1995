@@ -1,8 +1,10 @@
 #include <uart.h>
 #include <memory.h>
-#include <moteur.h>
+#include <timer.h>
 #include <adc.h>
 #include <util/delay.h>
+#include <avr/interrupt.h>
+#include <stdlib.h>
 
 void uart_test(void) {
     uart_init();
@@ -58,12 +60,78 @@ void memory_test(void) {
     uart_printf("%s\n\r", buffer);
 }
 
+/** Compteur pour le premier callback. */
+volatile uint8_t counter1 = 5;
+
+/** Compteur pour le deuxième callback. */
+volatile uint8_t counter2 = 5;
+
+/** Compteur pour le troisième callback. */
+volatile uint8_t counter3 = 5;
+
+/** Premier callback. */
+void timer_callback1(void);
+
+/** Deuxième callback. */
+void timer_callback2(void);
+
+/** Troisième callback. */
+void timer_callback3(void);
+
+/** Structure pour la configuration du premier callback. */
+struct callback callback1 = {
+    .time = 1000,
+    .func = &timer_callback1,
+    .repeat = 1,
+};
+
+/** Structure pour la configuration du deuxième callback. */
+struct callback callback2 = {
+    .time = 2500,
+    .func = &timer_callback2,
+    .repeat = 1,
+};
+
+/** Structure pour la configuration du troisième callback. */
+struct callback callback3 = {
+    .time = 1500,
+    .func = &timer_callback3,
+    .repeat = 1,
+};
+
+void timer_test(void) {
+    timer_init();
+
+    /* on démarre les deux premiers timers */
+    timer_start(&callback1, &callback2);
+
+    while(callback1.repeat || callback2.repeat || callback3.repeat)
+        /* on démarre le troisième quand le premier finit */
+        if(!counter1) timer_start(&callback3, &CALLBACK_IGNORE);
+}
+
+void timer_callback1(void) {
+    uart_printf("callback: %d %d %d\n\r", counter1--, counter2, counter3);
+    if(!counter1) callback1.repeat = 0;
+}
+
+void timer_callback2(void) {
+    uart_printf("callback: %d %d %d\n\r", counter1, counter2--, counter3);
+    if(!counter2) callback2.repeat = 0;
+}
+
+void timer_callback3(void) {
+    uart_printf("callback: %d %d %d\n\r", counter1, counter2, counter3--);
+    if(!counter3) callback3.repeat = 0;
+}
+
 void adc_test(void) {
     adc_init();
     
     uart_printf("Reading all ADC pins...\n\r");
     while(1) {
         /* on lit tout les pins */
+        cli();
         uart_printf("%4d ", adc_read(0));
         uart_printf("%4d ", adc_read(1));
         uart_printf("%4d ", adc_read(2));
@@ -73,6 +141,7 @@ void adc_test(void) {
         uart_printf("%4d ", adc_read(6));
         uart_printf("%4d ", adc_read(7));
         uart_printf("\n\r");
+        sei();
 
         /* on attend une demi seconde */
         _delay_ms(500);
@@ -82,6 +151,7 @@ void adc_test(void) {
 int main(void) {
     uart_test();
     memory_test();
+    timer_test();
     adc_test();
     return 0;
 }

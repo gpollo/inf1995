@@ -10,15 +10,21 @@ extern "C" {
  * après un certain temps.
  */
 struct callback {
+    /** La fonction à appeler après que le temps soit écoulé. */
+    void (*func)(void);
+
     /** Le temps d'attente en millisecondes. */
     uint16_t time;
 
-    /** La fonction à appeler après que le temps soit écoulé. */
-    void (*func)(void);
+    /** Si on répète le timer ou non. */
+    uint8_t repeat;
 };
 
 /** Cette structure peut être utilisée pour ne pas affecter un canal. */
-extern const struct callback CALLBACK_IGNORE;
+extern struct callback CALLBACK_IGNORE;
+
+/** Cette macro peut être utilisée pour désactiver un callback. */
+#define CALLBACK_REMOVE NULL
 
 /** Code d'erreur pour un temps invalide du canal A. */
 #define INVALID_TIMEA (-1)

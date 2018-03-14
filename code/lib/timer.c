@@ -9,19 +9,21 @@
 #endif
 
 /** Le temps maximal d'un timer 16-bits en millisecondes. */
-#define MAX_TIME_MILLISECONDS 1000*((0xFF * (uint32_t) TIMER_PRESCALER)/F_CPU)
+#define MAX_TIME_MILLISECONDS 1000*((0xFFFF * (uint32_t) TIMER_PRESCALER)/F_CPU)
 
 /** Cette structure peut être utilisée pour ne pas affecter un canal. */
-const struct callback CALLBACK_IGNORE = {
+struct callback CALLBACK_IGNORE = {
     .time = 0,
     .func = NULL,
+    .repeat = 0,
 };
 
+
 /** Le callback pour le canal A du timer. */
-void (*callbackA)(void);
+struct callback* callbackA;
 
 /** Le callback pour le canal B du timer. */
-void (*callbackB)(void);
+struct callback* callbackB;
 
 /**
  * Cette fonction configure une interruption pour le canal A. Si la structure
@@ -30,10 +32,9 @@ void (*callbackB)(void);
  * actuel. Sinon, on remplace le callback actuel du canal B par celui dans la
  * structure.
  *
- * @param func Une pointeur vers le pointeur de callback actuel.
- * @param c    Un pointer vers une structure de callback.
+ * @param c  Un pointer vers une structure de callback.
  */
-void configure_interruptA(void (**func)(void), struct callback* c);
+void configure_interruptA(struct callback* c);
 
 /**
  * Cette fonction configure une interruption pour le canal B. Si la structure
@@ -42,17 +43,16 @@ void configure_interruptA(void (**func)(void), struct callback* c);
  * actuel. Sinon, on remplace le callback actuel du canal B par celui dans la
  * structure.
  *
- * @param func Une pointeur vers le pointeur de callback actuel.
- * @param c    Un pointer vers une structure de callback.
+ * @param c Un pointer vers une structure de callback.
  */
-void configure_interruptB(void (**func)(void), struct callback* c);
+void configure_interruptB(struct callback* c);
 
 void timer_init(void) {
     /* on veut que le compteur soit déconnecté de sa pin */
     TCCR1A = 0;
 
-    /* clear timer on compare */
-    TCCR1B = _BV(WGM12);
+    /* timer normale avec 0xFFFF comme top */
+    TCCR1B = 0;
 
     /* on configure le prescaler */
 #if   TIMER_PRESCALER == 1
@@ -82,11 +82,8 @@ int8_t timer_start(struct callback* cA, struct callback* cB) {
     cli();
 
     /* on configure les interruptions */
-    configure_interruptA(&callbackA, cA);
-    configure_interruptB(&callbackB, cB);
-
-    /* on démarre le compteur à zéro */
-    TCNT1 = 0;
+    configure_interruptA(cA);
+    configure_interruptB(cB);
 
     /* on active les interruptions */
     sei();
@@ -94,40 +91,55 @@ int8_t timer_start(struct callback* cA, struct callback* cB) {
     return 0;
 }
 
+/** Cette macro gère une interruption. */
+#define HANDLE_INTERRUPT(channel) {                           \
+    /* on désactive les interruptions */                      \
+    cli();                                                    \
+                                                              \
+    /* on appel le callback */                                \
+    (*callback##channel->func)();                             \
+                                                              \
+    if(callback##channel->repeat)                             \
+        /* on calcul le prochain compteur si on répète */     \
+        OCR1##channel = TCNT1 + callback##channel->time;      \
+    else                                                      \
+        /* on désactive l'interruption si on ne répète pas */ \
+        TIMSK1 &= ~_BV(OCIE1##channel);                       \
+                                                              \
+    /* on reactive les interruptions */                       \
+    sei();                                                    \
+}
+
 /** Le vecteur d'interruption pour le canal A. */
 ISR(TIMER1_COMPA_vect) {
-    cli();
-    (*callbackA)();
-    sei();
+    HANDLE_INTERRUPT(A);
 }
 
 /** Le vecteur d'interruption pour le canal B. */
 ISR(TIMER1_COMPB_vect) {
-    cli();
-    (*callbackB)();
-    sei();
+    HANDLE_INTERRUPT(B);
 }
 
 /** Cette macro génère les fonctions pour configurer les interruptions. */
-#define conf_interrupt(channel)                                              \
-void configure_interrupt##channel(void (**func)(void), struct callback* c) { \
-    /* on enlève le callback si aucune est spécifié */                       \
-    if(c == NULL) {                                                          \
-        TIMSK1 &= ~_BV(OCIE1##channel);                                      \
-        (*func) = NULL;                                                      \
-        return;                                                              \
-    }                                                                        \
-                                                                             \
-    /* on ne touche pas au callback */                                       \
-    if(c->time == 0) {                                                       \
-        OCR1##channel -= TCNT1;                                              \
-        return;                                                              \
-    }                                                                        \
-                                                                             \
-    /* on change le callback */                                              \
-    (*func) = c->func;                                                       \
-    TIMSK1 |= _BV(OCIE1##channel);                                           \
-    OCR1##channel = (c->time*(F_CPU/1000))/TIMER_PRESCALER;                  \
+#define conf_interrupt(channel)                                       \
+void configure_interrupt##channel(struct callback* ncallback) {       \
+    /* on enlève le callback si aucune est spécifié */                \
+    if(ncallback == NULL) {                                           \
+        TIMSK1 &= ~_BV(OCIE1##channel);                               \
+        callback##channel = NULL;                                     \
+        return;                                                       \
+    }                                                                 \
+                                                                      \
+    /* on ne touche pas au callback */                                \
+    if(ncallback->time == 0) return;                                  \
+                                                                      \
+    /* on calcule le compteur nécessaire */                           \
+    ncallback->time = (ncallback->time*(F_CPU/1000))/TIMER_PRESCALER; \
+                                                                      \
+    /* on change le callback */                                       \
+    callback##channel = ncallback;                                    \
+    TIMSK1 |= _BV(OCIE1##channel);                                    \
+    OCR1##channel = TCNT1 + ncallback->time;                          \
 }
 
 /* on génère les fonctions */
