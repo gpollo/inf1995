@@ -92,8 +92,7 @@ CMD_SGO:
         continue;
 
 CMD_SAR:
-		/* on arrête le son */
-		son_arreter();
+
         continue;
 
 CMD_MAR:
