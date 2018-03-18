@@ -32,6 +32,11 @@ TEST_NAME=tests
 TEST_TARGET=$(TEST_NAME).hex
 TEST_DIR=tests
 
+# configururation pour le flasher de mémoire
+FLASHER_NAME=flasher
+FLASHER_TARGET=$(FLASHER_NAME).hex
+FLASHER_DIR=flasher
+
 # configuration pour la librarie
 LIB_NAME=statique
 LIB_TARGET=lib$(LIB_NAME).a
