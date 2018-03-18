@@ -32,6 +32,11 @@ TEST_NAME=tests
 TEST_TARGET=$(TEST_NAME).hex
 TEST_DIR=tests
 
+# configuration pour l'interpréteur d'instructions
+INTERPRETER_NAME=interpreter
+INTERPRETER_TARGET=$(INTERPRETER_NAME).hex
+INTERPRETER_DIR=interpreter
+
 # configururation pour le flasher de mémoire
 FLASHER_NAME=flasher
 FLASHER_TARGET=$(FLASHER_NAME).hex
