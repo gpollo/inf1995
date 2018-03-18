@@ -24,6 +24,11 @@ void son_jouer(uint8_t numero);
  */
 void son_arreter(void);
 
+/**
+ * Cette méthode émet une mélodie de démarrage.
+ */
+void son_depart(void) ;
+
 #ifdef __cplusplus
 }
 #endif

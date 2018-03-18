@@ -3,8 +3,8 @@
 
 void son_init(void) {
 	/* on configure le compteur en CTC avec prescaler à 1*/
-    TCCR1A |= _BV(WGM01);
-    TCCR1B |= _BV(CS00);
+    TCCR1A = 0;
+    TCCR1B = _BV(CS00) | _BV(WGM12);
     
 	/* faire partir le compteur à 0 */
 	TCNT1 = 0;
@@ -60,9 +60,38 @@ void son_jouer(uint8_t numero) {
 	OCR1A = son_table[numero];
 	
 	/* toggle OC1A quand le TCNT1 atteint OCR1A */
-	TCCR1A = _BV(COM1A0);
+	TCCR1A |= _BV(COM1A0);
 }
 
 void son_arreter(void) {
-	TCCR1A = 0;
+	TCCR1A &= ~_BV(COM1A0);
+}
+
+void son_depart(void) {
+	son_jouer(70);
+	_delay_ms(400);
+	son_arreter();
+	_delay_ms(80);
+	
+	son_jouer(65);
+	_delay_ms(600);
+	son_arreter();
+	_delay_ms(120);
+	
+	son_jouer(70);
+	_delay_ms(250);
+	son_arreter();
+	_delay_ms(50);
+	
+	son_jouer(70); 
+	_delay_ms(130);
+	son_jouer(72); 
+	_delay_ms(130);
+	son_jouer(74);
+	_delay_ms(130);
+	son_jouer(75);
+	_delay_ms(130);
+	son_jouer(77);
+	_delay_ms(500);
+	son_arreter();
 }
