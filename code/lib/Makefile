@@ -19,6 +19,8 @@ timer.o: $(INC)/timer.h
 
 son.o: $(INC)/son.h
 
+mpu6050.o: $(INC)/mpu6050.h
+
 clean:
 	$(REM) $(REMOPTS) *.o
 
