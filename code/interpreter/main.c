@@ -130,23 +130,28 @@ CMD_SAR:
         continue;
 
 CMD_MAR:
-
+        /* on arrête les moteurs */
+        moteur_arreter();
         continue;
 
 CMD_MAV:
-
+        /* on active les roues vers l'avant */
+        moteur_avancer(50);
         continue;
 
 CMD_MRE:
-
+        /* on active les roues vers l'arrière */
+        moteur_reculer(50);
         continue;
 
 CMD_TRD:
-
+        /* on tourne le robot vers la droite */
+        moteur_tourner_droite();
         continue;
 
 CMD_TRG:
-
+        /* on tourne le robot vers la gauche */
+        moteur_tourner_gauche();
         continue;
 
 CMD_DBC:
