@@ -31,14 +31,14 @@ void del_amber();
  *
  * @param numero Le numéro de la PINA.
  */
-void del_off();
+void del_off(uint8_t numero);
 
 /**
  * Cette fonction permet de choisir le numéro de la PINA désirée en mode sortie
  *
  * @param numero Le numéro de la PINA.
  */
-void del_on(uint_8 numero);
+void del_on(uint8_t numero);
 
 #ifdef __cplusplus
 }
