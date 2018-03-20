@@ -10,7 +10,11 @@ void son_init(void) {
 	/* faire partir le compteur à 0 */
 	TCNT1 = 0;
 	
+	/* on active la pin 4 comme ground */
+	DDRD |= _BV(4);
+	PORTD &= ~_BV(4);
 
+	/* on active la pin 5 en sortie */
     OC1A_DDR |= _BV(OC1A_BIT);
 }
 
