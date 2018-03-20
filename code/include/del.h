@@ -14,17 +14,17 @@ void del_init(void);
 /**
  * Cette fonction permet d'allumer la DEL de la couleur rouge.
  */
-void del_red();
+void del_red(void);
 
 /**
  * Cette fonction permet d'allumer la DEL de la couleur verte.
  */
-void del_green();
+void del_green(void);
 
 /**
  * Cette fonction permet d'allumer la DEL de la couleur ambrée.
  */
-void del_amber();
+void del_amber(void);
 
 /**
  * Cette fonction permet d'éteindre la DEL.
@@ -39,6 +39,11 @@ void del_off(uint8_t numero);
  * @param numero Le numéro de la PINA.
  */
 void del_on(uint8_t numero);
+
+/**
+ * Cette fonction exécute une routine préprogrammée sur pour les DELs.
+ */
+void del_depart(void);
 
 #ifdef __cplusplus
 }

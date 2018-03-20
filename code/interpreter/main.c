@@ -36,6 +36,9 @@ int main() {
 	/* on joue le son de départ */
 	son_depart();
 
+    /* on joue la routine de départ pour les DELs */
+    del_depart();
+
     /* ce flag dit si le programme roule ou non */
     uint8_t running = 0;
 
