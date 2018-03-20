@@ -3,6 +3,7 @@
 #include <son.h>
 #include <memory.h>
 #include <moteur.h>
+#include <del.h>
 
 #define PAGE_SIZE 128
 
@@ -21,7 +22,10 @@ int main() {
 
     /* on initialise les moteurs */
     motor_init();
-
+	
+	/* on initialise les dels */
+    del_init();
+	
     /* la table de correspondance des instructions */
     void** instructions[sizeof(uint8_t)];
 
@@ -106,11 +110,13 @@ CMD_ATT:
         continue;
 
 CMD_DAL:
-
+		/* on allume la DEL */
+		del_on(code[addr++]);
         continue;
 
 CMD_DET:
-
+		/* on éteint la DEL */
+		del_off(code[addr++]);
         continue;
 
 CMD_SGO:
