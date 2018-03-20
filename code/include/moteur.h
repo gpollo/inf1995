@@ -39,7 +39,7 @@ extern "C" {
  * Note: La macro #MOTEUR_PRESCALER peut être utilisée pour controller le
  *       prescaler du compteur.
  */
-void motor_init();
+void moteur_init();
 
 void moteur_avancer(uint8_t speed_ratio);
 
@@ -47,9 +47,9 @@ void moteur_reculer(uint8_t speed_ratio);
 
 void moteur_arreter();
 
-void tourner_droite();
+void moteur_tourner_droite();
 
-void tourner_gauche();
+void moteur_tourner_gauche();
 
 #ifdef __cplusplus
 }

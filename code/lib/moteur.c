@@ -1,5 +1,6 @@
 #include <avr/io.h>
 #include <moteur.h>
+#include <util/delay.h>
 
 /* valeur par défaut du prescaler */
 #ifndef MOTEUR_PRESCALER
@@ -48,8 +49,8 @@ void moteur_avancer(uint8_t speed_ratio) {
     /* On arrête les roues */
     moteur_arreter();
 
-    uint8_t speed = (speed_ratio*255/100);
     /* On active la vitesse */
+    uint8_t speed = (speed_ratio*255/100);
     OCR0A = speed;
     OCR0B = speed;
 
@@ -66,13 +67,18 @@ void moteur_reculer(uint8_t speed_ratio) {
     /* On arrête les roues */
     moteur_arreter();
 
+    /* On active la vitesse */
+    uint8_t speed = (speed_ratio*255/100);
+    OCR0A = speed;
+    OCR0B = speed;
+
     /* On met les directions vers l'arriere */
     DIR0A_PIN |= _BV(DIR0A_BIT);
     DIR0B_PIN |= _BV(DIR0B_BIT);
 
     /* On règle les pins du PWM en sortie */
     OC0A_DDR |= _BV(OC0A_BIT);
-    0C0B_DDR |= _BV(OC0B_BIT);
+    OC0B_DDR |= _BV(OC0B_BIT);
 }
 
 void moteur_arreter() {
@@ -81,12 +87,12 @@ void moteur_arreter() {
     OC0B_DDR &=~ _BV(OC0B_BIT);
 }
 
-void tourner_droite() {
+void moteur_tourner_droite() {
      /* On arrête les roues */
     moteur_arreter();
 
-    uint8_t speed = (ROTATION_SPEED*255/100);
     /* On active la vitesse pour roue de gauche seulement */
+    uint8_t speed = (ROTATION_SPEED*255/100);
     OCR0A = 0;
     OCR0B = speed;
 
@@ -99,14 +105,15 @@ void tourner_droite() {
     OC0B_DDR |= _BV(OC0B_BIT);
 
     _delay_ms(500);
+    moteur_arreter();
 }
 
-void tourner_gauche() {
+void moteur_tourner_gauche() {
      /* On arrête les roues */
     moteur_arreter();
 
-    uint8_t speed = (ROTATION_SPEED*255/100);
     /* On active la vitesse pour roue de droite seulement */
+    uint8_t speed = (ROTATION_SPEED*255/100);
     OCR0A = speed;
     OCR0B = 0;
 
@@ -119,4 +126,5 @@ void tourner_gauche() {
     OC0B_DDR |= _BV(OC0B_BIT);
 
     _delay_ms(500);
+    moteur_arreter();
 }
