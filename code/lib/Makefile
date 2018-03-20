@@ -1,6 +1,6 @@
 include ../Makefile.common
 
-OBJECTS=moteur.o uart.o memory.o adc.o timer.o son.o del.o
+OBJECTS=moteur.o uart.o memory.o adc.o timer.o son.o del.o mpu6050.o
 
 all: $(LIB_TARGET)
 
