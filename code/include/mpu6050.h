@@ -8,21 +8,6 @@ extern "C" {
 #endif
 
 /**
- * This structure defines the gyroscope measurements in the order of the chip's
- * registers.
- */
-struct gyroscope {
-    /** The x measurement value. */
-    int16_t x;
-
-    /** The y measurement value. */
-    int16_t y;
-
-    /** The z measurement value. */
-    int16_t z;
-} __attribute__((packed));
-
-/**
  * This structure defines the accelerometer measurements in the order of the
  * chip's registers.
  */
@@ -38,18 +23,33 @@ struct accelerometer {
 } __attribute__((packed));
 
 /**
+ * This structure defines the gyroscope measurements in the order of the chip's
+ * registers.
+ */
+struct gyroscope {
+    /** The x measurement value. */
+    int16_t x;
+
+    /** The y measurement value. */
+    int16_t y;
+
+    /** The z measurement value. */
+    int16_t z;
+} __attribute__((packed));
+
+/**
  * This structure defines the measurements that can be read from the chip in
  * the order of the chip's registers.
  */
 struct measurements {
-    /** The gyroscope measurements. */
-    struct gyroscope gyroscope;
+    /** The accelerometer measurements. */
+    struct accelerometer accelerometer;
 
     /** The temperature measurement. */
     int16_t temperature;
 
-    /** The accelerometer measurements. */
-    struct accelerometer accelerometer;
+    /** The gyroscope measurements. */
+    struct gyroscope gyroscope;
 } __attribute__((packed));
 
 /**
@@ -96,21 +96,23 @@ void mpu6050_write_registers(uint8_t puce, uint8_t reg, uint8_t count, uint8_t* 
  */
 void mpu6050_write_register(uint8_t puce, uint8_t reg, uint8_t data);
 
+void mpu6050_set_sleep(uint8_t puce, uint8_t mode);
+
 /** The register for the configuration of the gyroscope. */
 #define REG_GYRO_CONFIG 0x1B
-#define XG_ST   7 /** The bit for self-testing the x gyroscope. */
-#define YG_ST   6 /** The bit for self-testing the y gyroscope. */
-#define ZG_ST   5 /** The bit for self-testing the z gyroscope. */
-#define FS_SEL1 4 /** The second bit for selecting the range. */
-#define FS_SEL0 3 /** The first bit for selecting the range. */
+#define BIT_XG_ST   7 /** The bit for self-testing the x gyroscope. */
+#define BIT_YG_ST   6 /** The bit for self-testing the y gyroscope. */
+#define BIT_ZG_ST   5 /** The bit for self-testing the z gyroscope. */
+#define BIT_FS_SEL1 4 /** The second bit for selecting the range. */
+#define BIT_FS_SEL0 3 /** The first bit for selecting the range. */
 
 /** The register for the configuration of the accelerometer. */
 #define REG_ACCEL_CONFIG 0x1C
-#define XA_ST    7 /** The bit for self-testing the x gyroscope. */
-#define YA_ST    6 /** The bit for self-testing the y gyroscope. */
-#define ZA_ST    5 /** The bit for self-testing the z gyroscope. */
-#define AFS_SEL1 4 /** The second bit for selecting the range. */
-#define AFS_SEL0 3 /** The first bit for selecting the range. */
+#define BIT_XA_ST    7 /** The bit for self-testing the x gyroscope. */
+#define BIT_YA_ST    6 /** The bit for self-testing the y gyroscope. */
+#define BIT_ZA_ST    5 /** The bit for self-testing the z gyroscope. */
+#define BIT_AFS_SEL1 4 /** The second bit for selecting the range. */
+#define BIT_AFS_SEL0 3 /** The first bit for selecting the range. */
 
 /** The register for the higher byte of the x acceleration value. */
 #define REG_ACCEL_XOUTH 0x3B
@@ -153,6 +155,17 @@ void mpu6050_write_register(uint8_t puce, uint8_t reg, uint8_t data);
 
 /** The register for the lower byte of the z gyroscope value. */
 #define REG_GYRO_ZOUTL 0x48
+
+#define REG_PWR_MGMT_1 0x6B
+#define BIT_DEVICE_RESET 7
+#define BIT_SLEEP        6
+#define BIT_CYCLE        5
+#define BIT_TEMP_DIS     3
+#define BIT_CLK_SEL2     2
+#define BIT_CLK_SEL1     1
+#define BIT_CLK_SEL0     0
+
+#define REG_PWR_MGMT_2 0x6C
 
 #ifdef __cplusplus
 }
