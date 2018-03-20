@@ -30,7 +30,7 @@ extern "C" {
 #endif
 
 #ifndef ROTATION_SPEED
-            #define ROTATION_SPEED 50
+            #define ROTATION_SPEED 200
 #endif
 /**
  * Cette méthode initialise les moteurs du robot. À l'interne, elle l'utilise

@@ -39,92 +39,57 @@ void moteur_init() {
     /* on configure les pins de PWM sortie */
     OC0A_DDR |= _BV(OC0A_BIT);
     OC0B_DDR |= _BV(OC0B_BIT);
-    
-    /* par défaut, on met ces pins à bas */
-    DIR0A_PIN &=~ _BV(DIR0A_BIT);
-    DIR0B_PIN &=~ _BV(DIR0B_BIT);
+    DDRB = 0xff;    
 }
 
-void moteur_avancer(uint8_t speed_ratio) {
-    /* On arrête les roues */
-    moteur_arreter();
-
-    /* On active la vitesse */
-    uint8_t speed = (speed_ratio*255/100);
-    OCR0A = speed;
-    OCR0B = speed;
-
+void moteur_avancer(uint8_t speed) {
     /* On met les directions vers l'avant */
-    DIR0A_PIN &=~ _BV(DIR0A_BIT);
-    DIR0B_PIN &=~ _BV(DIR0B_BIT);
-
-    /* On configure les pins du pwm en sortie */
-    OC0A_DDR |= _BV(OC0A_BIT);
-    OC0B_DDR |= _BV(OC0B_BIT);
-}
-
-void moteur_reculer(uint8_t speed_ratio) {
-    /* On arrête les roues */
-    moteur_arreter();
+    PORTB &=~ (1<<2);
+    PORTB &=~ (1<<5);
 
     /* On active la vitesse */
-    uint8_t speed = (speed_ratio*255/100);
     OCR0A = speed;
     OCR0B = speed;
+}
 
+void moteur_reculer(uint8_t speed) {
     /* On met les directions vers l'arriere */
-    DIR0A_PIN |= _BV(DIR0A_BIT);
-    DIR0B_PIN |= _BV(DIR0B_BIT);
+    PORTB |= (1<<2);
+    PORTB |= (1<<5);
 
-    /* On règle les pins du PWM en sortie */
-    OC0A_DDR |= _BV(OC0A_BIT);
-    OC0B_DDR |= _BV(OC0B_BIT);
+    /* On active la vitesse */
+    OCR0A = speed;
+    OCR0B = speed;
 }
 
 void moteur_arreter() {
     /* On configure les pins du PWM en sortie */
-    OC0A_DDR &=~ _BV(OC0A_BIT);
-    OC0B_DDR &=~ _BV(OC0B_BIT);
+    OCR0A = 0;
+    OCR0B = 0;
 }
 
 void moteur_tourner_droite() {
-     /* On arrête les roues */
-    moteur_arreter();
+    /* On met les directions vers l'avant */
+    PORTB &=~ (1<<2);
+    PORTB &=~ (1<<5);
 
     /* On active la vitesse pour roue de gauche seulement */
-    uint8_t speed = (ROTATION_SPEED*255/100);
     OCR0A = 0;
-    OCR0B = speed;
+    OCR0B = ROTATION_SPEED;
 
-    /* On met les directions vers l'avant */
-    DIR0A_PIN &=~ _BV(DIR0A_BIT);
-    DIR0B_PIN &=~ _BV(DIR0B_BIT);
-
-    /* On configure les pins du pwm en sortie */
-    OC0A_DDR |= _BV(OC0A_BIT);
-    OC0B_DDR |= _BV(OC0B_BIT);
-
-    _delay_ms(500);
+    _delay_ms(2300);
     moteur_arreter();
 }
 
 void moteur_tourner_gauche() {
-     /* On arrête les roues */
-    moteur_arreter();
+    /* On met les directions vers l'avant */
+    PORTB &=~ (1<<2);
+    PORTB &=~ (1<<5);
 
     /* On active la vitesse pour roue de droite seulement */
-    uint8_t speed = (ROTATION_SPEED*255/100);
-    OCR0A = speed;
+    OCR0A = ROTATION_SPEED;
     OCR0B = 0;
 
-    /* On met les directions vers l'avant */
-    DIR0A_PIN &=~ _BV(DIR0A_BIT);
-    DIR0B_PIN &=~ _BV(DIR0B_BIT);
-
-    /* On configure les pins du pwm en sortie */
-    OC0A_DDR |= _BV(OC0A_BIT);
-    OC0B_DDR |= _BV(OC0B_BIT);
-
-    _delay_ms(500);
+    _delay_ms(2300);
     moteur_arreter();
 }
