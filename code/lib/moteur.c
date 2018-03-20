@@ -7,7 +7,7 @@
     #define MOTEUR_PRESCALER 64
 #endif
 
-void motor_init() {
+void moteur_init() {
     /* On réinitialise les registres impliqués */
     TCCR0A = 0;
     TCCR0B = 0;
