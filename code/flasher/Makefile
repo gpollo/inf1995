@@ -1,6 +1,8 @@
 include ../Makefile.common
 
 OBJECTS=main.o
+ROUTINE=routine.txt
+BYTECODE=bytecode.o
 
 all: $(FLASHER_TARGET)
 
@@ -13,13 +15,8 @@ main.o: $(INC)/uart.h $(INC)/memory.h
 install: $(FLASHER_TARGET)
 	$(AVRDUDE) -c $(PROGRAMMERID) -p $(MCU) -P -e -U flash:w:$(FLASHER_TARGET)
 
-clean:
-	$(REM) $(REMOPTS) *.o
-	$(REM) $(REMOPTS) $(FLASHER_NAME).out
-	$(REM) $(REMOPTS) $(FLASHER_NAME).map
+$(BYTECODE): $(ROUTINE)
+	$(PROGMEM) -o $(BYTECODE) $(ROUTINE)
 
-mrproper: clean
-	$(REM) $(REMOPTS) $(FLASHER_TARGET)
-
-.PHONY: clean mrproper
-
+flash: $(BYTECODE)
+	$(SERIEVIAUSB) -e -f $(BYTECODE)

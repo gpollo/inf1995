@@ -16,6 +16,12 @@ AVRDUDE=avrdude
 # programmeur utilisé pour avrdude
 PROGRAMMERID=usbasp
 
+# le programme qui compile les instructions
+PROGMEM=progmem
+
+# le programme qui interface avec le UART
+SERIEVIAUSB=serieViaUSB
+
 # niveau d'optimisation
 OPTLEVEL=s
 
