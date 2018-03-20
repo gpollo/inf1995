@@ -1,22 +1,16 @@
-#include <avr/io.h>
-#include <moteur.h>
+
 #include <util/delay.h>
-#include <son.h>
+#include <memory.h>
+#include <uart.h>
 
 int main(void) {
-    moteur_init();
-    son_init();
-
-    DDRD |= _BV(4);
-    PORTD |= _BV(4);
-    son_depart();
-
-    while(1) {
-        for(uint8_t speed = 50; speed < 200; speed +=50) {
-            moteur_avancer(speed);
-            _delay_ms(2000);
-            moteur_reculer(speed);
-            _delay_ms(2000);
-        }
-    }
+ uart_init();
+ memory_init();
+ uint16_t addr = 0;
+ uart_printf("\n\r");
+ while (1) {
+	 uint8_t data = memory_read_byte(0, addr++);
+	 uart_printf("0x%02x\t", data);
+	 _delay_ms(500);
+ }
 }
