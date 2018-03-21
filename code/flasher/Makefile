@@ -20,3 +20,11 @@ $(BYTECODE): $(ROUTINE)
 
 flash: $(BYTECODE)
 	$(SERIEVIAUSB) -e -f $(BYTECODE)
+
+clean:
+	$(REM) $(REMOPTS) *.o
+	$(REM) $(REMOPTS) $(INTERPRETER_NAME).out
+	$(REM) $(REMOPTS) $(INTERPRETER_NAME).map
+
+mrproper: clean
+	$(REM) $(REMOPTS) $(INTERPRETER_TARGET)
