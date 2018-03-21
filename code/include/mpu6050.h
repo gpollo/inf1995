@@ -7,6 +7,16 @@
 extern "C" {
 #endif
 
+#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+    #define FLIP_WORD(n) ((((n) & 0x00FF) << 8) | (((n) & 0xFF00) >> 8));
+#endif
+
+struct offset {
+    int16_t x;
+    int16_t y;
+    int16_t z;
+};
+
 /**
  * This structure defines the accelerometer measurements in the order of the
  * chip's registers.
@@ -97,6 +107,19 @@ void mpu6050_write_registers(uint8_t puce, uint8_t reg, uint8_t count, uint8_t* 
 void mpu6050_write_register(uint8_t puce, uint8_t reg, uint8_t data);
 
 void mpu6050_set_sleep(uint8_t puce, uint8_t mode);
+
+void mpu6050_read_gyroscope(uint8_t puce, struct gyroscope* gyro);
+
+void mpu6050_calibrate_gyroscope(uint8_t puce);
+
+#define REG_GYRO_XOFFSH 0x13
+#define REG_GYRO_XOFFSL 0x14
+
+#define REG_GYRO_YOFFSH 0x15
+#define REG_GYRO_YOFFSL 0x16
+
+#define REG_GYRO_ZOFFSH 0x17
+#define REG_GYRO_ZOFFSL 0x18
 
 /** The register for the configuration of the gyroscope. */
 #define REG_GYRO_CONFIG 0x1B
