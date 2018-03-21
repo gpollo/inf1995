@@ -5,7 +5,7 @@ MCU=atmega324pa
 FREQUENCY=8000000UL
 
 # vitesse de la connexion UART
-BAUD=2400
+BAUD=9600
 
 # horloge du bus I2C/TWI
 TWI_CLOCK=100000UL
@@ -70,7 +70,7 @@ CXXFLAGS += -fno-exceptions -Wno-write-strings
 # configuration de l'éditeur de liens
 LD=$(CC)
 LDFLAGS=-mmcu=$(MCU) -Wall -Wl,-Map,$(MAIN_NAME).map -L../$(LIB_DIR)
-LDLIBS=-lm -l$(LIB_NAME)
+LDLIBS=-lm -l$(LIB_NAME) -lprintf_flt -Wl,-u,vfprintf
 
 # configuration de l'archiveur
 AR=avr-ar

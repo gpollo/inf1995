@@ -139,3 +139,106 @@ void mpu6050_set_sleep(uint8_t puce, uint8_t mode) {
     /* on écrit la nouvelle valeur dans le régistre */
     mpu6050_write_register(puce, REG_PWR_MGMT_1, data);
 }
+
+void mpu6050_read_gyroscope(uint8_t puce, struct gyroscope* gyro) {
+    /* on lit les données du gyroscope */
+    mpu6050_read_registers(puce, REG_GYRO_XOUTH, sizeof(*gyro), (uint8_t*) gyro);
+
+#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+    /* on convertit l'ordre des octets si nécessaire */
+    gyro->x = FLIP_WORD(gyro->x);
+    gyro->y = FLIP_WORD(gyro->y);
+    gyro->z = FLIP_WORD(gyro->z);
+#endif
+}
+
+void mpu6050_set_gyroscope_offset(uint8_t puce, struct offset* offset) {
+#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+    /* on convertit l'ordre des octets si nécessaire */
+    offset->x = FLIP_WORD(offset->x);
+    offset->y = FLIP_WORD(offset->y);
+    offset->z = FLIP_WORD(offset->z);
+#endif
+
+    mpu6050_write_registers(puce, REG_GYRO_XOFFSH, sizeof(*offset), (uint8_t*) offset);
+
+#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+    /* on convertit l'ordre des octets si nécessaire */
+    offset->x = FLIP_WORD(offset->x);
+    offset->y = FLIP_WORD(offset->y);
+    offset->z = FLIP_WORD(offset->z);
+#endif
+}
+
+#include <uart.h>
+#include <util/delay.h>
+
+#define MEAN_MIN (-30)
+#define MEAN_MAX ( 30)
+
+void mpu6050_calibrate_gyroscope(uint8_t puce) {
+    struct gyroscope gyro;
+
+    struct offset offset;
+    offset.x = 0;
+    offset.y = 0;
+    offset.z = 0;
+
+    mpu6050_read_gyroscope(puce, &gyro);
+    float meanx = gyro.x;
+    float meany = gyro.y;
+    float meanz = gyro.z;
+
+    uint8_t count = 0;
+    while(1) {
+        mpu6050_set_gyroscope_offset(puce, &offset);
+
+        mpu6050_read_gyroscope(puce, &gyro);
+
+        uart_printf("%d | %6d %6d %6d | %6d %6d %6d | %6f %6f %6f\r",
+            count,
+            gyro.x, gyro.y, gyro.z,
+            offset.x, offset.y, offset.z,
+            meanx, meany, meanz);
+
+        meanx = (meanx + gyro.x) / 2;
+        meany = (meany + gyro.y) / 2;
+        meanz = (meanz + gyro.z) / 2;
+
+        if(meanx < 0)
+            offset.x++;
+        else
+            offset.x--;
+
+        if(meany < 0)
+            offset.y++;
+        else
+            offset.y--;
+
+        if(meanz < 0)
+            offset.z++;
+        else
+            offset.z--;
+
+        if(!(MEAN_MIN < meanx && meanx < MEAN_MAX)) {
+            count = 0;
+            continue;
+        }
+
+        if(!(MEAN_MIN < meany && meany < MEAN_MAX)) {
+            count = 0;
+            continue;
+        }
+
+        if(!(MEAN_MIN < meanz && meanz < MEAN_MAX)) {
+            count = 0;
+            continue;
+        }
+
+        count++;
+
+        if(count > 100) break;
+    }
+
+    uart_printf("\n\r");
+}
