@@ -11,7 +11,8 @@ int main(void) {
 
     mpu6050_set_sleep(0, 0);
 
-    mpu6050_calibrate_gyroscope(0);
+ //   mpu6050_calibrate_gyroscope(0);
+    mpu6050_set_gyroscope_offset_default(0);
 
     struct gyroscope gyro;
     while(1) {

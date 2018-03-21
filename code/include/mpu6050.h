@@ -7,10 +7,6 @@
 extern "C" {
 #endif
 
-#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
-    #define FLIP_WORD(n) ((((n) & 0x00FF) << 8) | (((n) & 0xFF00) >> 8));
-#endif
-
 struct offset {
     int16_t x;
     int16_t y;
@@ -109,6 +105,10 @@ void mpu6050_write_register(uint8_t puce, uint8_t reg, uint8_t data);
 void mpu6050_set_sleep(uint8_t puce, uint8_t mode);
 
 void mpu6050_read_gyroscope(uint8_t puce, struct gyroscope* gyro);
+
+void mpu6050_set_gyroscope_offset(uint8_t puce, struct offset* offset);
+
+void mpu6050_set_gyroscope_offset_default(uint8_t puce);
 
 void mpu6050_calibrate_gyroscope(uint8_t puce);
 
