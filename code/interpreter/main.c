@@ -7,12 +7,6 @@
 #include <del.h>
 #include <uart.h>
 
-#ifdef DEBUG
-    #define uart_debug(format,...) uart_printf(format,##__VA_ARGS__)
-#else
-    #define uart_debug(format,...)
-#endif
-
 #define PAGE_SIZE 128
 uint8_t code[PAGE_SIZE];
 

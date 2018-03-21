@@ -55,6 +55,23 @@ uint8_t uart_receive(void);
  */
 uint8_t uart_getline(uint8_t len, uint8_t* buffer);
 
+/**
+ * Cette macro est équivalente à uart_printf(), mais elle peut être désactiver
+ * à la compilation avec la macro #DEBUG. De cette manière, la transmission
+ * de données de déboggage ne ralentissent pas le fonctionnement du robot.
+ *
+ * Note: La taille de la chaîne de caractères formattée ne peut pas dépasser
+ *       une valeur de 255 caractères.
+ *
+ * @param format Le format de la chaîne de caractères.
+ * @param ...    Les valeurs de la chaîne de caratères.
+ */
+#ifdef DEBUG
+    #define uart_debug(format,...) uart_printf(format,##__VA_ARGS__)
+#else
+    #define uart_debug(format,...)
+#endif
+
 #ifdef __cplusplus
 }
 #endif
