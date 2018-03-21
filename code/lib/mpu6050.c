@@ -1,12 +1,41 @@
 #include <util/twi.h>
 #include <mpu6050.h>
 #include <math.h>
+#include <utils.h>
+
+    #define DEBUG
+#include <uart.h>
 
 #define GET_CONTROL(puce, op) ((0b11010000) | (puce << 1) | (op))
 
 /* valeur par défaut du prescaler */
 #ifndef TWI_PRESCALER
     #define TWI_PRESCALER 1
+#endif
+
+/* valeur minimale de la moyenne pour calibrer le senseur */
+#ifndef MEAX_MIN
+    #define MEAN_MIN (-30)
+#endif
+
+/* valeur maximale de la moyenne pour calibrer le senseur */
+#ifndef MEAN_MAX
+    #define MEAN_MAX ( 30)
+#endif
+
+/* valeur par défaut pour l'offset en X du gyroscope */
+#ifndef GYRO_OFFS_X
+    #define GYRO_OFFS_X 14
+#endif
+
+/* valeur par défaut pour l'offset en Y du gyroscope */
+#ifndef GYRO_OFFS_Y
+    #define GYRO_OFFS_Y 125
+#endif
+
+/* valeur par défaut pour l'offset en Z du gyroscope */
+#ifndef GYRO_OFFS_Z
+    #define GYRO_OFFS_Z 138
 #endif
 
 void mpu6050_init(void) {
@@ -170,11 +199,17 @@ void mpu6050_set_gyroscope_offset(uint8_t puce, struct offset* offset) {
 #endif
 }
 
-#include <uart.h>
-#include <util/delay.h>
+void mpu6050_set_gyroscope_offset_default(uint8_t puce) {
+    /* on utilise les valeurs par défauts */
+    struct offset offset = {
+        .x = GYRO_OFFS_X,
+        .y = GYRO_OFFS_Y,
+        .z = GYRO_OFFS_Z,
+    };
 
-#define MEAN_MIN (-30)
-#define MEAN_MAX ( 30)
+    /* on calibre le gyroscope */
+    mpu6050_set_gyroscope_offset(puce, &offset);
+}
 
 void mpu6050_calibrate_gyroscope(uint8_t puce) {
     struct gyroscope gyro;
@@ -195,7 +230,7 @@ void mpu6050_calibrate_gyroscope(uint8_t puce) {
 
         mpu6050_read_gyroscope(puce, &gyro);
 
-        uart_printf("%d | %6d %6d %6d | %6d %6d %6d | %6f %6f %6f\r",
+        uart_debug("%d | %6d %6d %6d | %6d %6d %6d | %6f %6f %6f\r",
             count,
             gyro.x, gyro.y, gyro.z,
             offset.x, offset.y, offset.z,
@@ -240,5 +275,5 @@ void mpu6050_calibrate_gyroscope(uint8_t puce) {
         if(count > 100) break;
     }
 
-    uart_printf("\n\r");
+    uart_printf("\n\rcalibration values: %d %d %d\n\r", offset.x, offset.y, offset.z);
 }
