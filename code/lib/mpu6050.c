@@ -25,17 +25,17 @@
 
 /* valeur par défaut pour l'offset en X du gyroscope */
 #ifndef GYRO_OFFS_X
-    #define GYRO_OFFS_X 14
+    #define GYRO_OFFS_X (2)
 #endif
 
 /* valeur par défaut pour l'offset en Y du gyroscope */
 #ifndef GYRO_OFFS_Y
-    #define GYRO_OFFS_Y 125
+    #define GYRO_OFFS_Y (106)
 #endif
 
 /* valeur par défaut pour l'offset en Z du gyroscope */
 #ifndef GYRO_OFFS_Z
-    #define GYRO_OFFS_Z 138
+    #define GYRO_OFFS_Z (124)
 #endif
 
 void mpu6050_init(void) {
