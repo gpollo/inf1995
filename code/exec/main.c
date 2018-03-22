@@ -21,9 +21,5 @@ int main(void) {
     moteur_suivre(0);
     while(1);
 
-//    struct gyroscope gyro;
-//    while(1) {
-//        mpu6050_read_gyroscope(0, &gyro);
-//        uart_printf("\rgyro: x=%-6d, y=%-6d, z=%-6d", gyro.x, gyro.y, gyro.z);
-//    }
 }
+

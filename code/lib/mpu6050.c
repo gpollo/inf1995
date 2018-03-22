@@ -3,7 +3,6 @@
 #include <math.h>
 #include <utils.h>
 
-    #define DEBUG
 #include <uart.h>
 
 #define GET_CONTROL(puce, op) ((0b11010000) | (puce << 1) | (op))
