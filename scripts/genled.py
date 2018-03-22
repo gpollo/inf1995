@@ -26,24 +26,24 @@ for i in range(0,255):
     print("det {};".format(i))
 
 # troisième pattern de DELs
-print("dbc 10;")
-for i in range(0,3):
-    print("dal {};".format((1 << i) | (128 >> i)))
-    print("att 1;")
-    print("det {};".format((1 << i) | (128 >> i)))
-for i in range(0,3):
-    print("dal {};".format((8 >> i) | (16 << i)))
-    print("att 2;")
-    print("det {};".format((8 >> i) | (16 << i)))
-print("fbc;")
+#print("dbc 10;")
+#for i in range(0,3):
+#    print("dal {};".format((1 << i) | (128 >> i)))
+#    print("att 1;")
+#    print("det {};".format((1 << i) | (128 >> i)))
+#for i in range(0,3):
+#    print("dal {};".format((8 >> i) | (16 << i)))
+#    print("att 2;")
+#    print("det {};".format((8 >> i) | (16 << i)))
+#print("fbc;")
 
 # quatrième pattern de DELs
-print("dbc 10;")
-for i in range(0,3):
-    print("dal {};".format(0b0101101))
-    print("att 3;")
-    print("det {};".format(0b1010010))
-print("fbc;")
+#print("dbc 10;")
+#for i in range(0,3):
+#    print("dal {};".format(0b0101101))
+#    print("att 3;")
+#    print("det {};".format(0b1010010))
+#print("fbc;")
 
 # on ferme toute les DELs
 print("det 255;")
@@ -79,7 +79,7 @@ print("sar;")
 
 # on recule
 print("mre 200;")
-print("att 20;")
+print("att 100;")
 print("mar;")
 
 # un beep
