@@ -42,4 +42,4 @@ for i in range(1024):
         value = -1
     else:
         value = mapping[i]
-    print("{:6d}, # {:4d}".format(value, i))
+    print("{:6d}, /* {:4d} */".format(value, i))
