@@ -16,6 +16,7 @@ void son_init(void) {
 
 	/* on active la pin 5 en sortie */
     OC1A_DDR |= _BV(OC1A_BIT);
+	
 }
 
 uint16_t son_table[37] = {	
