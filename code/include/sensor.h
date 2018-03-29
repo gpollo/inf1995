@@ -1,6 +1,6 @@
 #ifndef INCLUDE_SENSOR_H
 #define INCLUDE_SENSOR_H
-#include "adc.h"
+#include <adc.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -14,13 +14,13 @@ extern "C" {
  *       prescaler du compteur.
  */
 struct capteur {
-    uint16_t gauche;
-    uint16_t droite;
+    int16_t gauche;
+    int16_t droite;
 };
 
-int distance_value(uint16_t Analog_Vo);
+int16_t distance_value(int16_t capteurs);
 
-void sensor_read(struct capteur* capteur);
+void sensor_read(struct capteur* capteurs);
 
 #ifdef __cplusplus
 }
