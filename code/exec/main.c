@@ -109,7 +109,7 @@ void etat_interrupt(void) {
 
 	/* Distance en cm détectée par le capteur gauche (1 octet) */
 void distance_gauche(void) {
-	uart_putchar(0xf6);
+	//uart_putchar(0xf6);
 //	 while (1) {
 //       uint8_t data = memory_read_byte(0, addr++);
 //        uart_printf("0x%02x\t", data);
@@ -121,23 +121,47 @@ void distance_gauche(void) {
 
  
 //     }
-    if(!counter2) callback2.repeat = 0;
+   // if(!counter2) callback2.repeat = 0;
 }
 /* Distance en cm détectée par le capteur droite (1 octet) */
 void distance_droite(void) {
-	uart_putchar(0xf7);
+	//uart_putchar(0xf7);
 //	uart_putchar();
-    if(!counter3) callback3.repeat = 0;
+  //  if(!counter3) callback3.repeat = 0;
 }
-  
+
+void couleur_del(void){
+	/* On initialise la del */
+	uart_init();
+	del_init();
+	del_on(0x02);
+	uint8_t octet = uart_receive();
+	while(1) {
+	switch (octet){
+	/*Si on reçoit la donnée 0, la del est éteint */
+	case 0:
+		del_off(0x02);
+	break;
+	/*Si on reçoit la donnée 1, la del est verte */
+	case 1:
+		del_green();
+	break;
+	/*Si on reçoit la donnée 2, la del est rouge */
+	case 2:
+		del_red();
+	break;
+	}
+    }
+}
+
 int main(void) {
 	uart_init();
     identification();
     timer_test();
-   
     etat_interrupt();
 // 	  adc_init();
 //    distance_gauche();
 //    distance_droite();
+	couleur_del();
 }
 
