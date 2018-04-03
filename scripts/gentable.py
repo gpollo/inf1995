@@ -11,7 +11,7 @@ def get_voltage(x):
     return (x-0.3)*5.0
 
 def get_value(v):
-    return ((v+0.3)*1024)/reference
+    return ((v)*1024)/reference
 
 def inverse(x):
     return 1/x-0.42
@@ -20,7 +20,7 @@ mapping = dict()
 
 for i in np.linspace(-0.01, 0.12, 2048):
     voltage = curve(i)
-    distance = int(10*inverse(i))
+    distance = int(10*inverse(i))-20
     value = int(get_value(voltage))
 
     if distance < 0:
