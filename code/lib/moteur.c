@@ -1,6 +1,9 @@
 #include <avr/io.h>
 #include <moteur.h>
 #include <util/delay.h>
+#include <sensor.h>
+
+#define DISTANCE_SOUHAITE 150
 
 /* valeur par défaut du prescaler */
 #ifndef MOTEUR_PRESCALER
@@ -92,4 +95,39 @@ void moteur_tourner_gauche() {
 
     _delay_ms(2300);
     moteur_arreter();
+}
+
+void moteur_ajustement(struct capteurs* capteurs, uint8_t direction) {
+    /* On met les directions des deux roues vers l'avant */
+    PORTB &=~ (1<<2);
+    PORTB &=~ (1<<5);
+
+    /* Calcul de la vitesse selon distance captés */
+
+    /* Chercher les valeurs des capteurs*/
+    uint16_t dist_gauche = sensor_get_distance(capteurs->gauche);
+    uint16_t dist_droite = sensor_get_distance(capteurs->droite);
+
+    /* 
+     * Calcul du facteur de correction selon ces distances 
+     * Gauche = 0  et Droite =1
+     * Multiplier par deux pour accélérer la correction
+     */
+    int8_t erreur;
+    uint16_t speed_gauche;
+    uint16_t speed_droite;
+
+    if(direction == 0) {
+        erreur = DISTANCE_SOUHAITE - dist_gauche;
+        speed_gauche = ROTATION_SPEED + erreur*3;
+        speed_droite = ROTATION_SPEED;
+    } else {
+        erreur = DISTANCE_SOUHAITE - dist_droite;
+        speed_gauche = ROTATION_SPEED;
+        speed_droite = ROTATION_SPEED + erreur*3;
+    }
+
+    /* On définie la vitesse de chaque roues */
+    OCR0A = speed_droite%255;
+    OCR0B = speed_gauche%255;
 }
