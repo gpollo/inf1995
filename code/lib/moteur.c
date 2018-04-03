@@ -93,3 +93,32 @@ void moteur_tourner_gauche() {
     _delay_ms(2300);
     moteur_arreter();
 }
+
+void moteur_controller_gauche(int8_t vitesse) {
+    if(vitesse < 0) {
+        /* On met les directions vers l'arrière */
+        PORTB |= (1<<2);
+        vitesse = -vitesse;
+    } else {
+        /* On met les directions vers l'avant */
+        PORTB &=~ (1<<2);
+    }
+
+    /* On active la vitesse pour roue de droite seulement */
+    OCR0A = (vitesse*255)/100;
+}
+
+void moteur_controller_droite(int8_t vitesse) {
+    if(vitesse < 0) {
+        /* On met les directions vers l'arrière */
+        PORTB |= (1<<5);
+        vitesse = -vitesse;
+    } else {
+        /* On met les directions vers l'avant */
+        PORTB &=~ (1<<5);
+    }
+
+    /* On active la vitesse pour roue de droite seulement */
+    OCR0B = (vitesse*255)/100;
+}
+
