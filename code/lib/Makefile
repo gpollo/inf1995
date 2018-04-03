@@ -1,6 +1,6 @@
 include ../Makefile.common
 
-OBJECTS=moteur.o uart.o memory.o adc.o timer.o son.o del.o
+OBJECTS=moteur.o uart.o memory.o adc.o timer.o son.o del.o sensor.o
 
 all: $(LIB_TARGET)
 
@@ -20,6 +20,8 @@ timer.o: $(INC)/timer.h
 son.o: $(INC)/son.h
 
 del.o: $(INC)/del.h
+
+sensor.o : $(INC)/sensor.h
 
 clean:
 	$(REM) $(REMOPTS) *.o
