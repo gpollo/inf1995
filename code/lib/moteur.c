@@ -50,55 +50,77 @@ void moteur_init() {
 }
 
 void moteur_avancer(uint8_t speed) {
-    /* On met les directions vers l'avant */
-    PORTB &=~ (1<<2);
-    PORTB &=~ (1<<5);
+    /* on met les directions vers l'avant */
+    SET_DIRECTION_AVANCER(DROITE);
+    SET_DIRECTION_AVANCER(GAUCHE);
 
-    /* On active la vitesse */
-    OCR0A = speed;
-    OCR0B = speed;
+    /* on active la vitesse */
+    SET_SPEED(DROITE, speed);
+    SET_SPEED(GAUCHE, speed);
 }
 
 void moteur_reculer(uint8_t speed) {
     /* On met les directions vers l'arriere */
-    PORTB |= (1<<2);
-    PORTB |= (1<<5);
+    SET_DIRECTION_RECULER(DROITE);
+    SET_DIRECTION_RECULER(GAUCHE);
 
-    /* On active la vitesse */
-    OCR0A = speed;
-    OCR0B = speed;
+    /* on active la vitesse */
+    SET_SPEED(DROITE, speed);
+    SET_SPEED(GAUCHE, speed);
 }
 
 void moteur_arreter() {
-    /* On configure les pins du PWM en sortie */
-    OCR0A = 0;
-    OCR0B = 0;
+    /* on configure les pins du PWM en sortie */
+    SET_SPEED(DROITE, 0);
+    SET_SPEED(GAUCHE, 0);
 }
 
 void moteur_tourner_droite() {
-    /* On met les directions vers l'avant */
-    PORTB |= (1<<2);
-    PORTB &=~ (1<<5);
+    /* on tourne surplace */
+    SET_DIRECTION_RECULER(DROITE);
+    SET_DIRECTION_AVANCER(GAUCHE);
 
-    /* On active la vitesse pour roue de gauche seulement */
-    OCR0A = ROTATION_SPEED;
-    OCR0B = ROTATION_SPEED;
+    /* on active la vitesse pour roue de gauche seulement */
+    SET_SPEED(DROITE, ROTATION_SPEED);
+    SET_SPEED(GAUCHE, ROTATION_SPEED);
 
+    /* on attend un certain délais avant d'arrêter les moteurs */
     _delay_ms(DELAY_ROTATION90);
     moteur_arreter();
 }
 
 void moteur_tourner_gauche() {
-    /* On met les directions vers l'avant */
-    PORTB &=~ (1<<2);
-    PORTB |= (1<<5);
+    /* on met les directions vers l'avant */
+    SET_DIRECTION_AVANCER(DROITE);
+    SET_DIRECTION_RECULER(GAUCHE);
 
-    /* On active la vitesse pour roue de droite seulement */
-    OCR0A = ROTATION_SPEED;
-    OCR0B = ROTATION_SPEED;
+    /* on active la vitesse pour roue de droite seulement */
+    SET_SPEED(DROITE, ROTATION_SPEED);
+    SET_SPEED(GAUCHE, ROTATION_SPEED);
 
+    /* on attend un certain délais avant d'arrêter les moteurs */
     _delay_ms(DELAY_ROTATION90);
     moteur_arreter();
+}
+
+void moteur_control(struct moteur_control* control) {
+    /* on set la direction de la roue droite */
+    if(control->droite_avancer) {
+        SET_DIRECTION_AVANCER(DROITE);
+    } else {
+        SET_DIRECTION_RECULER(DROITE);
+    }
+
+    /* on set la direction de la roue gauche */
+    if(control->gauche_avancer) {
+        SET_DIRECTION_AVANCER(DROITE);
+    } else {
+        SET_DIRECTION_RECULER(DROITE);
+    }
+
+    /* on set la vitesse des deux roues */
+    SET_SPEED(DROITE, control->droite_speed);
+    SET_SPEED(GAUCHE, control->gauche_speed);
 }
 
 #include <uart.h>
