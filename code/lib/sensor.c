@@ -59,5 +59,6 @@ uint8_t sensor_is_nouveau_mur (struct capteurs* capteurs, uint8_t direction) {
 				son_poteau();
 				return 0;
 			}
+		}
 	}
 }

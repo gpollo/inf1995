@@ -174,7 +174,7 @@ void changement_coter(struct capteurs* capteurs, uint8_t direction);
 /**
  * Cette méthode effectue le déplacement pour commencer à suivre l'autre mur
  */
-void temps_croissiere(uint16_t distance_a_faire);
+uint16_t temps_croissiere(uint16_t distance_a_faire);
 
 #ifdef __cplusplus
 }

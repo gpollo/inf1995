@@ -182,7 +182,7 @@ void moteur_ajustement(struct capteurs* capteurs, uint8_t direction) {
     uart_printf("%d -- %i %i -- %i %i\n\t", erreur, speed_droite, speed_gauche, OCR0A, OCR0B);
 }
 
-void changement_coter(uint8_t ) {
+void changement_coter(struct capteurs* capteurs, uint8_t direction) {
     /* Chercher les valeurs des capteurs*/
     uint16_t dist_gauche = sensor_get_distance(capteurs->gauche);
     uint16_t dist_droite = sensor_get_distance(capteurs->droite);
@@ -193,9 +193,9 @@ void changement_coter(uint8_t ) {
         moteur_tourner_droite();
 
         /* S'approche du nouveau mur suivi */
-        uint16_t temps_croissiere = temps_croissiere(dist_droite);
+        uint16_t temps_croissiere1 = temps_croissiere(dist_droite);
         moteur_avancer(ROTATION_SPEED);
-        for(uint16_t i; i< temps_croissiere;i++)        
+        for(uint16_t i; i< temps_croissiere1;i++)        
             _delay_ms(100);
 
         /* Puis on réoriente le robot pour continuer le suivi du nouveau mur */
@@ -205,9 +205,9 @@ void changement_coter(uint8_t ) {
         moteur_tourner_gauche();
 
         /* S'approche du nouveau mur suivi */
-        uint16_t temps_croissiere = temps_croissiere(dist_gauche);
+        uint16_t temps_croissiere1 = temps_croissiere(dist_gauche);
         moteur_avancer(ROTATION_SPEED);
-        for(uint16_t i; i< temps_croissiere;i++)        
+        for(uint16_t i; i< temps_croissiere1;i++)        
             _delay_ms(100);
         
         /* Puis on réoriente le robot pour continuer le suivi du nouveau mur */
