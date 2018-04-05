@@ -33,7 +33,7 @@ extern "C" {
 
 /* Define un pwm de 35% */
 #ifndef ROTATION_SPEED
-            #define ROTATION_SPEED 90
+            #define ROTATION_SPEED 128
 #endif
 
     /**
@@ -64,6 +64,9 @@ void moteur_tourner_gauche();
 
 /* Garde le robot a une distance de 15 cm de l'objet */
 void moteur_ajustement(struct capteurs* capteurs, uint8_t direction);
+
+/* Effectue le déplacement pour commencer à suivre l'autre mur */
+void changement_coter(uint8_t direction);
 
 #ifdef __cplusplus
 }

@@ -18,7 +18,6 @@ int main(void) {
 		sensor_read(&capteurs);
         moteur_ajustement(&capteurs, 0);
         int16_t data = sensor_get_distance(capteurs.gauche);
-        uart_printf("%i\n", data);
         _delay_ms(10);
     }
 }

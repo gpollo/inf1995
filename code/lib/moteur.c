@@ -98,6 +98,8 @@ void moteur_tourner_gauche() {
     moteur_arreter();
 }
 
+#include <uart.h>
+
 void moteur_ajustement(struct capteurs* capteurs, uint8_t direction) {
 
     /* Calcul de la vitesse selon distance captés */
@@ -118,30 +120,30 @@ void moteur_ajustement(struct capteurs* capteurs, uint8_t direction) {
 
     if(direction == 0) {
         erreur = DISTANCE_SOUHAITE - dist_gauche;
-        if(erreur >= 0) {
-            speed_gauche = ROTATION_SPEED + erreur*correction;
+        if(erreur > 0) {
+            speed_gauche = ROTATION_SPEED;
             speed_droite = ROTATION_SPEED;
             /* Gauche vers l'avant et droite vers l'arriere */
             PORTB &=~ (1<<2);
             PORTB |= (1<<5);
         } else {
-            speed_gauche = ROTATION_SPEED + erreur*correction;
-            speed_droite = ROTATION_SPEED;
+            speed_gauche = ROTATION_SPEED;
+            speed_droite = ROTATION_SPEED - erreur/correction;
             /* On met les directions des deux roues vers l'avant */
             PORTB &=~ (1<<2);
             PORTB &=~ (1<<5);
         }
     } else {
         erreur = DISTANCE_SOUHAITE - dist_droite;
-        if(erreur >= 0) {
+        if(erreur > 0) {
             speed_gauche = ROTATION_SPEED;
-            speed_droite = ROTATION_SPEED + erreur*correction;
+            speed_droite = ROTATION_SPEED;
             /* Gauche recule et droite avant */
             PORTB |= (1<<2);
             PORTB &=~ (1<<5);
         } else {
-            speed_gauche = ROTATION_SPEED;
-            speed_droite = ROTATION_SPEED + erreur*correction;
+            speed_gauche = ROTATION_SPEED - erreur/correction;
+            speed_droite = ROTATION_SPEED;
             /* On met les directions des deux roues vers l'avant */
             PORTB &=~ (1<<2);
             PORTB &=~ (1<<5);
@@ -149,6 +151,10 @@ void moteur_ajustement(struct capteurs* capteurs, uint8_t direction) {
     }
 
     /* On définie la vitesse de chaque roues valeur allant de 90 à 180 */
-    OCR0A = speed_droite;
-    OCR0B = speed_gauche;
+    OCR0A = (speed_droite > 200) ? 200 : speed_droite;
+    OCR0B = (speed_gauche > 200) ? 200 : speed_gauche;
+
+    uart_printf("%d -- %i %i -- %i %i\n\t", erreur, speed_droite, speed_gauche, OCR0A, OCR0B);
 }
+
+void 
