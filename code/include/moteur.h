@@ -108,14 +108,13 @@ extern "C" {
  * @param La vitesse de la roue sur 8 bits.
  */
 #define SET_SPEED(roue, speed) { \
-    SPEED_##roue = (speed);    \
+    SPEED_##roue = (speed);      \
 }
 
 /* Define un pwm de 35% */
 #ifndef ROTATION_SPEED
             #define ROTATION_SPEED 128
 #endif
-
 
 #define DIRECTION_RECULER 0
 #define DIRECTION_AVANCER 1
@@ -134,29 +133,44 @@ struct moteur_control {
  * Note: La macro #MOTEUR_PRESCALER peut être utilisée pour controller le
  *       prescaler du compteur.
  */
-
 /* Active les moteurs */
 void moteur_init();
 
-/* Avance en ligne droite */
+/**
+ * Cette méthode permet au robot d'avance en ligne droite
+ */
 void moteur_avancer(uint8_t speed_ratio);
 
+/**
+ * Cette méthode permet au robot de reculer.
+ */
 /* Recule en ligne droite */
 void moteur_reculer(uint8_t speed_ratio);
 
-/* Arrete les moteurs */
+/**
+ * Cette méthode coupe les moteurs, ceux-ci ne peuvent fonctionnner à moins 
+ * d'être réinitiliser.
+ */
 void moteur_arreter();
 
-/* Effectue un virage de 90 degre a droite */
+/**
+ * Cette méthode effectue un virage de 90 degré vers la droite
+ */
 void moteur_tourner_droite();
 
-/* Effectue un virage de 90 degre a gauche */
+/**
+ * Cette méthode effectue un virage de 90 degré vers la gauche
+ */
 void moteur_tourner_gauche();
 
-/* Garde le robot a une distance de 15 cm de l'objet */
+/**
+ * Cette méthode s'assure de conserver une distance de 15 cm du mur
+ */
 void moteur_ajustement(struct capteurs* capteurs, uint8_t direction);
 
-/* Effectue le déplacement pour commencer à suivre l'autre mur */
+/**
+ * Cette méthode effectue le déplacement pour commencer à suivre l'autre mur
+ */
 void changement_coter(uint8_t direction);
 
 #ifdef __cplusplus
