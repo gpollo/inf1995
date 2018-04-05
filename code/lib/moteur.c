@@ -5,6 +5,8 @@
 
 #define DISTANCE_SOUHAITE 150
 #define CORRECTION_DOUCE 2
+#define DELAY_ROTATION90 500
+
 
 /* valeur par défaut du prescaler */
 #ifndef MOTEUR_PRESCALER
@@ -74,27 +76,27 @@ void moteur_arreter() {
 
 void moteur_tourner_droite() {
     /* On met les directions vers l'avant */
-    PORTB &=~ (1<<2);
+    PORTB |= (1<<2);
     PORTB &=~ (1<<5);
 
     /* On active la vitesse pour roue de gauche seulement */
-    OCR0A = 0;
+    OCR0A = ROTATION_SPEED;
     OCR0B = ROTATION_SPEED;
 
-    _delay_ms(2300);
+    _delay_ms(DELAY_ROTATION90);
     moteur_arreter();
 }
 
 void moteur_tourner_gauche() {
     /* On met les directions vers l'avant */
     PORTB &=~ (1<<2);
-    PORTB &=~ (1<<5);
+    PORTB |= (1<<5);
 
     /* On active la vitesse pour roue de droite seulement */
     OCR0A = ROTATION_SPEED;
-    OCR0B = 0;
+    OCR0B = ROTATION_SPEED;
 
-    _delay_ms(2300);
+    _delay_ms(DELAY_ROTATION90);
     moteur_arreter();
 }
 
@@ -157,4 +159,27 @@ void moteur_ajustement(struct capteurs* capteurs, uint8_t direction) {
     uart_printf("%d -- %i %i -- %i %i\n\t", erreur, speed_droite, speed_gauche, OCR0A, OCR0B);
 }
 
-void 
+void changement_coter(uint8_t direction) {
+    /* On commencer par savoir qu'elle direction est présentement suivi */
+    if(direction = 0) {
+        /* Initialise le changement en orientant le robot */
+        /* fait avancer */
+       
+
+    } else {
+    }
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
