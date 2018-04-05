@@ -5,6 +5,9 @@
 
 #define DISTANCE_SOUHAITE 150
 #define CORRECTION_DOUCE 2
+#define DELAY_ROTATION90 500
+/* Vitesse exprimer en cm par sec */
+#define VITESSE_50PWM 5
 
 /* valeur par défaut du prescaler */
 #ifndef MOTEUR_PRESCALER
@@ -47,55 +50,77 @@ void moteur_init() {
 }
 
 void moteur_avancer(uint8_t speed) {
-    /* On met les directions vers l'avant */
-    PORTB &=~ (1<<2);
-    PORTB &=~ (1<<5);
+    /* on met les directions vers l'avant */
+    SET_DIRECTION_AVANCER(DROITE);
+    SET_DIRECTION_AVANCER(GAUCHE);
 
-    /* On active la vitesse */
-    OCR0A = speed;
-    OCR0B = speed;
+    /* on active la vitesse */
+    SET_SPEED(DROITE, speed);
+    SET_SPEED(GAUCHE, speed);
 }
 
 void moteur_reculer(uint8_t speed) {
     /* On met les directions vers l'arriere */
-    PORTB |= (1<<2);
-    PORTB |= (1<<5);
+    SET_DIRECTION_RECULER(DROITE);
+    SET_DIRECTION_RECULER(GAUCHE);
 
-    /* On active la vitesse */
-    OCR0A = speed;
-    OCR0B = speed;
+    /* on active la vitesse */
+    SET_SPEED(DROITE, speed);
+    SET_SPEED(GAUCHE, speed);
 }
 
 void moteur_arreter() {
-    /* On configure les pins du PWM en sortie */
-    OCR0A = 0;
-    OCR0B = 0;
+    /* on configure les pins du PWM en sortie */
+    SET_SPEED(DROITE, 0);
+    SET_SPEED(GAUCHE, 0);
 }
 
 void moteur_tourner_droite() {
-    /* On met les directions vers l'avant */
-    PORTB &=~ (1<<2);
-    PORTB &=~ (1<<5);
+    /* on tourne surplace */
+    SET_DIRECTION_RECULER(DROITE);
+    SET_DIRECTION_AVANCER(GAUCHE);
 
-    /* On active la vitesse pour roue de gauche seulement */
-    OCR0A = 0;
-    OCR0B = ROTATION_SPEED;
+    /* on active la vitesse pour roue de gauche seulement */
+    SET_SPEED(DROITE, ROTATION_SPEED);
+    SET_SPEED(GAUCHE, ROTATION_SPEED);
 
-    _delay_ms(2300);
+    /* on attend un certain délais avant d'arrêter les moteurs */
+    _delay_ms(DELAY_ROTATION90);
     moteur_arreter();
 }
 
 void moteur_tourner_gauche() {
-    /* On met les directions vers l'avant */
-    PORTB &=~ (1<<2);
-    PORTB &=~ (1<<5);
+    /* on met les directions vers l'avant */
+    SET_DIRECTION_AVANCER(DROITE);
+    SET_DIRECTION_RECULER(GAUCHE);
 
-    /* On active la vitesse pour roue de droite seulement */
-    OCR0A = ROTATION_SPEED;
-    OCR0B = 0;
+    /* on active la vitesse pour roue de droite seulement */
+    SET_SPEED(DROITE, ROTATION_SPEED);
+    SET_SPEED(GAUCHE, ROTATION_SPEED);
 
-    _delay_ms(2300);
+    /* on attend un certain délais avant d'arrêter les moteurs */
+    _delay_ms(DELAY_ROTATION90);
     moteur_arreter();
+}
+
+void moteur_control(struct moteur_control* control) {
+    /* on set la direction de la roue droite */
+    if(control->droite_avancer) {
+        SET_DIRECTION_AVANCER(DROITE);
+    } else {
+        SET_DIRECTION_RECULER(DROITE);
+    }
+
+    /* on set la direction de la roue gauche */
+    if(control->gauche_avancer) {
+        SET_DIRECTION_AVANCER(DROITE);
+    } else {
+        SET_DIRECTION_RECULER(DROITE);
+    }
+
+    /* on set la vitesse des deux roues */
+    SET_SPEED(DROITE, control->droite_speed);
+    SET_SPEED(GAUCHE, control->gauche_speed);
 }
 
 #include <uart.h>
@@ -157,4 +182,44 @@ void moteur_ajustement(struct capteurs* capteurs, uint8_t direction) {
     uart_printf("%d -- %i %i -- %i %i\n\t", erreur, speed_droite, speed_gauche, OCR0A, OCR0B);
 }
 
-void 
+void changement_coter(uint8_t ) {
+    /* Chercher les valeurs des capteurs*/
+    uint16_t dist_gauche = sensor_get_distance(capteurs->gauche);
+    uint16_t dist_droite = sensor_get_distance(capteurs->droite);
+    
+    /* On commencer par savoir qu'elle direction est présentement suivi */
+    if(direction = 0) {
+        /* Initialise le changement en orientant le robot */
+        moteur_tourner_droite();
+
+        /* S'approche du nouveau mur suivi */
+        uint16_t temps_croissiere = temps_croissiere(dist_droite);
+        moteur_avancer(ROTATION_SPEED);
+        for(uint16_t i; i< temps_croissiere;i++)        
+            _delay_ms(100);
+
+        /* Puis on réoriente le robot pour continuer le suivi du nouveau mur */
+        moteur_tourner_gauche();
+    } else {
+        /* Initialise le changement en orientant le robot */
+        moteur_tourner_gauche();
+
+        /* S'approche du nouveau mur suivi */
+        uint16_t temps_croissiere = temps_croissiere(dist_gauche);
+        moteur_avancer(ROTATION_SPEED);
+        for(uint16_t i; i< temps_croissiere;i++)        
+            _delay_ms(100);
+        
+        /* Puis on réoriente le robot pour continuer le suivi du nouveau mur */
+        moteur_tourner_droite();
+    }
+}
+
+uint16_t temps_croissiere(uint16_t distance_a_faire) {
+    /* 
+     * Vitesse du robot à 50 PWM delay en milisecond donc multiplier par 1000 et divise
+     * par un facteur de 10 car la vitesse est défini en cm par seconde.
+     * De plus, il faut enlever un autre facteur de 100 car la constante de
+     **/
+    uint16_t temps = distance_a_faire/VITESSE_50PWM;
+}
