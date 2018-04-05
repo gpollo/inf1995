@@ -4,6 +4,7 @@
 #include <sensor.h>
 
 #define DISTANCE_SOUHAITE 150
+#define CORRECTION_DOUCE 2
 
 /* valeur par défaut du prescaler */
 #ifndef MOTEUR_PRESCALER
@@ -98,36 +99,56 @@ void moteur_tourner_gauche() {
 }
 
 void moteur_ajustement(struct capteurs* capteurs, uint8_t direction) {
-    /* On met les directions des deux roues vers l'avant */
-    PORTB &=~ (1<<2);
-    PORTB &=~ (1<<5);
 
     /* Calcul de la vitesse selon distance captés */
-
     /* Chercher les valeurs des capteurs*/
     uint16_t dist_gauche = sensor_get_distance(capteurs->gauche);
     uint16_t dist_droite = sensor_get_distance(capteurs->droite);
 
-    /* 
+    /*********************************************************************** 
      * Calcul du facteur de correction selon ces distances 
-     * Gauche = 0  et Droite =1
-     * Multiplier par deux pour accélérer la correction
-     */
-    int8_t erreur;
+     * Initialise les paramètres
+     * Définie la direction Gauche = 0  et Droite =1
+     * Multiplier par un facteur de correction pour corriger la trajectoire
+     ***********************************************************************/
+    int16_t erreur;
     uint16_t speed_gauche;
     uint16_t speed_droite;
+    int16_t correction = CORRECTION_DOUCE;
 
     if(direction == 0) {
         erreur = DISTANCE_SOUHAITE - dist_gauche;
-        speed_gauche = ROTATION_SPEED + erreur*3;
-        speed_droite = ROTATION_SPEED;
+        if(erreur >= 0) {
+            speed_gauche = ROTATION_SPEED + erreur*correction;
+            speed_droite = ROTATION_SPEED;
+            /* Gauche vers l'avant et droite vers l'arriere */
+            PORTB &=~ (1<<2);
+            PORTB |= (1<<5);
+        } else {
+            speed_gauche = ROTATION_SPEED + erreur*correction;
+            speed_droite = ROTATION_SPEED;
+            /* On met les directions des deux roues vers l'avant */
+            PORTB &=~ (1<<2);
+            PORTB &=~ (1<<5);
+        }
     } else {
         erreur = DISTANCE_SOUHAITE - dist_droite;
-        speed_gauche = ROTATION_SPEED;
-        speed_droite = ROTATION_SPEED + erreur*3;
+        if(erreur >= 0) {
+            speed_gauche = ROTATION_SPEED;
+            speed_droite = ROTATION_SPEED + erreur*correction;
+            /* Gauche recule et droite avant */
+            PORTB |= (1<<2);
+            PORTB &=~ (1<<5);
+        } else {
+            speed_gauche = ROTATION_SPEED;
+            speed_droite = ROTATION_SPEED + erreur*correction;
+            /* On met les directions des deux roues vers l'avant */
+            PORTB &=~ (1<<2);
+            PORTB &=~ (1<<5);
+        }
     }
 
-    /* On définie la vitesse de chaque roues */
-    OCR0A = speed_droite%255;
-    OCR0B = speed_gauche%255;
+    /* On définie la vitesse de chaque roues valeur allant de 90 à 180 */
+    OCR0A = speed_droite;
+    OCR0B = speed_gauche;
 }
