@@ -19,9 +19,11 @@ extern "C" {
  *
  * @param value La variable à limitée.
  * @param limit La valeur maximale de la variable.
+ *
+ * @return La valeur limitée.
  */
-#define LIMIT_VALUE(value, limit) {                    \
-    (value) = ((value) > (limit)) ? (limit) : (value); \
+#define LIMIT(value, limit) {                \
+    ((value) > (limit)) ? (limit) : (value); \
 }
 
 #ifdef __cplusplus
