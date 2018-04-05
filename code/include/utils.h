@@ -22,9 +22,9 @@ extern "C" {
  *
  * @return La valeur limitée.
  */
-#define LIMIT(value, limit) {                \
-    ((value) > (limit)) ? (limit) : (value); \
-}
+#define LIMIT(value, limit) (               \
+    ((value) > (limit)) ? (limit) : (value) \
+)
 
 /* on définie la valeur FALSE si nécessaire */
 #ifndef FALSE
