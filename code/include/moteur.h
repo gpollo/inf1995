@@ -133,7 +133,6 @@ struct moteur_control {
  * Note: La macro #MOTEUR_PRESCALER peut être utilisée pour controller le
  *       prescaler du compteur.
  */
-/* Active les moteurs */
 void moteur_init();
 
 /**
@@ -144,7 +143,6 @@ void moteur_avancer(uint8_t speed_ratio);
 /**
  * Cette méthode permet au robot de reculer.
  */
-/* Recule en ligne droite */
 void moteur_reculer(uint8_t speed_ratio);
 
 /**
@@ -171,7 +169,12 @@ void moteur_ajustement(struct capteurs* capteurs, uint8_t direction);
 /**
  * Cette méthode effectue le déplacement pour commencer à suivre l'autre mur
  */
-void changement_coter(uint8_t direction);
+void changement_coter(struct capteurs* capteurs, uint8_t direction);
+
+/**
+ * Cette méthode effectue le déplacement pour commencer à suivre l'autre mur
+ */
+void temps_croissiere(uint16_t distance_a_faire);
 
 #ifdef __cplusplus
 }
