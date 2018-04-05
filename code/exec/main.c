@@ -41,7 +41,7 @@ void couleur_base(void){
     uart_putchar('1');
 }
 
-void init_interruption(void) {
+void interruption_init(void) {
 	
 	/* Il bloque toutes les interruptions */
     cli();
@@ -57,36 +57,41 @@ void init_interruption(void) {
     sei();
 }
 
-volatile uint8_t boutton = 1;
-ISR(INT0_vect) {
-    cli();
-    boutton = (boutton == 0) ? 1 : 0;
+    /* On assume que le bouton est relâché (0x01) */
+    volatile uint8_t bouton = 1;
     
+ISR(INT0_vect) {
+    
+    /* Il bloque toutes les interruptions */
+    cli();
+    
+    /*Il permet de vérifier si le bouton est enfoncé (0x00) ou relâché */
+    bouton = (bouton == 0) ? 1 : 0;
+    
+    /* État du bouton Intrerrupt (1 octet) */
     uart_putchar(0xf5);
-    uart_putchar(boutton);
+    uart_putchar(bouton);
+    
+    /* Le delai du anti-rebond lorsque le bouton est appuyé */
     _delay_ms(30);
-    EIFR |= (1 << INTF0) ;
+    
+    /* La fonction est finie et l'Interrupt Flag est réinitialisé à 1   */
+    EIFR |= (1 << INTF0);
+    
+    /* Il permet de recevoir à nouveau des interruptions*/
     sei();
 }
 
-/* Distance en cm détectée par le capteur gauche (1 octet) */
+
 void distance_gauche(void) {
-
+    /* Distance en cm détectée par le capteur gauche (1 octet) */
 }
 
-/* Distance en cm détectée par le capteur droite (1 octet) */
+
 void distance_droite(void) {
-	
+	/* Distance en cm détectée par le capteur droite (1 octet) */
 }
 
-void vitesse_gauche(uint8_t vitesse1){
-	
-	moteur_controller_gauche();
-}
-
-void vitesse_droite(uint8_t vitesse2){
-	moteur_controller_droite();
-}
 
 void couleur_del(uint8_t couleur){
 	switch (couleur){
@@ -105,23 +110,66 @@ void couleur_del(uint8_t couleur){
 	}
 }
 
+void moteur_controller_gauche(int8_t vitesse) {
+    if(vitesse < 0) {
+        /* On met les directions vers l'arrière */
+        PORTB |= (1<<2);
+        vitesse = -vitesse;
+    } else {
+        /* On met les directions vers l'avant */
+        PORTB &=~ (1<<2);
+    }
+
+    /* On active la vitesse pour roue de droite seulement */
+    OCR0A = (vitesse*255)/100;
+}
+
+void moteur_controller_droite(int8_t vitesse) {
+    if(vitesse < 0) {
+        /* On met les directions vers l'arrière */
+        PORTB |= (1<<5);
+        vitesse = -vitesse;
+    } else {
+        /* On met les directions vers l'avant */
+        PORTB &=~ (1<<5);
+    }
+
+    /* On active la vitesse pour roue de droite seulement */
+    OCR0B = (vitesse*255)/100;
+}
+
 void requete_info(uint8_t identification){
-	
+    
+    if(identification == 0x00){
+        /* Le robot envoye les infos d'identification au logiciel */
+        nom_robot();
+        numero_equipe();
+        numero_section();
+        session();
+        couleur_base();
+   }
 }
 
 void listen(void) {
+   
+     /*Selon les données reçues */
 	while(1) {
 		switch(uart_receive()) {
-			case 0xf8:
+			case 0xf8: 
+            /*Le robot exécutera une rotation à la roue gauche */
 			moteur_controller_gauche(uart_receive());
 			break;
 			case 0xf9:
+            /*Le robot exécutera une rotation à la roue droite */
 			moteur_controller_droite(uart_receive());
 			break;
 			case 0xfa:
+            /*Le robot changera la couleur de sa del libre */
 			couleur_del(uart_receive());
 			break;
 			case 0xfb:
+            /*Le robot envoie ses informations sur le logiciel */
+            requete_info(uart_receive());
 			break;
 		}
 	}
@@ -130,13 +178,8 @@ void listen(void) {
 int main(void) {
 	uart_init();
 	del_init();
-	moteur_init();
-	nom_robot();
-    numero_equipe();
-    numero_section();
-    session();
-    couleur_base();	
-    init_interruption();
+	moteur_init();	
+    interruption_init();
     listen();
 
 }
