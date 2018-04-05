@@ -26,6 +26,16 @@ extern "C" {
     ((value) > (limit)) ? (limit) : (value); \
 }
 
+/* on définie la valeur FALSE si nécessaire */
+#ifndef FALSE
+    #define FALSE 0
+#endif
+
+/* on définie la valeur TRUE si nécessaire */
+#ifndef TRUE
+    #define TRUE 1
+#endif
+
 #ifdef __cplusplus
 }
 #endif
