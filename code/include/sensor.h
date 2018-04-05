@@ -31,6 +31,13 @@ void sensor_read(struct capteurs* capteurs);
  */
 int16_t sensor_get_distance(int16_t valeur);
 
+/**
+ * Cette fonction indique s'il y a un nouveau mur de l'autre côté
+ * 
+ * @return 0 pour un poteau détecté, 1 pour un mur détecté.
+ */
+uint8_t sensor_is_nouveau_mur (struct capteurs* capteurs, uint8_t direction);
+
 #ifdef __cplusplus
 }
 #endif
