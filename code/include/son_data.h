@@ -1,7 +1,7 @@
 #ifndef INCLUDE_SON_DATA_H
 #define INCLUDE_SON_DATA_H
 
-#define SON_MIN 94
+#define SON_MIN 45
 #define SON_MAX 81
 
 #define SON_DATA {  \
