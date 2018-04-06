@@ -12,14 +12,7 @@ int main(void) {
     adc_init();
     uart_printf("\n\r");
    
-    struct capteurs capteurs = {
-        .gauche = {
-            .pin = 0,
-        },
-        .droit = {
-            .pin = 1,
-        },
-    };
+    struct capteurs capteurs = CAPTEURS_INIT(0, 1);
 
     while (1) {
 		sensor_read(&capteurs);

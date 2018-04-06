@@ -18,6 +18,17 @@ struct capteur {
 };
 
 /**
+ * Un initialisateur pour la structure d'un capteur.
+ *
+ * @param npin Le numéro de la pin ADC du capteur.
+ */
+#define CAPTEUR_INIT(npin) { \
+    .pin   = (npin),         \
+    .raw   = 0,              \
+    .value = 0,              \
+}
+
+/**
  * Cette structure définie les deux capteurs de distance.
  */
 struct capteurs {
@@ -26,6 +37,17 @@ struct capteurs {
     /** Le senseur de droite. */
     struct capteur droit;
 };
+
+/**
+ * Un initialisateur pour la structure des capteurs.
+ *
+ * @param ping Le numéro de la pin ADC du capteur gauche.
+ * @param pind Le numéro de la pin ADC du capteur droit.
+ */
+#define CAPTEURS_INIT(ping, pind) { \
+    .gauche = CAPTEUR_INIT(ping),   \
+    .droit  = CAPTEUR_INIT(pind),   \
+}
 
 /**
  * Cette fonction lit la valeur des capteurs de distance.
