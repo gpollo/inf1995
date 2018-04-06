@@ -5,6 +5,7 @@
 #include <util/delay.h>
 #include <timer.h>
 #include <son.h>
+#include <utils.h>
 
 #define POTEAU 1000
 
@@ -17,15 +18,18 @@ void sensor_read(struct capteurs* capteurs) {
     capteurs->droit.raw  = adc_read(capteurs->droit.pin);
 }
 
-int16_t sensor_get_distance(int16_t valeur) {
+uint8_t sensor_get_value(struct capteur* capteur) {
 	/* on s'assure que les valeurs lues sont dans la table */
-    if(valeur < SENSOR_MIN || valeur > SENSOR_MAX) return 0;
+    if(capteur->raw < SENSOR_MIN || capteur->raw > SENSOR_MAX) return FAIL;
 
 	/* on calcule l'offset dans la table */
-	valeur -= SENSOR_MIN;
+	uint16_t offset = capteur->raw - SENSOR_MIN;
     
     /* on obtient la distance à partir de la table */
-    return sensor_tableau[valeur];
+    capteur->value = sensor_tableau[offset];
+
+    /* la conversion s'est bien effectuée */
+    return OK;
 }
 
 void son_poteau(void) {   
@@ -37,21 +41,25 @@ void son_poteau(void) {
 
 uint8_t sensor_is_nouveau_mur (struct capteurs* capteurs, uint8_t direction) {
 	if (direction == 0) {
-		while (sensor_get_distance(capteurs->droit.value) != 0) {
+		while (capteurs->droit.value != 0) {
 			_delay_ms(POTEAU);
-			if (sensor_get_distance(capteurs->droit.value) != 0)
+			if (capteurs->droit.value != 0) {
 				return 1;
-			else {
+			} else {
 				son_poteau();
 				son_poteau();
 				son_poteau();
 				return 0;
 			}
+
+            sensor_read(capteurs);
+            sensor_get_value(&(capteurs->gauche));
+            sensor_get_value(&(capteurs->droit));
 		}
 	} else {
-		while (sensor_get_distance(capteurs->gauche.value) != 0) {
+		while (capteurs->gauche.value != 0) {
 			_delay_ms(POTEAU);
-			if (sensor_get_distance(capteurs->gauche.value) != 0)
+			if (capteurs->gauche.value != 0)
 				return 1;
 			else {
 				son_poteau();
@@ -59,6 +67,10 @@ uint8_t sensor_is_nouveau_mur (struct capteurs* capteurs, uint8_t direction) {
 				son_poteau();
 				return 0;
 			}
+
+            sensor_read(capteurs);
+            sensor_get_value(&(capteurs->gauche));
+            sensor_get_value(&(capteurs->droit));
 		}
 	}
 }

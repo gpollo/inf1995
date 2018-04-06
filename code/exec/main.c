@@ -23,6 +23,9 @@ int main(void) {
 
     while (1) {
 		sensor_read(&capteurs);
+        sensor_get_value(&(capteurs.gauche));
+        sensor_get_value(&(capteurs.droit));
+
         moteur_ajustement(&capteurs, 0);
         
         sensor_is_nouveau_mur(&capteurs, 0);

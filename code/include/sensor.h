@@ -37,11 +37,11 @@ void sensor_read(struct capteurs* capteurs);
 /**
  * Cette fonction convertit une valeur analogique du capteur en distance.
  * 
- * @param valeur La valeur analogique du capteur.
+ * @param capteur Un pointeur vers une structure d'un capteur.
  * 
- * @return La distance du capteur ou -1 si la valeur est invalide.
+ * @return Si la conversion fut effectuée, alors #OK, sinon #FAIL.
  */
-int16_t sensor_get_distance(int16_t valeur);
+uint8_t sensor_get_value(struct capteur* capteur);
 
 /**
  * Cette fonction indique s'il y a un nouveau mur de l'autre côté
