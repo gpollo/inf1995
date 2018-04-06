@@ -10,13 +10,12 @@ void son_init(void) {
 	/* faire partir le compteur à 0 */
 	TCNT1 = 0;
 	
-	/* on active la pin 4 comme ground */
-	DDRD |= _BV(4);
-	PORTD &= ~_BV(4);
+	/* on active la pin du ground */
+    SON_GROUND_DDR |= _BV(SON_GROUND_BIT);
+    SON_GROUND_PORT &=~ _BV(SON_GROUND_BIT);
 
-	/* on active la pin 5 en sortie */
-    OC1A_DDR |= _BV(OC1A_BIT);
-	
+	/* on active la pin du son en sortie */
+    SON_OUT_DDR |= _BV(SON_OUT_BIT);
 }
 
 uint16_t son_table[37] = {	

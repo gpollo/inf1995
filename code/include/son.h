@@ -7,6 +7,40 @@
 extern "C" {
 #endif
 
+/* macros pour la pin de sortie du son */
+#ifndef SON_OUT_PIN
+    #define SON_OUT_PIN OC1A_PIN
+#endif
+
+#ifndef SON_OUT_BIT
+    #define SON_OUT_BIT OC1A_BIT
+#endif
+
+#ifndef SON_OUT_DDR
+    #define SON_OUT_DDR OC1A_DDR
+#endif
+
+#ifndef SON_OUT_PORT
+    #define SON_OUT_PORT OC1A_PORT
+#endif
+
+/* macros pour la pin de ground du son */
+#ifndef SON_GROUND_PIN
+    #define SON_GROUND_PIN PIND
+#endif
+
+#ifndef SON_GROUND_BIT
+    #define SON_GROUND_BIT 4
+#endif
+
+#ifndef SON_GROUND_DDR
+    #define SON_GROUND_DDR DDRD
+#endif
+
+#ifndef SON_GROUND_PORT
+    #define SON_GROUND_PORT PORTD
+#endif
+
 /**
  * Cette méthode initialise le piezoelectrique.
  */
