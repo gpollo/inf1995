@@ -9,12 +9,22 @@
 #define CORRECTION_DOUCE 2
 #define DELAY_ROTATION90 2500
 
-/* Vitesse exprimer en cm par sec */
+/* vitesse exprimer en cm par sec */
 #define VITESSE_50PWM 5
 
 /* valeur par défaut du prescaler */
 #ifndef MOTEUR_PRESCALER
     #define MOTEUR_PRESCALER 64
+#endif
+
+/* vitesse de rotation par défaut */
+#ifndef ROTATION_SPEED
+    #define ROTATION_SPEED 128
+#endif
+
+/* vitesse maximale lors de l'ajustement à un mur */
+#ifndef MAX_SPEED
+    #define MAX_SPEED 200
 #endif
 
 void moteur_init() {
@@ -107,24 +117,24 @@ void moteur_tourner_gauche() {
     moteur_arreter();
 }
 
-void moteur_control(struct moteur_control* control) {
+void moteur_config(struct moteurs* moteurs) {
     /* on set la direction de la roue droite */
-    if(control->droite_avancer) {
+    if(moteurs->droit.avancer) {
         SET_DIRECTION_AVANCER(DROITE);
     } else {
         SET_DIRECTION_RECULER(DROITE);
     }
 
     /* on set la direction de la roue gauche */
-    if(control->gauche_avancer) {
+    if(moteurs->gauche.avancer) {
         SET_DIRECTION_AVANCER(GAUCHE);
     } else {
         SET_DIRECTION_RECULER(GAUCHE);
     }
 
     /* on set la vitesse des deux roues */
-    SET_SPEED(DROITE, control->droite_speed);
-    SET_SPEED(GAUCHE, control->gauche_speed);
+    SET_SPEED(DROITE, moteurs->droit.speed);
+    SET_SPEED(GAUCHE, moteurs->gauche.speed);
 }
 
 void moteur_ajustement(struct capteurs* capteurs, uint8_t direction) {
@@ -143,46 +153,43 @@ void moteur_ajustement(struct capteurs* capteurs, uint8_t direction) {
     int16_t correction = CORRECTION_DOUCE;
 
     /* on calcule les vitesses à envoyer aux moteurs */
-    struct moteur_control control;
-    uint16_t speed_gauche, speed_droite;
+    struct moteurs moteurs;
     if(direction == 0) {
         if(erreur > 0) {
             /* on s'éloigne rapidement du mur */
-            speed_gauche = ROTATION_SPEED;
-            speed_droite = ROTATION_SPEED;
-            control.gauche_avancer = 0;
-            control.droite_avancer = 1;
+            moteurs.gauche.speed = LIMIT(ROTATION_SPEED, MAX_SPEED);
+            moteurs.droit.speed  = LIMIT(ROTATION_SPEED, MAX_SPEED);
+            moteurs.gauche.avancer = 0;
+            moteurs.droit.avancer  = 1;
         } else {
+            uint16_t ajustement = ROTATION_SPEED - erreur/correction;
+
             /* on s'approche tranquillement du mur */
-            speed_gauche = ROTATION_SPEED;
-            speed_droite = ROTATION_SPEED - erreur/correction;
-            control.gauche_avancer = 1;
-            control.droite_avancer = 1;
+            moteurs.gauche.speed = LIMIT(ROTATION_SPEED, MAX_SPEED);
+            moteurs.droit.speed  = LIMIT(ajustement, MAX_SPEED);
+            moteurs.gauche.avancer = 1;
+            moteurs.droit.avancer  = 1;
         }
     } else {
         if(erreur > 0) {
             /* on s'éloigne rapidement du mur */
-            speed_gauche = ROTATION_SPEED;
-            speed_droite = ROTATION_SPEED;
-            control.gauche_avancer = 1;
-            control.droite_avancer = 0;
+            moteurs.gauche.speed = ROTATION_SPEED;
+            moteurs.droit.speed  = ROTATION_SPEED;
+            moteurs.gauche.avancer = 1;
+            moteurs.droit.avancer  = 0;
         } else {
+            uint16_t ajustement = ROTATION_SPEED - erreur/correction;
+
             /* on s'approche tranquillement du mur */
-            speed_gauche = ROTATION_SPEED - erreur/correction;
-            speed_droite = ROTATION_SPEED;
-            control.gauche_avancer = 1;
-            control.droite_avancer = 1;
+            moteurs.gauche.speed = LIMIT(ajustement, MAX_SPEED);
+            moteurs.droit.speed  = LIMIT(ROTATION_SPEED, MAX_SPEED);
+            moteurs.gauche.avancer = 1;
+            moteurs.droit.avancer  = 1;
         }
     }
 
-    /* on limite la vitesse des roues */
-    LIMIT_VALUE(speed_gauche, 200);
-    LIMIT_VALUE(speed_droite, 200);
-    control.gauche_speed = speed_gauche;
-    control.droite_speed = speed_droite;
-
     /* on ajuste les roues */
-    moteur_control(&control);
+    moteur_config(&moteurs);
 
     /* information pour debug */
     uart_debug("%d %d -- %i %i -- %i %i / %i %i\n\r",
@@ -192,8 +199,8 @@ void moteur_ajustement(struct capteurs* capteurs, uint8_t direction) {
         capteurs->droite,
         speed_gauche,
         speed_droite,
-        control.gauche_speed,
-        control.droite_speed
+        moteurs.gauche.speed,
+        moteurs.droit.speed
     );
 }
 
@@ -203,7 +210,7 @@ void changement_coter(struct capteurs* capteurs, uint8_t direction) {
     uint16_t dist_droite = sensor_get_distance(capteurs->droite);
     
     /* On commencer par savoir qu'elle direction est présentement suivi */
-    if(direction = 0) {
+    if(direction == 0) {
         /* Initialise le changement en orientant le robot */
         moteur_tourner_droite();
 

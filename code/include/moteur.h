@@ -111,19 +111,24 @@ extern "C" {
     SPEED_##roue = (speed);      \
 }
 
-/* Define un pwm de 35% */
-#ifndef ROTATION_SPEED
-            #define ROTATION_SPEED 128
-#endif
+/**
+ * Cette structure définie un moteur.
+ */
+struct moteur {
+    /** Si le moteur avance ou pas. */
+    uint8_t avancer;
+    /** La vitesse du moteur. */
+    uint8_t speed;
+};
 
-#define DIRECTION_RECULER 0
-#define DIRECTION_AVANCER 1
-
-struct moteur_control {
-    uint8_t droite_avancer;
-    uint8_t droite_speed;
-    uint8_t gauche_avancer;
-    uint8_t gauche_speed;
+/**
+ * Cette structure définie l'ensemble des moteurs.
+ */
+struct moteurs {
+    /** Le moteur droit. */
+    struct moteur droit;
+    /** Le moteur gauche. */
+    struct moteur gauche;
 };
 
 /**
@@ -136,30 +141,44 @@ struct moteur_control {
 void moteur_init();
 
 /**
- * Cette méthode permet au robot d'avance en ligne droite
+ * Cette méthode active les deux moteurs du robot vers l'avant.
+ *
+ * @param speed La vitesse du moteur.
  */
-void moteur_avancer(uint8_t speed_ratio);
+void moteur_avancer(uint8_t speed);
 
 /**
- * Cette méthode permet au robot de reculer.
+ * Cette méthode active les deux moteurs du robot vers l'arrière.
+ *
+ * @param speed La vitesse du robot.
  */
-void moteur_reculer(uint8_t speed_ratio);
+void moteur_reculer(uint8_t speed);
 
 /**
- * Cette méthode coupe les moteurs, ceux-ci ne peuvent fonctionnner à moins 
- * d'être réinitiliser.
+ * Cette méthode arrête les deux moteurs.
  */
 void moteur_arreter();
 
 /**
- * Cette méthode effectue un virage de 90 degré vers la droite
+ * Cette méthode effectue un virage de 90 degré vers la droite sur place.
+ *
+ * Note: La macro #DELAY_ROTATION90 peut être utilisée pour ajuster la rotation.
  */
 void moteur_tourner_droite();
 
 /**
- * Cette méthode effectue un virage de 90 degré vers la gauche
+ * Cette méthode effectue un virage de 90 degré vers la gauche sur place.
+ *
+ * Note: La macro #DELAY_ROTATION90 peut être utilisée pour ajuster la rotation.
  */
 void moteur_tourner_gauche();
+
+/**
+ * Cette méthode configure les deux moteurs.
+ *
+ * @param moteurs Un pointeur vers la configuration des deux moteurs.
+ */
+void moteur_configure(struct moteurs* moteurs);
 
 /**
  * Cette méthode s'assure de conserver une distance de 15 cm du mur
