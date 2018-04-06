@@ -36,6 +36,16 @@ extern "C" {
     #define TRUE 1
 #endif
 
+/* on définie la valeur OK si nécessaire */
+#ifndef OK
+    #define OK 1
+#endif
+
+/* on définie la valeur FAIL si nécessaire */
+#ifndef FAIL
+    #define FAIL 0
+#endif
+
 #ifdef __cplusplus
 }
 #endif
