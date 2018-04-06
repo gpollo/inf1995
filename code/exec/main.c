@@ -12,14 +12,20 @@ int main(void) {
     adc_init();
     uart_printf("\n\r");
    
-    struct capteurs capteurs;
+    struct capteurs capteurs = {
+        .gauche = {
+            .pin = 0,
+        },
+        .droit = {
+            .pin = 1,
+        },
+    };
 
     while (1) {
 		sensor_read(&capteurs);
         moteur_ajustement(&capteurs, 0);
         
         sensor_is_nouveau_mur(&capteurs, 0);
-        int16_t data = sensor_get_distance(capteurs.gauche);
         _delay_ms(10);
     }
 }

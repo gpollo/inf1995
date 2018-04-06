@@ -13,8 +13,8 @@ int16_t sensor_tableau[] = SENSOR_DATA;
 
 void sensor_read(struct capteurs* capteurs) {
     /* on lit les deux capteurs */
-    capteurs->gauche = adc_read(0);
-    capteurs->droite = adc_read(1);
+    capteurs->gauche.raw = adc_read(capteurs->gauche.pin);
+    capteurs->droit.raw  = adc_read(capteurs->droit.pin);
 }
 
 int16_t sensor_get_distance(int16_t valeur) {
@@ -37,9 +37,9 @@ void son_poteau(void) {
 
 uint8_t sensor_is_nouveau_mur (struct capteurs* capteurs, uint8_t direction) {
 	if (direction == 0) {
-		while (sensor_get_distance(capteurs->droite) != 0) {
+		while (sensor_get_distance(capteurs->droit.value) != 0) {
 			_delay_ms(POTEAU);
-			if (sensor_get_distance(capteurs->droite) != 0)
+			if (sensor_get_distance(capteurs->droit.value) != 0)
 				return 1;
 			else {
 				son_poteau();
@@ -49,9 +49,9 @@ uint8_t sensor_is_nouveau_mur (struct capteurs* capteurs, uint8_t direction) {
 			}
 		}
 	} else {
-		while (sensor_get_distance(capteurs->gauche) != 0) {
+		while (sensor_get_distance(capteurs->gauche.value) != 0) {
 			_delay_ms(POTEAU);
-			if (sensor_get_distance(capteurs->gauche) != 0)
+			if (sensor_get_distance(capteurs->gauche.value) != 0)
 				return 1;
 			else {
 				son_poteau();

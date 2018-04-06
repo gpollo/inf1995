@@ -141,9 +141,9 @@ void moteur_ajustement(struct capteurs* capteurs, uint8_t direction) {
     /* on obtient la distance du capteurs */
     int16_t distance;
     if(direction == 0) {
-        distance = sensor_get_distance(capteurs->gauche);
+        distance = sensor_get_distance(capteurs->gauche.raw);
     } else {
-        distance = sensor_get_distance(capteurs->droite);
+        distance = sensor_get_distance(capteurs->droit.raw);
     }
 
     /* on calcul l'erreur */
@@ -206,8 +206,8 @@ void moteur_ajustement(struct capteurs* capteurs, uint8_t direction) {
 
 void changement_coter(struct capteurs* capteurs, uint8_t direction) {
     /* Chercher les valeurs des capteurs*/
-    uint16_t dist_gauche = sensor_get_distance(capteurs->gauche);
-    uint16_t dist_droite = sensor_get_distance(capteurs->droite);
+    uint16_t dist_gauche = sensor_get_distance(capteurs->gauche.raw);
+    uint16_t dist_droite = sensor_get_distance(capteurs->droit.raw);
     
     /* On commencer par savoir qu'elle direction est présentement suivi */
     if(direction == 0) {

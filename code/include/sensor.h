@@ -6,7 +6,7 @@ extern "C" {
 #endif
 
 /**
- * Cette structue définie un capteur analogique.
+ * Cette structue définie un capteur de distance.
  */
 struct capteur {
     /** Le numéro de la pin de l'ADC. */
@@ -18,13 +18,13 @@ struct capteur {
 };
 
 /**
- * Cette structure définie les deux senseurs de distance.
+ * Cette structure définie les deux capteurs de distance.
  */
 struct capteurs {
-	/** Le senseur de gauche. */
-    int16_t gauche;
+	/** Le capteur de gauche. */
+    struct capteur gauche;
     /** Le senseur de droite. */
-    int16_t droite;
+    struct capteur droit;
 };
 
 /**
