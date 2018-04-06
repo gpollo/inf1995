@@ -1,4 +1,3 @@
-
 #include <uart.h>
 #include <memory.h>
 #include <timer.h>
@@ -10,22 +9,23 @@
 #include <moteur.h>
 //#include <sensor.h>
 
+#include "message.h"
 
 void nom_robot(void){
 	/* On écrit le nom du robot */
-	uart_putchar(0xf0);
+	uart_putchar(MSG_NUMERO_SECTION);
     uart_printf("FireFightingB\0");
 }
 
 void numero_equipe (void){
     /* On écrit le numéro de l'équipe (9 octets) */
-	uart_putchar(0xf1);
+	uart_putchar(MSG_NUMERO_EQUIPE);
     uart_printf("6266     ");
 }
 	
 void numero_section(void){
 	/* On écrit le groupe (1 octet) */
-	uart_putchar(0xf2);
+	uart_putchar(MSG_NUMERO_SECTION);
 	uart_putchar(3);
 }
 
