@@ -39,11 +39,11 @@
 
 void nom_robot(void) {
     /* on écrit le nom du robot (13 octets) */
-    uart_putchar(MSG_NUMERO_SECTION);
+    uart_putchar(MSG_NOM_ROBOT);
     uart_printf(NOM_ROBOT);
 }
 
-void numero_equipe (void) {
+void numero_equipe(void) {
     /* on écrit le numéro de l'équipe (9 octets) */
     uart_putchar(MSG_NUMERO_EQUIPE);
     uart_printf(NUMERO_EQUIPE);
@@ -106,16 +106,13 @@ ISR(INT0_vect) {
     sei();
 }
 
-
 void distance_gauche(void) {
     /* distance en cm détectée par le capteur gauche (1 octet) */
 }
 
-
 void distance_droite(void) {
     /* distance en cm détectée par le capteur droite (1 octet) */
 }
-
 
 void couleur_del(uint8_t couleur) {
     switch (couleur) {
@@ -134,36 +131,37 @@ void couleur_del(uint8_t couleur) {
     }
 }
 
-void requete_info(uint8_t identification) {
-    if(identification == MSG_ENVOIE_INFO) {
-        /* le robot envoye les infos d'identification au logiciel */
-        nom_robot();
-        numero_equipe();
-        numero_section();
-        session();
-        couleur_base();
-    }
+void requete_info() {
+    /* le robot envoye les infos d'identification au logiciel */
+    nom_robot();
+    numero_equipe();
+    numero_section();
+    session();
+    couleur_base();
 }
+
 
 void listen(void) {
     /* selon les données reçues */
+    uint8_t id = uart_receive();
+    uint8_t data = uart_receive();   
     while(1) {
-        switch(uart_receive()) {
+        switch(id) {
 	    case MSG_VITESSE_GAUCHE: 
 	        /* le robot exécutera une rotation à la roue gauche */
-		    moteur_controller_gauche(uart_receive());
+		    moteur_controller_gauche(data);
 		    break;
 	    case MSG_VITESSE_DROITE:
 		    /* le robot exécutera une rotation à la roue droite */
-		    moteur_controller_droite(uart_receive());
+		    moteur_controller_droite(data);
 		    break;
 	    case MSG_COULEUR_DEL:
 		    /* le robot changera la couleur de sa del libre */
-		    couleur_del(uart_receive());
+		    couleur_del(data);
 		    break;
 	    case MSG_REQUETE_INFO:
 		    /* le robot envoie ses informations sur le logiciel */
-		    requete_info(uart_receive());
+		    requete_info();
 		    break;
         }
     }

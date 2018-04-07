@@ -46,7 +46,4 @@
 /** Cette macro définie le numéro du message pour la DEL libre soit rouge. */
 #define MSG_DEL_ROUGE 2
 
-/** Cette macro définie le numéro du message pour que le robot envoye ses informations. */
-#define MSG_ENVOIE_INFO 0x00
-
 #endif
