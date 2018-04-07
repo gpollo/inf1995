@@ -38,10 +38,6 @@
 /** Cette macro définie la DEL libre est éteinte. */
 #define LED_OFF 0x03
 
-#define ID uart_receive()
-
-#define DATA uart_receive()
-
 void nom_robot(void) {
     /* on écrit le nom du robot (13 octets) */
     uart_putchar(MSG_NOM_ROBOT);
@@ -111,22 +107,20 @@ ISR(INT0_vect) {
     sei();
 }
 
-//void distance_gauche(void) {
-    /* distance en cm détectée par le capteur gauche (1 octet) */
- //   uart_putchar(MSG_DISTANCE_GAUCHE);
-   // struct capteurs capteurs =  CAPTEURS_INIT(0,1);
-    //sensor_read(&capteurs); 
-    //sensor_get_value(&(capteurs.gauche));
-//}
-
-//void distance_droite(void) {
-    /* distance en cm détectée par le capteur droite (1 octet) */
-  //   uart_putchar(MSG_DISTANCE_DROIT);
-    
-    //struct capteurs capteurs = CAPTEURS_INIT(0,1);
-     //sensor_read(&capteurs);
-     //sensor_get_value(&(capteurs.droit));
-//}
+void distance_capteur(void) {
+    /* distance en cm détectée par le capteur gauche et le capteur droit (1 octet) */
+    struct capteurs capteurs =  CAPTEURS_INIT(0,1);
+    while(1) {
+        /* on lit les deux capteurs */
+        sensor_read(&capteurs);
+	/* on convertit une valeur analogique du capteur gauche */
+	uart_putchar(MSG_DISTANCE_GAUCHE);
+        uart_printf("sensor_get_value(&(capteurs.gauche))");
+	/*on convertit une valeur analogique du capteur droit */
+	uart_putchar(MSG_DISTANCE_DROITE);
+        uart_printf("sensor_get_value(&(capteurs.droit))");
+    }
+}
 
 void couleur_del(uint8_t couleur) {
     switch (couleur) {
@@ -152,8 +146,7 @@ void requete_info() {
     numero_section();
     session();
     couleur_base();
-   // distance_droite();
-    //distance_gauche();
+    distance_capteur();
 }
 
 
@@ -172,7 +165,7 @@ void listen(void) {
 		    moteur_controler_droite(data);
 		    break;
 	        case MSG_COULEUR_DEL:
-                /* le robot changera la couleur de sa del libre */
+                 /* le robot changera la couleur de sa del libre */
 		    couleur_del(data);
 		    break;
 	        case MSG_REQUETE_INFO:
@@ -187,8 +180,9 @@ int main(void) {
     uart_init();
     del_init();
     moteur_init();	
-    //distance_droite();
-   // distance_gauche();
+    adc_init();
+    DDRA = 0x00;
     interruption_init();
-    listen();
+    listen(); 
+   
 }

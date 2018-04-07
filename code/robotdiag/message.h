@@ -23,7 +23,7 @@
 #define MSG_DISTANCE_GAUCHE 0xF6
 
 /** Cette macro définie le numéro du message pour la distance du capteur droit. */
-#define MSG_DISTANCE_DROIT 0xF7
+#define MSG_DISTANCE_DROITE 0xF7
 
 /** Cette macro définie le numéro du message pour la vitesse de la roue gauche. */
 #define MSG_VITESSE_GAUCHE 0xF8
