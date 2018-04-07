@@ -1,5 +1,4 @@
 #include <uart.h>
-#include <memory.h>
 #include <timer.h>
 #include <adc.h>
 #include <util/delay.h>
@@ -8,9 +7,7 @@
 #include <del.h>
 #include <moteur.h>
 #include <sensor.h>
-#include <timer.h>
 #include "message.h"
-#include <sensor_data.h>
 
 /** Cette macro définie le nom du robot. */
 #define NOM_ROBOT "FireFightingB\0"
@@ -202,7 +199,7 @@ struct callback capteur_callback = {
     .data = NULL,
 };
 
-int main(void) {
+int robotdiag_main(void) {
     uart_init();
     del_init();
     moteur_init();	

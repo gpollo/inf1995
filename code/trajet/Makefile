@@ -1,7 +1,8 @@
 include ../Makefile.common
 
-OBJECTS=main.o \
-        trajet.o
+OBJECTS=main.o   \
+        trajet.o \
+        robotdiag.o
 
 all: $(TRAJET_TARGET)
 
@@ -10,7 +11,8 @@ $(TRAJET_NAME).out: $(OBJECTS)
 	$(CC) $(LDFLAGS) -o $(TRAJET_NAME).out $^ $(LDLIBS)
 
 main.o: $(INC)/memory.h \
-        trajet.h
+        trajet.h        \
+	robotdiag.h
 
 trajet.o: $(INC)/utils.h  \
           $(INC)/sensor.h \
@@ -20,7 +22,15 @@ trajet.o: $(INC)/utils.h  \
           $(INC)/timer.h  \
           $(INC)/del.h    \
           $(INC)/buzzer.h
-
+          
+robotdiag.o: $(INC)/uart.h   \
+             $(INC)/timer.h  \
+             $(INC)/moteur.h \
+             $(INC)/adc.h    \
+             $(INC)/del.h    \
+             $(INC)/sensor.h \
+	     message.h
+		  
 install: $(TRAJET_TARGET)
 	$(AVRDUDE) -c $(PROGRAMMERID) -p $(MCU) -P -e -U flash:w:$(TRAJET_TARGET)
 

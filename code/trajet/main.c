@@ -1,5 +1,6 @@
 #include <memory.h>
 #include "trajet.h"
+#include "robotdiag.h"
 
 
 int main(void) {
@@ -19,6 +20,6 @@ int main(void) {
     if(byte) {
         trajet_main();
     } else {
-        /* TODO: exécuter le robodiag*/
+        robotdiag_main();
     }
 }
