@@ -107,19 +107,21 @@ ISR(INT0_vect) {
     sei();
 }
 
-void distance_capteur(void) {
+void distance_capteur(struct capteurs* capteurs) {
     /* distance en cm détectée par le capteur gauche et le capteur droit (1 octet) */
-    struct capteurs capteurs =  CAPTEURS_INIT(0,1);
-    while(1) {
+ 
+    
+    while(1){
         /* on lit les deux capteurs */
-        sensor_read(&capteurs);
+        int16_t distance;
+        distance = capteurs->gauche.value / 10;
 	/* on convertit une valeur analogique du capteur gauche */
 	uart_putchar(MSG_DISTANCE_GAUCHE);
-        uart_printf("sensor_get_value(&(capteurs.gauche))");
+        uart_printf("distance");
 	/*on convertit une valeur analogique du capteur droit */
 	uart_putchar(MSG_DISTANCE_DROITE);
-        uart_printf("sensor_get_value(&(capteurs.droit))");
-    }
+        uart_printf("((&(capteurs.droit->value)))");
+ }   
 }
 
 void couleur_del(uint8_t couleur) {
@@ -146,7 +148,7 @@ void requete_info() {
     numero_section();
     session();
     couleur_base();
-    distance_capteur();
+   
 }
 
 
@@ -184,5 +186,12 @@ int main(void) {
     DDRA = 0x00;
     interruption_init();
     listen(); 
-   
+   struct capteurs capteurs =  CAPTEURS_INIT(0,1);
+   while(1){
+	   
+	  sensor_read(&capteurs);
+	  sensor_get_value(&(capteurs.gauche));
+	//  sensor_get_value(&(capteurs.gauche));
+	distance_capteur(&capteurs);
+}
 }
