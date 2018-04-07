@@ -8,8 +8,14 @@
 #include <del.h>
 #include <moteur.h>
 //#include <sensor.h>
-
 #include "message.h"
+
+#define BUTTON_PRESSED 0
+#define BUTTON_RELEASED 1
+#define DELAY_BOUNCE 30
+#define LED_OFF 0x03
+#define SPEED_STATIONARY 0
+#define SPEED_ROTATION (vitesse*255)/100
 
 void nom_robot(void){
 	/* On écrit le nom du robot */
@@ -24,20 +30,20 @@ void numero_equipe (void){
 }
 	
 void numero_section(void){
-	/* On écrit le groupe (1 octet) */
+	/* On écrit la section (1 octet) */
 	uart_putchar(MSG_NUMERO_SECTION);
 	uart_putchar(3);
 }
 
 void session(void){
 	/* On écrit la session (4 octets)*/
-	uart_putchar(0xf3);
+	uart_putchar(MSG_SESSION);
     uart_printf("18-1");
 } 
  
 void couleur_base(void){
     /* On écrit la couleur de la base (1 octet) */
-    uart_putchar(0xf4);
+    uart_putchar(MSG_COULEUR_BASE);
     uart_putchar('1');
 }
 
@@ -58,7 +64,7 @@ void interruption_init(void) {
 }
 
     /* On assume que le bouton est relâché (0x01) */
-    volatile uint8_t bouton = 1;
+    volatile uint8_t bouton = BUTTON_RELEASED;
     
 ISR(INT0_vect) {
     
@@ -66,14 +72,14 @@ ISR(INT0_vect) {
     cli();
     
     /*Il permet de vérifier si le bouton est enfoncé (0x00) ou relâché */
-    bouton = (bouton == 0) ? 1 : 0;
+    bouton = (bouton == BUTTON_PRESSED) ? 1 : 0;
     
-    /* État du bouton Intrerrupt (1 octet) */
-    uart_putchar(0xf5);
+    /* État du bouton Interrupt (1 octet) */
+    uart_putchar(MSG_ETAT_INTERRUPT);
     uart_putchar(bouton);
     
     /* Le delai du anti-rebond lorsque le bouton est appuyé */
-    _delay_ms(30);
+    _delay_ms(DELAY_BOUNCE);
     
     /* La fonction est finie et l'Interrupt Flag est réinitialisé à 1   */
     EIFR |= (1 << INTF0);
@@ -96,22 +102,22 @@ void distance_droite(void) {
 void couleur_del(uint8_t couleur){
 	switch (couleur){
 	/*Si on reçoit la donnée 0, la del est éteint */
-	case 0:
-		del_off(0x03);
+	case MSG_DEL_ETEINT:
+		del_off(LED_OFF);
 		break;
 	/*Si on reçoit la donnée 1, la del est verte */
-	case 1:
+	case MSG_DEL_VERTE:
 		del_green();
 		break;
 	/*Si on reçoit la donnée 2, la del est rouge */
-	case 2:
+	case MSG_DEL_ROUGE:
 		del_red();
 		break;
 	}
 }
 
 void moteur_controller_gauche(int8_t vitesse) {
-    if(vitesse < 0) {
+    if(vitesse < SPEED_STATIONARY) {
         /* On met les directions vers l'arrière */
         PORTB |= (1<<2);
         vitesse = -vitesse;
@@ -121,7 +127,7 @@ void moteur_controller_gauche(int8_t vitesse) {
     }
 
     /* On active la vitesse pour roue de droite seulement */
-    OCR0A = (vitesse*255)/100;
+    OCR0A = SPEED_ROTATION;
 }
 
 void moteur_controller_droite(int8_t vitesse) {
@@ -135,12 +141,12 @@ void moteur_controller_droite(int8_t vitesse) {
     }
 
     /* On active la vitesse pour roue de droite seulement */
-    OCR0B = (vitesse*255)/100;
+    OCR0B = SPEED_ROTATION;
 }
 
 void requete_info(uint8_t identification){
     
-    if(identification == 0x00){
+    if(identification == MSG_ENVOIE_INFO){
         /* Le robot envoye les infos d'identification au logiciel */
         nom_robot();
         numero_equipe();
@@ -155,19 +161,19 @@ void listen(void) {
      /*Selon les données reçues */
 	while(1) {
 		switch(uart_receive()) {
-			case 0xf8: 
+			case MSG_VITESSE_GAUCHE: 
             /*Le robot exécutera une rotation à la roue gauche */
 			moteur_controller_gauche(uart_receive());
 			break;
-			case 0xf9:
+			case MSG_VITESSE_DROITE:
             /*Le robot exécutera une rotation à la roue droite */
 			moteur_controller_droite(uart_receive());
 			break;
-			case 0xfa:
+			case MSG_COULEUR_DEL:
             /*Le robot changera la couleur de sa del libre */
 			couleur_del(uart_receive());
 			break;
-			case 0xfb:
+			case MSG_REQUETE_INFO:
             /*Le robot envoie ses informations sur le logiciel */
             requete_info(uart_receive());
 			break;
