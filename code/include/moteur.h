@@ -32,6 +32,15 @@ extern "C" {
 #ifndef ROTATION_SPEED
             #define ROTATION_SPEED 200
 #endif
+
+#ifndef SPEED_STATIONARY
+            #define SPEED_STATIONARY 0
+#endif
+
+#ifndef SPEED_ROTATION
+            #define SPEED_ROTATION(vitesse) (((vitesse*255)/100))
+#endif
+
 /**
  * Cette méthode initialise les moteurs du robot. À l'interne, elle l'utilise
  * les deux canaux du compteur TC0, c'est-à-dire un canal pour chaque roue.
@@ -47,9 +56,9 @@ void moteur_reculer(uint8_t speed_ratio);
 
 void moteur_arreter();
 
-void moteur_tourner_droite();
+void moteur_tourner_droite(int8_t vitesse);
 
-void moteur_tourner_gauche();
+void moteur_tourner_gauche(int8_t vitesse);
 
 #ifdef __cplusplus
 }
