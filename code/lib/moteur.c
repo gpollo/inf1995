@@ -195,8 +195,8 @@ void moteur_ajustement(struct capteurs* capteurs, uint8_t direction) {
     } else {
         if(erreur > 0) {
             /* on s'éloigne rapidement du mur */
-            moteurs.gauche.speed = ROTATION_SPEED;
-            moteurs.droit.speed  = ROTATION_SPEED;
+            moteurs.gauche.speed = LIMIT(ROTATION_SPEED, MAX_SPEED);
+            moteurs.droit.speed  = LIMIT(ROTATION_SPEED, MAX_SPEED);
             moteurs.gauche.avancer = 1;
             moteurs.droit.avancer  = 0;
         } else {
@@ -214,15 +214,10 @@ void moteur_ajustement(struct capteurs* capteurs, uint8_t direction) {
     moteur_config(&moteurs);
 
     /* information pour debug */
-    uart_debug("%d %d -- %i %i -- %i %i / %i %i\n\r",
-        erreur,
-        distance,
-        capteurs->gauche,
-        capteurs->droite,
-        speed_gauche,
-        speed_droite,
-        moteurs.gauche.speed,
-        moteurs.droit.speed
+    uart_printf("%d %d %d\n\r",
+        capteurs->gauche.value,
+        capteurs->droit.value,
+        direction
     );
 }
 

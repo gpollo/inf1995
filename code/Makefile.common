@@ -33,6 +33,11 @@ MAIN_NAME=robot
 MAIN_TARGET=$(MAIN_NAME).hex
 MAIN_DIR=exec
 
+# configuration pour la cible principale
+TRAJET_NAME=trajet
+TRAJET_TARGET=$(TRAJET_NAME).hex
+TRAJET_DIR=trajet
+
 # configuration pour effectuer des tests
 TEST_NAME=tests
 TEST_TARGET=$(TEST_NAME).hex
