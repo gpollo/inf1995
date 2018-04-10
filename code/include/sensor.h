@@ -15,7 +15,17 @@ struct capteur {
     int16_t raw;
     /** La dernière valeur calculée. */
     int16_t value;
+    /** Si le capteur capte un objet ou non. */
+    uint8_t capting;
+    /** Ce compteur est utilisé pour déterminer si on capte ou non. */
+    uint8_t counter;
 };
+
+/** Cette macro définit lorsque le capteur ne capte rien. */
+#define NOT_CAPTING 0
+
+/** Cette macro définit lorsque le capteur capte quelque chose. */
+#define CAPTING 1
 
 /**
  * Un initialisateur pour la structure d'un capteur.
@@ -23,9 +33,11 @@ struct capteur {
  * @param npin Le numéro de la pin ADC du capteur.
  */
 #define CAPTEUR_INIT(npin) { \
-    .pin   = (npin),         \
-    .raw   = 0,              \
-    .value = 0,              \
+    .pin     = (npin),       \
+    .raw     = 0,            \
+    .value   = 0,            \
+    .capting = NOT_CAPTING,  \
+    .counter = 0,            \
 }
 
 /**
@@ -56,7 +68,19 @@ struct capteurs {
  */
 void sensor_read(struct capteurs* capteurs);
 
-void sensor_mean(struct capteurs* capteurs);
+/**
+ * Cette fonction actualise l'état du capteur. C'est-à-dire que s'il ne captait
+ * rien, mais qu'il a capté plusieurs valeurs valides de suite, alors il change
+ * d'état. De même que s'il captait quelque chose, mais qu'il capte plusieurs
+ * valeurs invalides de suite, alors il change d'état.
+ *
+ * Note: La macro #CAPTING_LIMIT control le nombre de valeurs de suite
+ *       nécessaire afin de changer d'état.
+ *
+ * @param capteur Un pointer vers une structure d'un capteur.
+ * @param capting Si le capteur a capté quelque chose.
+ */
+void sensor_update_capting(struct capteur* capteur, uint8_t capting);
 
 /**
  * Cette fonction convertit une valeur analogique du capteur en distance.
