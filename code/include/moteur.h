@@ -174,6 +174,13 @@ void moteur_tourner_droite();
 void moteur_tourner_gauche();
 
 /**
+ * Cette méthode effectue un virage de 180 degré vers la direction souhaite.
+ *
+ * Note: La macro #DELAY_ROTATION90 peut être utilisée pour ajuster la rotation.
+ */
+void moteur_tourner180(uint8_t direction);
+
+/**
  * Cette méthode configure les deux moteurs.
  *
  * @param moteurs Un pointeur vers la configuration des deux moteurs.

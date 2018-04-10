@@ -70,7 +70,7 @@ uint8_t sensor_get_value(struct capteur* capteur);
  * 
  * @return 0 pour un poteau détecté, 1 pour un mur détecté.
  */
-uint8_t sensor_is_nouveau_mur (struct capteurs* capteurs, uint8_t direction);
+uint8_t mur_ou_pouteau (struct capteurs* capteurs, uint8_t direction);
 
 #ifdef __cplusplus
 }

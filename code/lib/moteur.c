@@ -6,8 +6,11 @@
 #include <uart.h>
 
 #define DISTANCE_SOUHAITE 150
+#define DISTANCE_MINIMALE_CROISSIERE 200
 #define CORRECTION_DOUCE 2
 #define DELAY_ROTATION90 1750
+#define DELAY_TOURNANT180 3000
+#define DELAY_FIN180 1000
 
 /* vitesse exprimer en mm par sec */
 #define VITESSE_50PWM 70
@@ -117,6 +120,25 @@ void moteur_tourner_gauche() {
     moteur_arreter();
 }
 
+void moteur_tourner180(uint8_t direction) {
+    /* Pour tourner vers la gauche */
+    if(direction == 0) {
+        moteur_tourner_gauche();
+        moteur_avancer(ROTATION_SPEED);
+        _delay_ms(DELAY_TOURNANT180);
+        moteur_tourner_gauche();
+        moteur_avancer(ROTATION_SPEED);
+        _delay_ms(DELAY_FIN180);
+    } else {
+        moteur_tourner_droite();
+        moteur_avancer(ROTATION_SPEED);
+        _delay_ms(DELAY_TOURNANT180);
+        moteur_tourner_droite();
+        moteur_avancer(ROTATION_SPEED);
+        _delay_ms(DELAY_FIN180);
+    }
+}
+
 void moteur_config(struct moteurs* moteurs) {
     /* on set la direction de la roue droite */
     if(moteurs->droit.avancer) {
@@ -211,7 +233,7 @@ void changement_coter(struct capteurs* capteurs, uint8_t direction) {
     
     /* On commencer par savoir qu'elle direction est présentement suivi */
     if(direction == 0) {
-        if(dist_droite < 200) {return;}
+        if(dist_droite < DISTANCE_MINIMALE_CROISSIERE) {return;}
         /* Initialise le changement en orientant le robot */
         moteur_tourner_droite();
 
@@ -225,7 +247,7 @@ void changement_coter(struct capteurs* capteurs, uint8_t direction) {
         /* Puis on réoriente le robot pour continuer le suivi du nouveau mur */
         moteur_tourner_gauche();
     } else {
-        if(dist_gauche < 200) {return;}
+        if(dist_gauche < DISTANCE_MINIMALE_CROISSIERE) {return;}
         /* Initialise le changement en orientant le robot */
         moteur_tourner_gauche();
 
