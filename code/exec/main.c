@@ -17,17 +17,13 @@ int main(void) {
         sensor_get_value(&(capteurs.gauche));
         sensor_get_value(&(capteurs.droit));
 
-        changement_coter(&capteurs, 1);
-        //moteur_avancer(128);
-        //_delay_ms(3000);
-        //moteur_arreter();
          
     while (1) {
 		sensor_read(&capteurs);
         sensor_get_value(&(capteurs.gauche));
         sensor_get_value(&(capteurs.droit));
         moteur_ajustement(&capteurs, 0);
-        
+		sensor_is_nouveau_mur(capteurs, 0);
         _delay_ms(10);
     }
 }
