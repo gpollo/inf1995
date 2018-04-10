@@ -13,21 +13,22 @@
 #define DELAY 10
 
 #define TIME_LIMIT 5000
-#define TIME_MIN 500
-#define TIME_MAX 700
+#define TIME_MIN 300
+#define TIME_MAX 600
+#define TIME_MUR 1000
 
 enum state {
-    RESET,
-    AVANCER_GAUCHE,
-    AVANCER_DROITE,
-    AVANCER_GAUCHE_ATTENDRE,
-    AVANCER_DROITE_ATTENDRE,
-    VERIFIER_GAUCHE,
-    VERIFIER_DROITE,
-    TOURNER_GAUCHE,
-    TOURNER_DROITE,
-    CHANGER_MUR_GAUCHE,
-    CHANGER_MUR_DROITE,
+    RESET,                   /*  0 */
+    AVANCER_GAUCHE,          /*  1 */
+    AVANCER_DROITE,          /*  2 */
+    AVANCER_GAUCHE_ATTENDRE, /*  3 */
+    AVANCER_DROITE_ATTENDRE, /*  4 */
+    VERIFIER_GAUCHE,         /*  5 */
+    VERIFIER_DROITE,         /*  6 */
+    TOURNER_GAUCHE,          /*  7 */
+    TOURNER_DROITE,          /*  8 */
+    CHANGER_MUR_GAUCHE,      /*  9 */
+    CHANGER_MUR_DROITE,      /* 10 */
 };
 
 struct robot {
@@ -51,6 +52,7 @@ void son() {
 }
 
 enum obstacle {
+    UNKNOWN,
     MUR,
     POTEAU,
 };
@@ -58,29 +60,31 @@ enum obstacle {
 enum obstacle detect(struct robot* robot) {
     struct capteurs* capteurs = &(robot->capteurs);
 
-    enum obstacle obstacle = MUR;
+    enum obstacle obstacle = UNKNOWN;
 
     if(robot->droite)
         if(capteurs->gauche.value != 0) {
             robot->time = LIMIT(robot->time+DELAY, TIME_LIMIT);
+            if(robot->time > TIME_MUR) {
+                obstacle = MUR;
+            }
         } else {
             if((TIME_MIN < robot->time) && (robot->time < TIME_MAX)) {
                 obstacle = POTEAU;
                 son();
-            } else {
-                obstacle = MUR;
             }
             robot->time = 0;
         }
     else {
         if(capteurs->droit.value != 0) {
             robot->time = LIMIT(robot->time+DELAY, TIME_LIMIT);
+            if(robot->time > TIME_MUR) {
+                obstacle = MUR;
+            }
         } else {
             if((TIME_MIN < robot->time) && (robot->time < TIME_MAX)) {
                 obstacle = POTEAU;
                 son();
-            } else {
-                obstacle = MUR;
             }
             robot->time = 0;
         }
@@ -98,7 +102,7 @@ void update_state(struct robot* robot) {
 
     struct capteurs* capteurs = &(robot->capteurs);
 
-    uart_printf("%d\n\r", robot->state);
+    uart_printf("%d ", robot->state);
 
     switch(robot->state) {
     case RESET:
@@ -109,26 +113,23 @@ void update_state(struct robot* robot) {
 
         if(capteurs->gauche.value == 0) {
             robot->state = AVANCER_DROITE;
-            robot->droite = TRUE;
             break;
         }
 
         if(capteurs->droit.value == 0) {
             robot->state = AVANCER_GAUCHE;
-            robot->droite = FALSE;
             break;
         }
 
         if(capteurs->gauche.value < capteurs->droit.value) {
             robot->state = AVANCER_GAUCHE;
-            robot->droite = FALSE;
         } else {
             robot->state = AVANCER_DROITE;
-            robot->droite = TRUE;
         }
         break;
 
     case AVANCER_GAUCHE:
+        robot->droite = FALSE;
         moteur_ajustement(capteurs, robot->droite);
         if(capteurs->droit.value != 0) {
             robot->state = VERIFIER_DROITE;
@@ -142,6 +143,7 @@ void update_state(struct robot* robot) {
         break;
 
     case AVANCER_DROITE:
+        robot->droite = TRUE;
         moteur_ajustement(capteurs, robot->droite);
         if(capteurs->gauche.value != 0) {
             robot->state = VERIFIER_GAUCHE;
@@ -155,32 +157,73 @@ void update_state(struct robot* robot) {
         break;
 
     case AVANCER_GAUCHE_ATTENDRE:
-        break;
-    case AVANCER_DROITE_ATTENDRE:
-        break;
-    case VERIFIER_GAUCHE:
+        robot->droite = FALSE;
         moteur_ajustement(capteurs, robot->droite);
-        if(obstacle == POTEAU) {
-
-        } else {
-            robot->state = AVANCER_DROITE;
-        }
-        break;
-    case VERIFIER_DROITE:
-        moteur_ajustement(capteurs, robot->droite);
-        if(obstacle == POTEAU) {
-
-        } else {
+        if(capteurs->droit.value == 0) {
             robot->state = AVANCER_GAUCHE;
+            break;
+        }
+
+        if(capteurs->gauche.value == 0) {
+            robot->state = TOURNER_GAUCHE;
+            break;
         }
         break;
+
+    case AVANCER_DROITE_ATTENDRE:
+        robot->droite = TRUE;
+        moteur_ajustement(capteurs, robot->droite);
+        if(capteurs->gauche.value == 0) {
+            robot->state = AVANCER_DROITE;
+            break;
+        }
+
+        if(capteurs->droit.value == 0) {
+            robot->state = TOURNER_DROITE;
+            break;
+        }
+        break;
+
+    case VERIFIER_GAUCHE:
+        robot->droite = TRUE;
+        moteur_ajustement(capteurs, robot->droite);
+        if(obstacle == POTEAU) {
+            robot->state = AVANCER_DROITE;
+        } else if(obstacle == MUR) {
+            robot->state = CHANGER_MUR_GAUCHE;
+        }
+        break;
+
+    case VERIFIER_DROITE:
+        robot->droite = FALSE;
+        moteur_ajustement(capteurs, robot->droite);
+        if(obstacle == POTEAU) {
+            robot->state = AVANCER_GAUCHE;
+        } else if(obstacle == MUR) {
+            robot->state = CHANGER_MUR_DROITE;
+        }
+        break;
+
     case TOURNER_GAUCHE:
+        moteur_tourner180(0);
+        robot->state = AVANCER_GAUCHE;
         break;
+
     case TOURNER_DROITE:
+        moteur_tourner180(1);
+        robot->state = AVANCER_DROITE;
         break;
+
     case CHANGER_MUR_GAUCHE:
+        uart_printf("gauche\n\r");
+        changement_coter(capteurs, 0);
+        robot->state = AVANCER_GAUCHE_ATTENDRE;
         break;
+
     case CHANGER_MUR_DROITE:
+        uart_printf("droit\n\r");
+        changement_coter(capteurs, 1);
+        robot->state = AVANCER_DROITE_ATTENDRE;
         break;
     }
 }
@@ -196,11 +239,15 @@ int main(void) {
     struct capteurs* capteurs = &(robot.capteurs);
 
     while(1) {
-        sensor_read(capteurs);
+        sensor_mean(capteurs);
         sensor_get_value(&(capteurs->gauche));
         sensor_get_value(&(capteurs->droit));
-
-//        moteur_ajustement(capteurs, 0);
+/*
+        uart_printf("%3d %3d\n\r",
+            capteurs->gauche.value,
+            capteurs->droit.value
+        );
+*/
         update_state(&robot);
 
         _delay_ms(DELAY);

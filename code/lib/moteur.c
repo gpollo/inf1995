@@ -214,7 +214,7 @@ void moteur_ajustement(struct capteurs* capteurs, uint8_t direction) {
     moteur_config(&moteurs);
 
     /* information pour debug */
-    uart_printf("%d %d %d\n\r",
+    uart_debug("%d %d %d\n\r",
         capteurs->gauche.value,
         capteurs->droit.value,
         direction

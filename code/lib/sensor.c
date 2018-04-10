@@ -18,6 +18,16 @@ void sensor_read(struct capteurs* capteurs) {
     capteurs->droit.raw  = adc_read(capteurs->droit.pin);
 }
 
+void sensor_mean(struct capteurs* capteurs) {
+    capteurs->gauche.raw = 0;
+    capteurs->droit.raw = 0;
+
+    for(uint8_t i = 0; i < 3; i++) {
+        capteurs->gauche.raw += adc_read(capteurs->gauche.pin)/3;
+        capteurs->droit.raw  += adc_read(capteurs->droit.pin)/3;
+    }
+}
+
 uint8_t sensor_get_value(struct capteur* capteur) {
 	/* on s'assure que les valeurs lues sont dans la table */
     if(capteur->raw < SENSOR_MIN || capteur->raw > SENSOR_MAX) {

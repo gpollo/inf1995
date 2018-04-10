@@ -56,6 +56,8 @@ struct capteurs {
  */
 void sensor_read(struct capteurs* capteurs);
 
+void sensor_mean(struct capteurs* capteurs);
+
 /**
  * Cette fonction convertit une valeur analogique du capteur en distance.
  * 
