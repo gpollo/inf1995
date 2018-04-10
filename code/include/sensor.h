@@ -91,13 +91,6 @@ void sensor_update_capting(struct capteur* capteur, uint8_t capting);
  */
 uint8_t sensor_get_value(struct capteur* capteur);
 
-/**
- * Cette fonction indique s'il y a un nouveau mur de l'autre côté
- * 
- * @return 0 pour un poteau détecté, 1 pour un mur détecté.
- */
-uint8_t mur_ou_pouteau (struct capteurs* capteurs, uint8_t direction);
-
 #ifdef __cplusplus
 }
 #endif
