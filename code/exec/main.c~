@@ -9,7 +9,6 @@
 #include <moteur.h>
 #include <sensor.h>
 #include "message.h"
-#include <sensor_data.h>
 
 /** Cette macro définie le nom du robot. */
 #define NOM_ROBOT "FireFightingB\0"
@@ -37,10 +36,6 @@
 
 /** Cette macro définie la DEL libre est éteinte. */
 #define LED_OFF 0x03
-
-#define ID uart_receive()
-
-#define DATA uart_receive()
 
 void nom_robot(void) {
     /* on écrit le nom du robot (13 octets) */
@@ -111,22 +106,21 @@ ISR(INT0_vect) {
     sei();
 }
 
-//void distance_gauche(void) {
+void distance_gauche(void) {
     /* distance en cm détectée par le capteur gauche (1 octet) */
- //   uart_putchar(MSG_DISTANCE_GAUCHE);
-   // struct capteurs capteurs =  CAPTEURS_INIT(0,1);
-    //sensor_read(&capteurs); 
-    //sensor_get_value(&(capteurs.gauche));
-//}
+    uart_putchar(MSG_DISTANCE_GAUCHE);
+    struct capteurs* capteurs = CAPTEURS_INIT(0,1);
+    sensor_read(&capteurs);
+    sensor_get_value(&(capteurs->gauche));
+}
 
-//void distance_droite(void) {
+void distance_droite(void) {
     /* distance en cm détectée par le capteur droite (1 octet) */
-  //   uart_putchar(MSG_DISTANCE_DROIT);
-    
-    //struct capteurs capteurs = CAPTEURS_INIT(0,1);
-     //sensor_read(&capteurs);
-     //sensor_get_value(&(capteurs.droit));
-//}
+     uart_putchar(MSG_DISTANCE_DROIT);
+     struct capteurs* capteurs = CAPTEURS_INIT(0,1);
+     sensor_read(&capteurs);
+     sensor_get_value(&(capteurs->droit));
+}
 
 void couleur_del(uint8_t couleur) {
     switch (couleur) {
@@ -152,31 +146,29 @@ void requete_info() {
     numero_section();
     session();
     couleur_base();
-   // distance_droite();
-    //distance_gauche();
 }
 
 
 void listen(void) {
     /* selon les données reçues */
+    //uint8_t id = uart_receive();
+    //uint8_t data = uart_receive();   
     while(1) {
-        uint8_t id = uart_receive();
-        uint8_t data = uart_receive();
-            switch(id) {
-	        case MSG_VITESSE_GAUCHE: 
-	         /* le robot exécutera une rotation à la roue gauche */
-		    moteur_controller_gauche(data);
+        switch(uart_receive()) {
+	    case MSG_VITESSE_GAUCHE: 
+	        /* le robot exécutera une rotation à la roue gauche */
+		    moteur_controller_gauche(uart_receive());
 		    break;
-	        case MSG_VITESSE_DROITE:
-		 /* le robot exécutera une rotation à la roue droite */
-		    moteur_controller_droite(data);
+	    case MSG_VITESSE_DROITE:
+		    /* le robot exécutera une rotation à la roue droite */
+		    moteur_controller_droite(uart_receive());
 		    break;
-	        case MSG_COULEUR_DEL:
-                /* le robot changera la couleur de sa del libre */
-		    couleur_del(data);
+	    case MSG_COULEUR_DEL:
+		    /* le robot changera la couleur de sa del libre */
+		    couleur_del(uart_receive());
 		    break;
-	        case MSG_REQUETE_INFO:
-                /* le robot envoie ses informations sur le logiciel */
+	    case MSG_REQUETE_INFO:
+		    /* le robot envoie ses informations sur le logiciel */
 		    requete_info();
 		    break;
         }
@@ -187,8 +179,9 @@ int main(void) {
     uart_init();
     del_init();
     moteur_init();	
-    //distance_droite();
-   // distance_gauche();
+    distance_droite();
+    distance_gauche();
     interruption_init();
     listen();
 }
+
