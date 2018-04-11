@@ -46,6 +46,16 @@ extern "C" {
     #define FAIL 0
 #endif
 
+/** Cette macro définit une direction possible. */
+enum direction {
+    /** Aucune direction. */
+    AUCUNE,
+    /** La direction vers la droite. */
+    DROITE,
+    /** La direction vers la gauche. */ 
+    GAUCHE,
+};
+
 #ifdef __cplusplus
 }
 #endif

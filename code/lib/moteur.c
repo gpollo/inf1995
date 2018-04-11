@@ -120,6 +120,33 @@ void moteur_tourner_gauche() {
     moteur_arreter();
 }
 
+void moteur_tourner(enum direction direction) {
+    struct moteurs moteurs;
+
+    /* on configure la direction des moteurs */
+    switch(direction) {
+    case DROITE:
+        /* seulement la roue de gauche bouge */
+        moteurs.gauche.speed = ROTATION_SPEED;
+        moteurs.droit.speed  = 0;
+        break;
+    case GAUCHE:
+        /* seulement la roue de droite bouge */
+        moteurs.gauche.speed = 0;
+        moteurs.droit.speed  = ROTATION_SPEED;
+        break;
+    default:
+        return;
+    }
+
+    /* les deux roues avancent */
+    moteurs.gauche.avancer = TRUE;
+    moteurs.droit.avancer  = TRUE;
+
+    /* on ajuste les roues */
+    moteur_config(&moteurs);
+}
+
 void moteur_tourner180(uint8_t direction) {
     /* Pour tourner vers la gauche */
     if(direction == 0) {

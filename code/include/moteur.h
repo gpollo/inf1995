@@ -2,6 +2,7 @@
 #define INCLUDE_MOTEUR_H
 
 #include <sensor.h>
+#include <utils.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -174,6 +175,13 @@ void moteur_tourner_droite();
 void moteur_tourner_gauche();
 
 /**
+ * Cette méthode active les roues en rotation vers une direction.
+ *
+ * @param direction La direction du robot.
+ */
+void moteur_tourner(enum direction);
+
+/**
  * Cette méthode effectue un virage de 180 degré vers la direction souhaite.
  *
  * Note: La macro #DELAY_ROTATION90 peut être utilisée pour ajuster la rotation.
@@ -185,7 +193,7 @@ void moteur_tourner180(uint8_t direction);
  *
  * @param moteurs Un pointeur vers la configuration des deux moteurs.
  */
-void moteur_configure(struct moteurs* moteurs);
+void moteur_config(struct moteurs* moteurs);
 
 /**
  * Cette méthode s'assure de conserver une distance de 15 cm du mur
