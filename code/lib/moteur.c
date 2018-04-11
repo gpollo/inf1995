@@ -92,6 +92,38 @@ void moteur_arreter() {
     SET_SPEED(GAUCHE, 0);
 }
 
+void moteur_controler_droite(int8_t vitesse) {
+    if(vitesse < 0) {
+        /* on met la roue vers l'arrière */
+        SET_DIRECTION_RECULER(DROITE);
+
+        /* on rend la valeur positive */
+        vitesse = -vitesse;
+    } else {
+        /* on met la roue vers l'avant */
+        SET_DIRECTION_AVANCER(DROITE);
+    }
+
+    /* on ajuste la vitesse de la roue droite */
+    SET_SPEED(DROITE, (vitesse * 255)/100);
+}
+
+void moteur_controler_gauche(int8_t vitesse) {
+    if(vitesse < 0) {
+        /* on met la roue vers l'arrière */
+        SET_DIRECTION_RECULER(GAUCHE);
+
+        /* on rend la valeur positive */
+        vitesse = -vitesse;
+    } else {
+        /* on met la roue vers l'avant */
+        SET_DIRECTION_AVANCER(GAUCHE);
+    }
+
+    /* on ajuste la vitesse de la roue gauche */
+    SET_SPEED(GAUCHE, (vitesse * 255)/100);
+}
+
 void moteur_tourner_droite() {
     /* on tourne surplace */
     SET_DIRECTION_AVANCER(DROITE);
