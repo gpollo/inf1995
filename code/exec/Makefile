@@ -8,7 +8,7 @@ $(MAIN_NAME).out: $(OBJECTS)
 	@(cd ../$(LIB_DIR) && $(MAKE))
 	$(CC) $(LDFLAGS) -o $(MAIN_NAME).out $^ $(LDLIBS)
 
-main.o: $(INC)/moteur.h
+main.o: $(INC)/uart.h $(INC)/sensor.h
 
 install: $(MAIN_TARGET)
 	$(AVRDUDE) -c $(PROGRAMMERID) -p $(MCU) -P -e -U flash:w:$(MAIN_TARGET)

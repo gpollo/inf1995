@@ -14,6 +14,38 @@ extern "C" {
     #define FLIP_WORD(n) ((((n) & 0x00FF) << 8) | (((n) & 0xFF00) >> 8));
 #endif
 
+/**
+ * Cette macro limite la valeur d'une variable.
+ *
+ * @param value La variable à limitée.
+ * @param limit La valeur maximale de la variable.
+ *
+ * @return La valeur limitée.
+ */
+#define LIMIT(value, limit) (               \
+    ((value) > (limit)) ? (limit) : (value) \
+)
+
+/* on définie la valeur FALSE si nécessaire */
+#ifndef FALSE
+    #define FALSE 0
+#endif
+
+/* on définie la valeur TRUE si nécessaire */
+#ifndef TRUE
+    #define TRUE 1
+#endif
+
+/* on définie la valeur OK si nécessaire */
+#ifndef OK
+    #define OK 1
+#endif
+
+/* on définie la valeur FAIL si nécessaire */
+#ifndef FAIL
+    #define FAIL 0
+#endif
+
 #ifdef __cplusplus
 }
 #endif
