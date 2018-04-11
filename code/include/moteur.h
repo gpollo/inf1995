@@ -159,9 +159,19 @@ void moteur_reculer(uint8_t speed);
  */
 void moteur_arreter();
 
-void moteur_controller_droite(int8_t vitesse);
+/**
+ * Cette méthode controle la roue de droite en pourcentage négatif ou positif.
+ *
+ * @param L'activation du moteur droit.
+ */
+void moteur_controler_droite(int8_t vitesse);
 
-void moteur_controller_gauche(int8_t vitesse);
+/**
+ * Cette méthode controle la roue de gauche en pourcentage négatif ou positif.
+ *
+ * @param L'activation du moteur gauche.
+ */
+void moteur_controler_gauche(int8_t vitesse);
 
 /**
  * Cette méthode effectue un virage de 90 degré vers la droite sur place.

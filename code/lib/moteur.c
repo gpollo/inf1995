@@ -92,32 +92,36 @@ void moteur_arreter() {
     SET_SPEED(GAUCHE, 0);
 }
 
-void moteur_controller_gauche(int8_t vitesse) {
-    if(vitesse < SPEED_STATIONARY) {
-        /* On met les directions vers l'arrière */
-        PORTB |= (1<<2);
+void moteur_controler_droite(int8_t vitesse) {
+    if(vitesse < 0) {
+        /* on met la roue vers l'arrière */
+        SET_DIRECTION_RECULER(DROITE);
+
+        /* on rend la valeur positive */
         vitesse = -vitesse;
     } else {
-        /* On met les directions vers l'avant */
-        PORTB &=~ (1<<2);
+        /* on met la roue vers l'avant */
+        SET_DIRECTION_AVANCER(DROITE);
     }
 
-    /* On active la vitesse pour roue de droite seulement */
-    OCR0A = SPEED_ROTATION(vitesse);
+    /* on ajuste la vitesse de la roue droite */
+    SET_SPEED(DROITE, (vitesse * 255)/100);
 }
 
-void moteur_controller_droite(int8_t vitesse) {
-    if(vitesse < SPEED_STATIONARY) {
-        /* On met les directions vers l'arrière */
-        PORTB |= (1<<5);
+void moteur_controler_gauche(int8_t vitesse) {
+    if(vitesse < 0) {
+        /* on met la roue vers l'arrière */
+        SET_DIRECTION_RECULER(GAUCHE);
+
+        /* on rend la valeur positive */
         vitesse = -vitesse;
     } else {
-        /* On met les directions vers l'avant */
-        PORTB &=~ (1<<5);
+        /* on met la roue vers l'avant */
+        SET_DIRECTION_AVANCER(GAUCHE);
     }
 
-    /* On active la vitesse pour roue de droite seulement */
-    OCR0B = SPEED_ROTATION(vitesse);
+    /* on ajuste la vitesse de la roue gauche */
+    SET_SPEED(GAUCHE, (vitesse * 255)/100);
 }
 
 void moteur_tourner_droite() {

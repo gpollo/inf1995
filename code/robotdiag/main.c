@@ -165,11 +165,11 @@ void listen(void) {
             switch(id) {
 	        case MSG_VITESSE_GAUCHE: 
 	         /* le robot exécutera une rotation à la roue gauche */
-		    moteur_controller_gauche(data);
+		    moteur_controler_gauche(data);
 		    break;
 	        case MSG_VITESSE_DROITE:
 		 /* le robot exécutera une rotation à la roue droite */
-		    moteur_controller_droite(data);
+		    moteur_controler_droite(data);
 		    break;
 	        case MSG_COULEUR_DEL:
                 /* le robot changera la couleur de sa del libre */
