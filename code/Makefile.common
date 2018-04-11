@@ -57,7 +57,7 @@ LIB_DIR=lib
 CC=avr-gcc
 CFLAGS  = -mmcu=$(MCU) -g -O$(OPTLEVEL) -I$(INC)
 CFLAGS += -Wall -Wextra
-CFLAGS += -fpack-struct -fshort-enums -funsigned-bitfields -funsigned-char
+CFLAGS += -fpack-struct -fshort-enums -funsigned-bitfields -funsigned-char -std=c11
 CFLAGS += -DF_CPU=$(FREQUENCY)
 CFLAGS += -DF_SCL=$(TWI_CLOCK)
 CFLAGS += -DBAUD=$(BAUD)
