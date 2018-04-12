@@ -1,5 +1,6 @@
 #ifndef INCLUDE_DEL_H
 #define INCLUDE_DEL_H
+#include <sensor.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -39,6 +40,13 @@ void del_off(uint8_t numero);
  * @param numero Le numéro de la PINA.
  */
 void del_on(uint8_t numero);
+
+/**
+ * Cette fonction affiche si le robot est à la distance ou entrain de s'ajuster.
+ *
+ * @param la direction à suivre.
+ */
+void del_ajust(struct capteurs* capteurs, uint8_t direction);
 
 /**
  * Cette fonction exécute une routine préprogrammée sur pour les DELs.

@@ -6,6 +6,8 @@
 #include <timer.h>
 #include <utils.h>
 
+#define DISTANCE_REFERENCE 150
+
 /* combien de données il faut pour pouvoir capter */
 #ifndef CAPTING_LIMIT
     #define CAPTING_LIMIT 10
@@ -68,4 +70,16 @@ uint8_t sensor_get_value(struct capteur* capteur) {
 
     /* la conversion s'est bien effectuée */
     return OK;
+}
+
+int16_t sensor_diff_dist(struct capteurs* capteurs,uint8_t direction) {
+    /* on obtient la distance des capteurs */
+    int16_t distance;
+    if(direction == 0) {
+        distance = capteurs->gauche.value;
+    } else {
+        distance = capteurs->droit.value;
+    }
+    /* Retour de la différence entre 150 mm et la distance capté. */
+    return (distance - DISTANCE_REFERENCE);
 }

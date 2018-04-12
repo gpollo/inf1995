@@ -9,6 +9,7 @@
 #include <uart.h>
 #include <timer.h>
 #include <son.h>
+#include <del.h>
 
 #define DELAY 10
 
@@ -280,6 +281,7 @@ int main(void) {
     moteur_init();
     adc_init();
     son_init();
+    del_init();
     uart_printf("\n\r");
  
     struct robot robot = ROBOT_INIT(0, 1);
@@ -289,7 +291,9 @@ int main(void) {
         sensor_read(capteurs);
         sensor_get_value(&(capteurs->gauche));
         sensor_get_value(&(capteurs->droit));
-/*
+
+        del_ajust(capteurs, 0);
+        /*
         uart_printf("%3d %3d\n\r",
             capteurs->gauche.value,
             capteurs->droit.value

@@ -219,18 +219,10 @@ void moteur_config(struct moteurs* moteurs) {
 }
 
 void moteur_ajustement(struct capteurs* capteurs, uint8_t direction) {
-    /* on obtient la distance du capteurs */
-    int16_t distance;
-    if(direction == 0) {
-        distance = capteurs->gauche.value;
-    } else {
-        distance = capteurs->droit.value;
-    }
+    /* on obtient l'erreur */
+    int16_t erreur = sensor_diff_dist(capteurs, direction);
 
-    /* on calcul l'erreur */
-    int16_t erreur = DISTANCE_SOUHAITE - distance;
-
-    /* le facteur de correction */
+    /* Iniatialise le facteur de correction */
     int16_t correction = CORRECTION_DOUCE;
 
     /* on calcule les vitesses à envoyer aux moteurs */

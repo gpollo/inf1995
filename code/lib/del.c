@@ -1,38 +1,55 @@
 #include <avr/io.h>
 #include <util/delay.h>
 #include <del.h>
+#include <sensor.h>
+
+#define INCERTITUDE_DISTANCE 20
 
 void del_init(void ) {
 	/* on initialise le PORTA en mode sortie */
-	DDRA = 0xff;
+	DDRB = 0x03;
 }
 
 void del_red(void) {
 	/* on allume la DEL de la couleur rouge */
-	PORTA = 0x02;
+	PORTB = 0x02;
 }
 
 void del_green(void) {
 	/* on allume la DEL de la couleur verte */
-	PORTA = 0x01;
+	PORTB = 0x01;
 }
 
 void del_amber(void) {
 	/* on allume la DEL de la couleur ambrée */
-	PORTA = 0x01;
+	PORTB = 0x01;
 	_delay_ms(1);
-	PORTA = 0x02;
+	PORTB = 0x02;
 	_delay_ms(4);
 }
 
 void del_off(uint8_t numero) {
 	/* on éteint la DEL */
-	PORTA &= ~numero;
+	PORTB &= ~numero;
 }
 
 void del_on(uint8_t numero) {
 	/* on choisit le numéro de la PINA pour le mettre en mode sortie */
-	PORTA |= numero;
+	PORTB |= numero;
+}
+
+void del_ajust(struct capteurs* capteurs, uint8_t direction) {
+    /* on extrait l'erreur */
+    int16_t erreur = sensor_diff_dist(capteurs, direction);
+
+    erreur = (erreur < 0) ? -erreur : erreur;
+
+    /* Bonne distance on veut que la Del soit verte */
+    if(erreur < INCERTITUDE_DISTANCE) {
+        del_green();
+    } else {
+        del_red();
+    }
 }
 
 void del_depart() {
