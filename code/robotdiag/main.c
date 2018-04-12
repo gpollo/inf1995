@@ -8,6 +8,7 @@
 #include <del.h>
 #include <moteur.h>
 #include <sensor.h>
+#include <timer.h>
 #include "message.h"
 #include <sensor_data.h>
 
@@ -38,9 +39,11 @@
 /** Cette macro définie la DEL libre est éteinte. */
 #define LED_OFF 0x03
 
-#define ID uart_receive()
+/** Cette macro définie le delai pour l'affichage du capteur. */
+#define DELAY_SENSOR 100
 
-#define DATA uart_receive()
+/** Cette macro définie que le timer est répété une seule fois. */
+#define REPEAT_1 1
 
 void nom_robot(void) {
     /* on écrit le nom du robot (13 octets) */
@@ -61,7 +64,7 @@ void numero_section(void) {
 }
 
 void session(void) {
-    /* on écrit la session (4 octets)*/
+    /* on écrit la session (4 octets) */
     uart_putchar(MSG_SESSION);
     uart_printf(SESSION);
 } 
@@ -83,7 +86,7 @@ void interruption_init(void) {
     EICRA |= ISC00;
     EICRA |= ISC01;
     
-	/* on active les interruptions */
+    /* on active les interruptions */
     sei();
 }
 
@@ -111,23 +114,18 @@ ISR(INT0_vect) {
     sei();
 }
 
-
 void distance_capteur(struct capteurs* capteurs) {
-    /* distance en cm détectée par le capteur gauche et le capteur droit (1 octet) */
- 
-        /* on lit les deux capteurs */
-        uint8_t distanceG, distanceD;
-        distanceG = (uint8_t) (capteurs->gauche.value);
-        distanceD = (uint8_t) (capteurs->droit.value);
-	/* on convertit une valeur analogique du capteur gauche */
-	uart_putchar(MSG_DISTANCE_GAUCHE);
-        uart_printf("\n\r%d %d\n\r", capteurs->gauche.value, capteurs->droit.value);
-        uart_putchar(distanceG);
-	/*on convertit une valeur analogique du capteur droit */
-	uart_putchar(MSG_DISTANCE_DROIT);
-        uart_putchar(distanceD);
+    /* on désire les distances en cm détectées par le capteur gauche et droit (1 octet) */
+    uint8_t distanceG, distanceD;
+    distanceG = (uint8_t) ((capteurs->gauche.value) / 10);
+    distanceD = (uint8_t) ((capteurs->droit.value) / 10);
+    /* on affiche la distance du capteur gauche */
+    uart_putchar(MSG_DISTANCE_GAUCHE);
+    uart_putchar(distanceG);
+    /*on affiche la distance du capteur droit */
+    uart_putchar(MSG_DISTANCE_DROIT);
+    uart_putchar(distanceD);
  }   
-
 
 void couleur_del(uint8_t couleur) {
     switch (couleur) {
@@ -153,20 +151,12 @@ void requete_info() {
     numero_section();
     session();
     couleur_base();
-   // distance_droite();
-    //distance_gauche();
 }
-
 
 void listen(void) {
     /* selon les données reçues */
-    struct capteurs capteurs =  CAPTEURS_INIT(0,1);
-    while(1) {
-        sensor_read(&capteurs);
-	  sensor_get_value(&(capteurs.gauche));
-	  sensor_get_value(&(capteurs.droit));
-	 distance_capteur(&capteurs);
-        uint8_t id = uart_receive();
+    while(1) {        
+        uint8_t id =  uart_receive();
         uint8_t data = uart_receive();
             switch(id) {
 	        case MSG_VITESSE_GAUCHE: 
@@ -189,21 +179,36 @@ void listen(void) {
     }
 }
 
+void send_capteurs(void* data) {
+    /* on initialise les capteurs */	
+    struct capteurs capteurs =  CAPTEURS_INIT(0,1);
+    /* on lit les deux capteurs */
+    sensor_read(&capteurs);
+    /* on obtient la distance des capteurs */
+    sensor_get_value(&(capteurs.gauche));
+    sensor_get_value(&(capteurs.droit));
+    /* on affiche la distance dans le logiciel */
+    distance_capteur(&capteurs);
+}
+
+struct callback capteur_callback = {
+    /* la fonction à appeler */
+    .func = &send_capteurs,
+    /* le temps d'attente en millisecondes */
+    .time = DELAY_SENSOR,
+    /* le nombre de fois que le timer doit être répété */
+    .repeat = REPEAT_1,
+    /* aucun pointeur à envoyer à la fonction */
+    .data = NULL,
+};
+
 int main(void) {
     uart_init();
     del_init();
     moteur_init();	
     interruption_init();
     adc_init();
-    struct capteurs capteurs =  CAPTEURS_INIT(0,1);
-    while(1) {
-        sensor_read(&capteurs);
-	  sensor_get_value(&(capteurs.gauche));
-	  sensor_get_value(&(capteurs.droit));
-	 distance_capteur(&capteurs);
-     }
-    //DDRA = 0x00;
-    listen(); 
-   
-   
+    timer_init();
+    timer_start(&capteur_callback, NULL);
+    listen();
 }
