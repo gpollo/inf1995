@@ -239,7 +239,7 @@ int main(void) {
     struct capteurs* capteurs = &(robot.capteurs);
 
     while(1) {
-        sensor_mean(capteurs);
+        sensor_read(capteurs);
         sensor_get_value(&(capteurs->gauche));
         sensor_get_value(&(capteurs->droit));
 /*
@@ -247,8 +247,16 @@ int main(void) {
             capteurs->gauche.value,
             capteurs->droit.value
         );
-*/
+
         update_state(&robot);
+*/
+
+        uart_printf("%d %d -- %d %d\n\r",
+            capteurs->droit.value / 10,
+            capteurs->gauche.value / 10,
+            capteurs->droit.capting,
+            capteurs->gauche.capting
+        );
 
         _delay_ms(DELAY);
     }

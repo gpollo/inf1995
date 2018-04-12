@@ -44,7 +44,7 @@ void sensor_update_capting(struct capteur* capteur, uint8_t capting) {
 
         /* if we're capting for a while, then we're capting */
         if(capteur->counter > CAPTING_LIMIT) {
-            capteur->capting = NOT_CAPTING;
+            capteur->capting = CAPTING;
             capteur->counter = 0;
         }
     }
