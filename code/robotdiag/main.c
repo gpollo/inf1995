@@ -111,22 +111,23 @@ ISR(INT0_vect) {
     sei();
 }
 
-//void distance_gauche(void) {
-    /* distance en cm détectée par le capteur gauche (1 octet) */
- //   uart_putchar(MSG_DISTANCE_GAUCHE);
-   // struct capteurs capteurs =  CAPTEURS_INIT(0,1);
-    //sensor_read(&capteurs); 
-    //sensor_get_value(&(capteurs.gauche));
-//}
 
-//void distance_droite(void) {
-    /* distance en cm détectée par le capteur droite (1 octet) */
-  //   uart_putchar(MSG_DISTANCE_DROIT);
-    
-    //struct capteurs capteurs = CAPTEURS_INIT(0,1);
-     //sensor_read(&capteurs);
-     //sensor_get_value(&(capteurs.droit));
-//}
+void distance_capteur(struct capteurs* capteurs) {
+    /* distance en cm détectée par le capteur gauche et le capteur droit (1 octet) */
+ 
+        /* on lit les deux capteurs */
+        uint8_t distanceG, distanceD;
+        distanceG = (uint8_t) (capteurs->gauche.value);
+        distanceD = (uint8_t) (capteurs->droit.value);
+	/* on convertit une valeur analogique du capteur gauche */
+	uart_putchar(MSG_DISTANCE_GAUCHE);
+        uart_printf("\n\r%d %d\n\r", capteurs->gauche.value, capteurs->droit.value);
+        uart_putchar(distanceG);
+	/*on convertit une valeur analogique du capteur droit */
+	uart_putchar(MSG_DISTANCE_DROIT);
+        uart_putchar(distanceD);
+ }   
+
 
 void couleur_del(uint8_t couleur) {
     switch (couleur) {
@@ -159,7 +160,12 @@ void requete_info() {
 
 void listen(void) {
     /* selon les données reçues */
+    struct capteurs capteurs =  CAPTEURS_INIT(0,1);
     while(1) {
+        sensor_read(&capteurs);
+	  sensor_get_value(&(capteurs.gauche));
+	  sensor_get_value(&(capteurs.droit));
+	 distance_capteur(&capteurs);
         uint8_t id = uart_receive();
         uint8_t data = uart_receive();
             switch(id) {
@@ -187,8 +193,17 @@ int main(void) {
     uart_init();
     del_init();
     moteur_init();	
-    //distance_droite();
-   // distance_gauche();
     interruption_init();
-    listen();
+    adc_init();
+    struct capteurs capteurs =  CAPTEURS_INIT(0,1);
+    while(1) {
+        sensor_read(&capteurs);
+	  sensor_get_value(&(capteurs.gauche));
+	  sensor_get_value(&(capteurs.droit));
+	 distance_capteur(&capteurs);
+     }
+    //DDRA = 0x00;
+    listen(); 
+   
+   
 }
