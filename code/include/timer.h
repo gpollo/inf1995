@@ -11,13 +11,16 @@ extern "C" {
  */
 struct callback {
     /** La fonction à appeler après que le temps soit écoulé. */
-    void (*func)(void);
+    void (*func)(void*);
 
     /** Le temps d'attente en millisecondes. */
     uint16_t time;
 
     /** Si on répète le timer ou non. */
     uint8_t repeat;
+
+    /** Un pointer à envoyer à la fonction. */
+    void* data;
 };
 
 /** Cette structure peut être utilisée pour ne pas affecter un canal. */
