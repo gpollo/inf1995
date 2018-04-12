@@ -33,6 +33,11 @@ MAIN_NAME=robot
 MAIN_TARGET=$(MAIN_NAME).hex
 MAIN_DIR=exec
 
+# configuration pour la cible principale
+TRAJET_NAME=trajet
+TRAJET_TARGET=$(TRAJET_NAME).hex
+TRAJET_DIR=trajet
+
 # configuration pour effectuer des tests
 TEST_NAME=tests
 TEST_TARGET=$(TEST_NAME).hex
@@ -57,7 +62,7 @@ LIB_DIR=lib
 CC=avr-gcc
 CFLAGS  = -mmcu=$(MCU) -g -O$(OPTLEVEL) -I$(INC)
 CFLAGS += -Wall -Wextra
-CFLAGS += -fpack-struct -fshort-enums -funsigned-bitfields -funsigned-char
+CFLAGS += -fpack-struct -fshort-enums -funsigned-bitfields -funsigned-char -std=c11
 CFLAGS += -DF_CPU=$(FREQUENCY)
 CFLAGS += -DF_SCL=$(TWI_CLOCK)
 CFLAGS += -DBAUD=$(BAUD)

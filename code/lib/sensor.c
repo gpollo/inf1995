@@ -3,23 +3,69 @@
 #include <sensor.h>
 #include <sensor_data.h>
 #include <util/delay.h>
+#include <timer.h>
+#include <utils.h>
+
+/* combien de données il faut pour pouvoir capter */
+#ifndef CAPTING_LIMIT
+    #define CAPTING_LIMIT 10
+#endif
 
 /** La table des distances. */
 int16_t sensor_tableau[] = SENSOR_DATA;
 
 void sensor_read(struct capteurs* capteurs) {
     /* on lit les deux capteurs */
-    capteurs->gauche = adc_read(0);
-    capteurs->droite = adc_read(1);
+    capteurs->gauche.raw = adc_read(capteurs->gauche.pin);
+    capteurs->droit.raw  = adc_read(capteurs->droit.pin);
 }
 
-int16_t sensor_get_distance(int16_t valeur) {
+void sensor_update_capting(struct capteur* capteur, uint8_t capting) {
+    if(capteur->capting == CAPTING) {
+        /* increment only when not capting, else reset count */
+        if(capting == NOT_CAPTING) {
+            capteur->counter++;
+        } else {
+            capteur->counter = 0;
+        }
+
+        /* if we didn't capted something for a while, then we're not capting */
+        if(capteur->counter > CAPTING_LIMIT) {
+            capteur->capting = NOT_CAPTING;
+            capteur->counter = 0;
+        }
+    } else {
+        /* increment only when capting, else reset count */
+        if(capting == CAPTING) {
+            capteur->counter++;
+        } else {
+            capteur->counter = 0;
+        }
+
+        /* if we're capting for a while, then we're capting */
+        if(capteur->counter > CAPTING_LIMIT) {
+            capteur->capting = NOT_CAPTING;
+            capteur->counter = 0;
+        }
+    }
+}
+
+uint8_t sensor_get_value(struct capteur* capteur) {
 	/* on s'assure que les valeurs lues sont dans la table */
-    if(valeur < SENSOR_MIN || valeur > SENSOR_MAX) return -1;
+    if(capteur->raw < SENSOR_MIN || capteur->raw > SENSOR_MAX) {
+        sensor_update_capting(capteur, NOT_CAPTING);
+        capteur->value = 0;
+        return FAIL;
+    } else {
+        sensor_update_capting(capteur, CAPTING);
+    }
 
 	/* on calcule l'offset dans la table */
-	valeur -= SENSOR_MIN;
+	uint16_t offset = capteur->raw - SENSOR_MIN;
     
     /* on obtient la distance à partir de la table */
-    return sensor_tableau[valeur];
+    capteur->value = sensor_tableau[offset];
+
+    /* la conversion s'est bien effectuée */
+    return OK;
 }
