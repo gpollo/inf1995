@@ -32,7 +32,7 @@ void del_off(uint8_t numero) {
 
 void del_on(uint8_t numero) {
 	/* on choisit le numéro de la PINA pour le mettre en mode sortie */
-	PINA |= numero;
+	PORTA |= numero;
 }
 
 void del_depart() {

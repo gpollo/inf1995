@@ -48,10 +48,15 @@ INTERPRETER_NAME=interpreter
 INTERPRETER_TARGET=$(INTERPRETER_NAME).hex
 INTERPRETER_DIR=interpreter
 
-# configururation pour le flasher de mémoire
+# configuration pour le flasher de mémoire
 FLASHER_NAME=flasher
 FLASHER_TARGET=$(FLASHER_NAME).hex
 FLASHER_DIR=flasher
+
+# configuration pour le programme qui interface avec le logiciel
+ROBOTDIAG_NAME=robotdiag
+ROBOTDIAG_TARGET=$(ROBOTDIAG_NAME).hex
+ROBOTDIAG_DIR=robotdiag
 
 # configuration pour la librarie
 LIB_NAME=statique
