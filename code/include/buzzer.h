@@ -1,5 +1,5 @@
- #ifndef INCLUDE_SON_H
-#define INCLUDE_SON_H
+ #ifndef INCLUDE_BUZZER_H
+#define INCLUDE_BUZZER_H
 
 #include <stdint.h>
 
@@ -44,24 +44,18 @@ extern "C" {
 /**
  * Cette méthode initialise le piezoelectrique.
  */
-void son_init(void);
+void buzzer_init(void);
 
 /**
- * Cette méthode fait jouer un son selon une table de fréquences MIDI.
- * 
- * @param numero Le numéro de la fréquence.
+ * Cette méthode fait jouer un son à 880 Hz.
  */
-void son_jouer(uint8_t numero);
+void buzzer_jouer(void);
 
 /**
  * Cette méthode arrête le piezoelectrique.
  */
-void son_arreter(void);
+void buzzer_arreter(void);
 
-/**
- * Cette méthode émet une mélodie de démarrage.
- */
-void son_depart(void);
 
 #ifdef __cplusplus
 }

@@ -4,8 +4,8 @@
 
 void buzzer_init(void) {
 	/* on configure le compteur en CTC avec prescaler à 32*/
-    TCCR2A = 0;
-    TCCR2B = _BV(CS20) | _BV(CS21) | _BV(WGM1);
+    TCCR2A = _BV(WGM21);
+    TCCR2B = _BV(CS20) | _BV(CS21);
     
 	/* faire partir le compteur à 0 */
 	TCNT2 = 0;
@@ -18,7 +18,7 @@ void buzzer_init(void) {
     SON_OUT_DDR |= _BV(SON_OUT_BIT);
 }
 
-void buzzer_jouer() {
+void buzzer_jouer(void) {
    	
     /* on ajuste le PWM pour produire le son. OCR2A = 8 000 000 / (2 * 32 * 880) */
 	OCR2A = 142; 
