@@ -16,6 +16,7 @@ struct callback CALLBACK_IGNORE = {
     .time = 0,
     .func = NULL,
     .repeat = 0,
+    .data = NULL,
 };
 
 /** Le callback pour le canal A du timer. */
@@ -96,7 +97,7 @@ int8_t timer_start(struct callback* cA, struct callback* cB) {
     cli();                                                    \
                                                               \
     /* on appel le callback */                                \
-    (*callback##channel->func)();                             \
+    (*callback##channel->func)(callback##channel->data);      \
                                                               \
     if(callback##channel->repeat)                             \
         /* on calcul le prochain compteur si on répète */     \
