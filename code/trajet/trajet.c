@@ -376,6 +376,9 @@ void trajet_main(void) {
     /* pour la détection d'obstacle */
     buzzer_init();
 
+    /* pour les timers */
+    timer_init();
+
 	/* pour le bouton interrupt */
 	interruption_init(&trajet_bouton, (void*) &robot);
 
