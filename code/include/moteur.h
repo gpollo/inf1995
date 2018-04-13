@@ -212,7 +212,7 @@ void moteur_config(struct moteurs* moteurs);
 /**
  * Cette méthode s'assure de conserver une distance de 15 cm du mur
  */
-void moteur_ajustement(struct capteurs* capteurs, uint8_t direction);
+void moteur_ajustement(struct capteurs* capteurs, enum direction direction);
 
 /**
  * Cette méthode effectue le déplacement pour commencer à suivre l'autre mur

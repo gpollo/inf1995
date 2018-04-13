@@ -218,7 +218,7 @@ void moteur_config(struct moteurs* moteurs) {
     SET_SPEED(GAUCHE, moteurs->gauche.speed);
 }
 
-void moteur_ajustement(struct capteurs* capteurs, uint8_t direction) {
+void moteur_ajustement(struct capteurs* capteurs, enum direction direction) {
     /* on obtient l'erreur */
     int16_t erreur = sensor_diff_dist(capteurs, direction);
 
@@ -227,7 +227,8 @@ void moteur_ajustement(struct capteurs* capteurs, uint8_t direction) {
 
     /* on calcule les vitesses à envoyer aux moteurs */
     struct moteurs moteurs;
-    if(direction == 0) {
+    switch(direction) {
+    case GAUCHE:
         if(erreur > 0) {
             /* on s'éloigne rapidement du mur */
             moteurs.gauche.speed = LIMIT(ROTATION_SPEED, MAX_SPEED);
@@ -243,7 +244,8 @@ void moteur_ajustement(struct capteurs* capteurs, uint8_t direction) {
             moteurs.gauche.avancer = 1;
             moteurs.droit.avancer  = 1;
         }
-    } else {
+        break;
+    case DROITE:
         if(erreur > 0) {
             /* on s'éloigne rapidement du mur */
             moteurs.gauche.speed = LIMIT(ROTATION_SPEED, MAX_SPEED);
@@ -259,6 +261,9 @@ void moteur_ajustement(struct capteurs* capteurs, uint8_t direction) {
             moteurs.gauche.avancer = 1;
             moteurs.droit.avancer  = 1;
         }
+        break;
+    default:
+        break;
     }
 
     /* on ajuste les roues */

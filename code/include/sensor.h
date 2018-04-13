@@ -1,6 +1,8 @@
 #ifndef INCLUDE_SENSOR_H
 #define INCLUDE_SENSOR_H
 
+#include <utils.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -98,7 +100,7 @@ uint8_t sensor_get_value(struct capteur* capteur);
  * 
  * @return La différence entre la distance capté et la distance souhaité.
  */
-int16_t sensor_diff_dist(struct capteurs* capteurs, uint8_t direction);
+int16_t sensor_diff_dist(struct capteurs* capteurs, enum direction direction);
 
 #ifdef __cplusplus
 }

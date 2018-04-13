@@ -72,13 +72,19 @@ uint8_t sensor_get_value(struct capteur* capteur) {
     return OK;
 }
 
-int16_t sensor_diff_dist(struct capteurs* capteurs,uint8_t direction) {
+int16_t sensor_diff_dist(struct capteurs* capteurs, enum direction direction) {
     /* on obtient la distance des capteurs */
     int16_t distance;
-    if(direction == 0) {
+    switch(direction) {
+    case GAUCHE:
         distance = capteurs->gauche.value;
-    } else {
+        break;
+    case DROITE:
         distance = capteurs->droit.value;
+        break;
+    default:
+        distance = 0;
+        break;
     }
     /* Retour de la différence entre 150 mm et la distance capté. */
     return (DISTANCE_REFERENCE-distance);
