@@ -356,6 +356,9 @@ void trajet_main(void) {
     /* pour le debugging */
     uart_init();
 
+    /* Del init */
+    del_init();
+
     /* pour les moteurs */
     moteur_init();
 
@@ -378,15 +381,16 @@ void trajet_main(void) {
         sensor_read(capteurs);
         sensor_get_value(&(capteurs->gauche));
         sensor_get_value(&(capteurs->droit));
-
-        del_ajust(capteurs, 0);
-        /*
+        
+        moteur_ajustement(capteurs, DROITE);
+        del_ajust(capteurs, DROITE);
+        
         uart_printf("%3d %3d\n\r",
             capteurs->gauche.value,
             capteurs->droit.value
         );
-*/
-        update_state(robot);
+
+//        update_state(&robot);
 /*
         uart_printf("%d %d -- %d %d\n\r",
             capteurs->droit.value / 10,
