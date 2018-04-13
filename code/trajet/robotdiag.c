@@ -177,6 +177,8 @@ void listen(void) {
 }
 
 void send_capteurs(void* data) {
+    UNUSED(data);
+
     /* on initialise les capteurs */	
     struct capteurs capteurs =  CAPTEURS_INIT(0,1);
     /* on lit les deux capteurs */
@@ -199,7 +201,7 @@ struct callback capteur_callback = {
     .data = NULL,
 };
 
-int robotdiag_main(void) {
+void robotdiag_main(void) {
     uart_init();
     del_init();
     moteur_init();	

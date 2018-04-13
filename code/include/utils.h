@@ -56,6 +56,9 @@ enum direction {
     GAUCHE,
 };
 
+/** Cette macro peut être utilisée pour enlever un warning. */
+#define UNUSED(x) (void)(x)
+
 #ifdef __cplusplus
 }
 #endif

@@ -19,17 +19,19 @@
 #define TIME_MUR 1000
 
 enum state {
-    RESET,                   /*  0 */
-    AVANCER_GAUCHE,          /*  1 */
-    AVANCER_DROITE,          /*  2 */
-    AVANCER_GAUCHE_ATTENDRE, /*  3 */
-    AVANCER_DROITE_ATTENDRE, /*  4 */
-    VERIFIER_GAUCHE,         /*  5 */
-    VERIFIER_DROITE,         /*  6 */
-    TOURNER_GAUCHE,          /*  7 */
-    TOURNER_DROITE,          /*  8 */
-    CHANGER_MUR_GAUCHE,      /*  9 */
-    CHANGER_MUR_DROITE,      /* 10 */
+    RESET,                    /*  0 */
+    AVANCER_GAUCHE,           /*  1 */
+    AVANCER_DROITE,           /*  2 */
+    AVANCER_GAUCHE_ATTENDRE,  /*  3 */
+    AVANCER_DROITE_ATTENDRE,  /*  4 */
+    VERIFIER_GAUCHE,          /*  5 */
+    VERIFIER_DROITE,          /*  6 */
+    VERIFIER_GAUCHE_ROTATION, /*  7 */
+    VERIFIER_DROITE_ROTATION, /*  8 */
+    TOURNER_GAUCHE,           /*  9 */
+    TOURNER_DROITE,           /* 10 */
+    CHANGER_MUR_GAUCHE,       /* 11 */
+    CHANGER_MUR_DROITE,       /* 12 */
 };
 
 struct robot {
@@ -242,10 +244,51 @@ void update_state(struct robot* robot) {
         CHECK_OBSTACLE(obstacle, robot, GAUCHE, DROITE);
         break;
 
+    case VERIFIER_GAUCHE_ROTATION:
+        /* on s'assure que le moteur est en rotation vers la gauche */
+        moteur_tourner(GAUCHE);
+
+        /* à un poteau, on continue de tourner */
+        if(obstacle == POTEAU) {
+            robot->state = TOURNER_DROITE;
+            break;
+        }
+
+        /* à un mur, on change de coté */
+        if(obstacle == MUR) {
+            robot->state = CHANGER_MUR_GAUCHE;
+            break;
+        }
+        break;
+
+    case VERIFIER_DROITE_ROTATION:
+        /* on s'assure que le moteur est en rotation vers la droite */
+        moteur_tourner(DROITE);
+
+        /* à un poteau, on continue de tourner */
+        if(obstacle == POTEAU) {
+            robot->state = TOURNER_GAUCHE;
+            break;
+        }
+
+        /* à un mur, on change de coté */
+        if(obstacle == MUR) {
+            robot->state = CHANGER_MUR_DROITE;
+            break;
+        }
+        break;
+
     case TOURNER_GAUCHE:
         /* on regarde si on capte quelque chose vers la gauche */
         if(capteurs->gauche.capting) {
             robot->state = AVANCER_GAUCHE;
+            break;
+        }
+
+        /* on vérifie ce qu'il y a à droite */
+        if(capteurs->droit.capting) {
+            robot->state = VERIFIER_DROITE_ROTATION;
+            break;
         }
         break;
 
@@ -253,6 +296,13 @@ void update_state(struct robot* robot) {
         /* on regarde si on capte quelque chose vers la droite */
         if(capteurs->droit.capting) {
             robot->state = AVANCER_DROITE;
+            break;
+        }
+
+        /* on vérifie ce qu'il y a à droite */
+        if(capteurs->gauche.capting) {
+            robot->state = VERIFIER_GAUCHE_ROTATION;
+            break;
         }
         break;
 
@@ -270,7 +320,7 @@ void update_state(struct robot* robot) {
     }
 }
 
-int trajet_main(void) {
+void trajet_main(void) {
     /* pour le debugging */
     uart_init();
 
