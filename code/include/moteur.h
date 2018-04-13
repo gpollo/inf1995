@@ -200,7 +200,7 @@ void moteur_tourner(enum direction);
  *
  * Note: La macro #DELAY_ROTATION90 peut être utilisée pour ajuster la rotation.
  */
-void moteur_tourner180(uint8_t direction);
+void moteur_tourner180(enum direction);
 
 /**
  * Cette méthode configure les deux moteurs.
@@ -217,7 +217,7 @@ void moteur_ajustement(struct capteurs* capteurs, enum direction direction);
 /**
  * Cette méthode effectue le déplacement pour commencer à suivre l'autre mur
  */
-void changement_coter(struct capteurs* capteurs, uint8_t direction);
+void changement_coter(struct capteurs* capteurs, enum direction direction);
 
 /**
  * Cette méthode effectue le déplacement pour commencer à suivre l'autre mur

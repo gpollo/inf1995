@@ -179,22 +179,14 @@ void moteur_tourner(enum direction direction) {
     moteur_config(&moteurs);
 }
 
-void moteur_tourner180(uint8_t direction) {
-    /* Pour tourner vers la gauche */
-    if(direction == 0) {
-        moteur_tourner_gauche();
-        moteur_avancer(ROTATION_SPEED);
-        _delay_ms(DELAY_TOURNANT180);
-        moteur_tourner_gauche();
-        moteur_avancer(ROTATION_SPEED);
-        _delay_ms(DELAY_FIN180);
-    } else {
+void moteur_tourner180(enum direction direction) {
+    /* Pour tourner vers la gauche ou droite de 180 degrés */
+    if(direction == GAUCHE) {
         moteur_tourner_droite();
-        moteur_avancer(ROTATION_SPEED);
-        _delay_ms(DELAY_TOURNANT180);
         moteur_tourner_droite();
-        moteur_avancer(ROTATION_SPEED);
-        _delay_ms(DELAY_FIN180);
+    } else if(direction == DROITE){
+        moteur_tourner_gauche();
+        moteur_tourner_gauche();
     }
 }
 
@@ -277,7 +269,7 @@ void moteur_ajustement(struct capteurs* capteurs, enum direction direction) {
     );
 }
 
-void changement_coter(struct capteurs* capteurs, uint8_t direction) {
+void changement_coter(struct capteurs* capteurs, enum direction direction) {
     /* Chercher les valeurs des capteurs*/
     uint16_t dist_gauche = capteurs->gauche.value;
     uint16_t dist_droite = capteurs->droit.value;
