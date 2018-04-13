@@ -1,4 +1,7 @@
 #include <memory.h>
+#include "trajet.h"
+#include "robotdiag.h"
+
 
 int main(void) {
     /* on a besoins de la mémoire */
@@ -15,8 +18,8 @@ int main(void) {
 
     /* on exécute le bon programme selon le bon octet */
     if(byte) {
-        /* TODO: exécuter le trajet */
+        trajet_main();
     } else {
-        /* TODO: exécuter le robodiag*/
+        robotdiag_main();
     }
 }

@@ -1,14 +1,16 @@
 include ../Makefile.common
 
-OBJECTS=main.o
+OBJECTS=robotdiag.o trajet.o main.o
 
 all: $(TRAJET_TARGET)
 
-$(TRAJET_NAME).out: $(OBJECTS)
+$(TRAJET_NAME).out: robotdiag.o $(OBJECTS)
 	@(cd ../$(LIB_DIR) && $(MAKE))
 	$(CC) $(LDFLAGS) -o $(TRAJET_NAME).out $^ $(LDLIBS)
 
-main.o: $(INC)/uart.h $(INC)/sensor.h
+main.o: $(INC)/memory.h \
+        trajet.h        \
+        robotdiag.h
 
 install: $(TRAJET_TARGET)
 	$(AVRDUDE) -c $(PROGRAMMERID) -p $(MCU) -P -e -U flash:w:$(TRAJET_TARGET)
