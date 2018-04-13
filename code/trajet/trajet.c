@@ -20,6 +20,8 @@
 
 void buzzer_poteau(void* data);
 
+void buzzer_caller(void);
+
 enum state {
     RESET,                    /*  0 */
     AVANCER_GAUCHE,           /*  1 */
@@ -54,8 +56,10 @@ struct robot {
 void trajet_bouton(uint8_t bouton, void* data) {
 	if(bouton) return;
 	
-	struct robot* robot = (struct robot*) data;
-	moteur_tourner180(robot->mur);
+	//struct robot* robot = (struct robot*) data;
+	//moteur_tourner180(robot->mur);
+	// TODO state
+	buzzer_caller();
 }
 
 enum obstacle {
@@ -388,13 +392,15 @@ void trajet_main(void) {
         sensor_get_value(&(capteurs->droit));
 
         del_ajust(capteurs, 0);
+        
+        
         /*
         uart_printf("%3d %3d\n\r",
             capteurs->gauche.value,
             capteurs->droit.value
         );
 */
-        update_state(&robot);
+        //update_state(&robot);
 /*
         uart_printf("%d %d -- %d %d\n\r",
             capteurs->droit.value / 10,

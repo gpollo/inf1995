@@ -171,7 +171,7 @@ struct callback capteur_callback = {
     .data = NULL,
 };
 
-int main(void) {
+int robotdiag_main(void) {
     uart_init();
     del_init();
     moteur_init();	
