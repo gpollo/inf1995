@@ -46,7 +46,7 @@ void del_on(uint8_t numero);
  *
  * @param la direction à suivre.
  */
-void del_ajust(struct capteurs* capteurs, uint8_t direction);
+void del_ajust(struct capteurs* capteurs, enum direction direction);
 
 /**
  * Cette fonction exécute une routine préprogrammée sur pour les DELs.

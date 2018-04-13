@@ -275,7 +275,7 @@ void changement_coter(struct capteurs* capteurs, enum direction direction) {
     uint16_t dist_droite = capteurs->droit.value;
     
     /* On commencer par savoir qu'elle direction est présentement suivi */
-    if(direction == 0) {
+    if(direction == GAUCHE) {
         if(dist_droite < DISTANCE_MINIMALE_CROISSIERE) {return;}
         /* Initialise le changement en orientant le robot */
         moteur_tourner_droite();
@@ -289,7 +289,7 @@ void changement_coter(struct capteurs* capteurs, enum direction direction) {
 
         /* Puis on réoriente le robot pour continuer le suivi du nouveau mur */
         moteur_tourner_gauche();
-    } else {
+    } else if(direction == DROITE) {
         if(dist_gauche < DISTANCE_MINIMALE_CROISSIERE) {return;}
         /* Initialise le changement en orientant le robot */
         moteur_tourner_gauche();

@@ -38,7 +38,7 @@ void del_on(uint8_t numero) {
 	PORTB |= numero;
 }
 
-void del_ajust(struct capteurs* capteurs, uint8_t direction) {
+void del_ajust(struct capteurs* capteurs, enum direction direction) {
     /* on extrait l'erreur */
     int16_t erreur = sensor_diff_dist(capteurs, direction);
 
