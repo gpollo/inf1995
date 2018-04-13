@@ -81,5 +81,5 @@ int16_t sensor_diff_dist(struct capteurs* capteurs,uint8_t direction) {
         distance = capteurs->droit.value;
     }
     /* Retour de la différence entre 150 mm et la distance capté. */
-    return (distance - DISTANCE_REFERENCE);
+    return (DISTANCE_REFERENCE-distance);
 }
