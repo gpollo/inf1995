@@ -8,8 +8,8 @@
 #include <adc.h>
 #include <uart.h>
 #include <timer.h>
-#include <son.h>
 #include <del.h>
+#include <buzzer.h>
 
 #define DELAY 10
 
@@ -47,12 +47,6 @@ struct robot {
     .state = RESET,                        \
 }
 
-void son() {
-    son_jouer(70);
-    _delay_ms(100);
-    son_arreter();
-}
-
 enum obstacle {
     UNKNOWN,
     MUR,
@@ -73,7 +67,7 @@ enum obstacle detect(struct robot* robot) {
         } else {
             if((TIME_MIN < robot->time) && (robot->time < TIME_MAX)) {
                 obstacle = POTEAU;
-                son();
+                /* TODO: jouer son */
             }
             robot->time = 0;
         }
@@ -86,7 +80,7 @@ enum obstacle detect(struct robot* robot) {
         } else {
             if((TIME_MIN < robot->time) && (robot->time < TIME_MAX)) {
                 obstacle = POTEAU;
-                son();
+                /* TODO: jouer son */
             }
             robot->time = 0;
         }
@@ -276,18 +270,30 @@ void update_state(struct robot* robot) {
     }
 }
 
-int main(void) {
+int trajet_main(void) {
+    /* pour le debugging */
     uart_init();
+
+    /* pour les moteurs */
     moteur_init();
+
+    /* pour les capteurs */
     adc_init();
-    son_init();
-    del_init();
+
+    /* pour la détection d'obstacle */
+    buzzer_init();
+
+    /* on recommence une nouvelle ligne dans le deboggage */
     uart_printf("\n\r");
  
+    /* la structure du robot */
     struct robot robot = ROBOT_INIT(0, 1);
+
+    /* le pointeur vers les capteurs */
     struct capteurs* capteurs = &(robot.capteurs);
 
     while(1) {
+        /* on lit les capteurs */
         sensor_read(capteurs);
         sensor_get_value(&(capteurs->gauche));
         sensor_get_value(&(capteurs->droit));
@@ -298,17 +304,16 @@ int main(void) {
             capteurs->gauche.value,
             capteurs->droit.value
         );
-
-        update_state(&robot);
 */
-
+        update_state(&robot);
+/*
         uart_printf("%d %d -- %d %d\n\r",
             capteurs->droit.value / 10,
             capteurs->gauche.value / 10,
             capteurs->droit.capting,
             capteurs->gauche.capting
         );
-
+*/
         _delay_ms(DELAY);
     }
 }
