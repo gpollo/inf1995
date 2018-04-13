@@ -18,6 +18,8 @@
 #define TIME_MAX 600
 #define TIME_MUR 1000
 
+void buzzer_poteau(void* data);
+
 enum state {
     RESET,                    /*  0 */
     AVANCER_GAUCHE,           /*  1 */
@@ -55,6 +57,33 @@ enum obstacle {
     POTEAU,
 };
 
+struct callback buzzer_timer = { 
+	.func = &buzzer_poteau,
+	.time = 100,
+	.repeat = 9,
+	.data = NULL,
+};
+
+void buzzer_poteau(void* data) {
+	switch(buzzer_timer.repeat % 3) {
+	case 0: 
+		buzzer_jouer();
+		break;
+	case 1: 
+		buzzer_arreter();
+		break;
+	default:
+        break;
+	}
+    buzzer_timer.repeat--;
+}
+
+void buzzer_caller(void) {
+	buzzer_timer.repeat = 9;
+    buzzer_timer.time = 100;
+    timer_start(&buzzer_timer, &CALLBACK_IGNORE);
+}
+
 enum obstacle detect(struct robot* robot) {
     struct capteurs* capteurs = &(robot->capteurs);
 
@@ -69,7 +98,7 @@ enum obstacle detect(struct robot* robot) {
         } else {
             if((TIME_MIN < robot->time) && (robot->time < TIME_MAX)) {
                 obstacle = POTEAU;
-                /* TODO: jouer son */
+                buzzer_caller();
             }
             robot->time = 0;
         }
@@ -82,7 +111,7 @@ enum obstacle detect(struct robot* robot) {
         } else {
             if((TIME_MIN < robot->time) && (robot->time < TIME_MAX)) {
                 obstacle = POTEAU;
-                /* TODO: jouer son */
+                buzzer_caller();
             }
             robot->time = 0;
         }
