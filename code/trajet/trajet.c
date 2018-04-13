@@ -51,6 +51,8 @@ struct robot {
     .state = RESET,                        \
 }
 
+volatile struct robot robot = ROBOT_INIT(0, 1);
+
 enum obstacle {
     UNKNOWN,
     MUR,
@@ -65,6 +67,7 @@ struct callback buzzer_timer = {
 };
 
 void buzzer_poteau(void* data) {
+    UNUSED(data);
 	switch(buzzer_timer.repeat % 3) {
 	case 0: 
 		buzzer_jouer();
@@ -364,12 +367,11 @@ void trajet_main(void) {
 
     /* on recommence une nouvelle ligne dans le deboggage */
     uart_printf("\n\r");
- 
-    /* la structure du robot */
-    struct robot robot = ROBOT_INIT(0, 1);
+
+    struct robot* robot = (struct robot*) &robot;
 
     /* le pointeur vers les capteurs */
-    struct capteurs* capteurs = &(robot.capteurs);
+    struct capteurs* capteurs = &(robot->capteurs);
 
     while(1) {
         /* on lit les capteurs */
@@ -384,7 +386,7 @@ void trajet_main(void) {
             capteurs->droit.value
         );
 */
-        update_state(&robot);
+        update_state(robot);
 /*
         uart_printf("%d %d -- %d %d\n\r",
             capteurs->droit.value / 10,
