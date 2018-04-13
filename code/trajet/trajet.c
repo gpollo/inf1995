@@ -1,7 +1,7 @@
 #include <avr/io.h>
 #include <util/delay.h>
 #include <stdlib.h>
-
+#include <interrupt.h>
 #include <utils.h>
 #include <sensor.h>
 #include <moteur.h>
@@ -51,7 +51,12 @@ struct robot {
     .state = RESET,                        \
 }
 
-volatile struct robot robot = ROBOT_INIT(0, 1);
+void trajet_bouton(uint8_t bouton, void* data) {
+	if(bouton) return;
+	
+	struct robot* robot = (struct robot*) data;
+	moteur_tourner180(robot->mur);
+}
 
 enum obstacle {
     UNKNOWN,
@@ -353,6 +358,8 @@ void update_state(struct robot* robot) {
 }
 
 void trajet_main(void) {
+	struct robot robot = ROBOT_INIT(0, 1);
+	
     /* pour le debugging */
     uart_init();
 
@@ -365,13 +372,14 @@ void trajet_main(void) {
     /* pour la détection d'obstacle */
     buzzer_init();
 
+	/* pour le bouton interrupt */
+	interruption_init(&trajet_bouton, (void*) &robot);
+
     /* on recommence une nouvelle ligne dans le deboggage */
     uart_printf("\n\r");
 
-    struct robot* robot = (struct robot*) &robot;
-
     /* le pointeur vers les capteurs */
-    struct capteurs* capteurs = &(robot->capteurs);
+    struct capteurs* capteurs = &(robot.capteurs);
 
     while(1) {
         /* on lit les capteurs */
@@ -386,7 +394,7 @@ void trajet_main(void) {
             capteurs->droit.value
         );
 */
-        update_state(robot);
+        update_state(&robot);
 /*
         uart_printf("%d %d -- %d %d\n\r",
             capteurs->droit.value / 10,

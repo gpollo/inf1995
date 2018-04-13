@@ -3,7 +3,7 @@
 #include <timer.h>
 #include <adc.h>
 #include <util/delay.h>
-#include <avr/interrupt.h>
+#include <interrupt.h>
 #include <stdlib.h>
 #include <del.h>
 #include <moteur.h>
@@ -75,43 +75,12 @@ void couleur_base(void) {
     uart_putchar(COULEUR_BASE);
 }
 
-void interruption_init(void) {
-    /* on désactive les interruptions */
-    cli();
+void button(uint8_t bouton, void* data) {
+	UNUSED(data);
 	
-    /* on active l'interruption INT0 */
-    EIMSK |= (1 << INT0);
-
-    /* on configure sensiblité de l'interruption aux changements */
-    EICRA |= ISC00;
-    EICRA |= ISC01;
-    
-    /* on active les interruptions */
-    sei();
-}
-
-/* par défaut, on assume que le bouton est relâché */
-volatile uint8_t bouton = BUTTON_RELEASED;
-    
-ISR(INT0_vect) {
-    /* on désactive les interruptions */
-    cli();
-    
-    /* on détermine l'état du bouton */
-    bouton = (bouton == BUTTON_PRESSED) ? 1 : 0;
-    
     /* on écrit l'état du bouton (1 octet) */
     uart_putchar(MSG_ETAT_INTERRUPT);
     uart_putchar(bouton);
-    
-    /* on applique un délais pour l'anti-rebond */
-    _delay_ms(DELAY_BOUNCE);
-    
-    /* on réactive cet interruption */
-    EIFR |= (1 << INTF0);
-    
-    /* on active les interruptions */
-    sei();
 }
 
 void distance_capteur(struct capteurs* capteurs) {
@@ -206,7 +175,7 @@ int main(void) {
     uart_init();
     del_init();
     moteur_init();	
-    interruption_init();
+    interruption_init(&button, NULL);
     adc_init();
     timer_init();
     timer_start(&capteur_callback, NULL);
