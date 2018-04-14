@@ -11,6 +11,9 @@
 #include <del.h>
 #include <buzzer.h>
 
+#include "robot.h"
+#include "callback.h"
+
 #define DELAY 10
 
 #define TIME_LIMIT 5000
@@ -18,48 +21,15 @@
 #define TIME_MAX 600
 #define TIME_MUR 1000
 
-void buzzer_poteau(void* data);
+void interrupteur(uint8_t button, void* data) {
+    /* on obtient le robot en paramètre */
+    struct robot* robot = (struct robot*) data;
 
-void buzzer_caller(void);
+    /* on s'assure que le bouton est appuyé */
+    if(button) return;
 
-
-void trajet_bouton(uint8_t bouton, void* data) {
-	if(bouton) return;
-	
-	//struct robot* robot = (struct robot*) data;
-	//moteur_tourner180(robot->mur);
-	// TODO state
-	buzzer_caller();
-}
-
-
-
-struct callback buzzer_timer = { 
-	.func = &buzzer_poteau,
-	.time = 100,
-	.repeat = 9,
-	.data = NULL,
-};
-
-void buzzer_poteau(void* data) {
-    UNUSED(data);
-	switch(buzzer_timer.repeat % 3) {
-	case 0: 
-		buzzer_jouer();
-		break;
-	case 1: 
-		buzzer_arreter();
-		break;
-	default:
-        break;
-	}
-    buzzer_timer.repeat--;
-}
-
-void buzzer_caller(void) {
-	buzzer_timer.repeat = 9;
-    buzzer_timer.time = 100;
-    timer_start(&buzzer_timer, &CALLBACK_IGNORE);
+    /* TODO: faire une rotation 180 et mettre l'état à RESET */
+    UNUSED(robot);
 }
 
 enum obstacle detect(struct robot* robot) {
@@ -69,7 +39,8 @@ enum obstacle detect(struct robot* robot) {
     enum obstacle obstacle = UNKNOWN;
 
     /* on regarde quel coté qu'on cherche un obstacle */
-    if(robot->droite)
+    switch(robot->mur) {
+    case DROITE:
         if(capteurs->gauche.capting) {
             robot->time = LIMIT(robot->time+DELAY, TIME_LIMIT);
             if(robot->time > TIME_MUR) {
@@ -79,11 +50,12 @@ enum obstacle detect(struct robot* robot) {
             /* si on ne capte plus rien, on regarde si le temps est un poteau */
             if((TIME_MIN < robot->time) && (robot->time < TIME_MAX)) {
                 obstacle = POTEAU;
-                buzzer_caller();
+                buzz();
             }
             robot->time = 0;
         }
-    else {
+        break;
+    case GAUCHE:
         if(capteurs->droit.capting) {
             robot->time = LIMIT(robot->time+DELAY, TIME_LIMIT);
             if(robot->time > TIME_MUR) {
@@ -92,10 +64,13 @@ enum obstacle detect(struct robot* robot) {
         } else {
             if((TIME_MIN < robot->time) && (robot->time < TIME_MAX)) {
                 obstacle = POTEAU;
-                buzzer_caller();
+                buzz();
             }
             robot->time = 0;
         }
+        break;
+    default:
+        break;
     }
 
     return obstacle;
@@ -216,7 +191,7 @@ void update_state(struct robot* robot) {
         robot->mur = DROITE;
 
         /* on s'ajuste par rapport au mur droite */
-        moteur_ajustement(capteurs, robot->droite);
+        moteur_ajustement(capteurs, robot->mur);
 
         /* le robot peut changer de bord si on ne capte rien à gauche */
         if(!capteurs->gauche.capting) {
@@ -352,7 +327,7 @@ void trajet_main(void) {
     timer_init();
 
 	/* pour le bouton interrupt */
-	interruption_init(&trajet_bouton, (void*) &robot);
+	interruption_init(&interrupteur, (void*) &robot);
 
     /* on recommence une nouvelle ligne dans le deboggage */
     uart_printf("\n\r");

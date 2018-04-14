@@ -1,10 +1,10 @@
 include ../Makefile.common
 
-OBJECTS=robotdiag.o trajet.o main.o
+OBJECTS=robotdiag.o callback.o trajet.o main.o
 
 all: $(TRAJET_TARGET)
 
-$(TRAJET_NAME).out: robotdiag.o $(OBJECTS)
+$(TRAJET_NAME).out: $(OBJECTS)
 	@(cd ../$(LIB_DIR) && $(MAKE))
 	$(CC) $(LDFLAGS) -o $(TRAJET_NAME).out $^ $(LDLIBS)
 
