@@ -12,6 +12,11 @@ main.o: $(INC)/memory.h \
         trajet.h        \
         robotdiag.h
 
+callback.o: $(INC)/buzzer.h \
+            $(INC)/timer.h  \
+            $(INC)/utils.h  \
+            callback.h
+
 install: $(TRAJET_TARGET)
 	$(AVRDUDE) -c $(PROGRAMMERID) -p $(MCU) -P -e -U flash:w:$(TRAJET_TARGET)
 
