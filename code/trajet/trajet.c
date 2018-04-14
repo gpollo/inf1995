@@ -90,7 +90,7 @@ enum obstacle detect(struct robot* robot) {
     }                                               \
 }
 
-void update_state(struct robot* robot) {
+void updatestate(struct robot* robot) {
     enum obstacle obstacle = detect(robot);
 
     struct capteurs* capteurs = &(robot->capteurs);

@@ -1,6 +1,6 @@
 include ../Makefile.common
 
-OBJECTS=robotdiag.o callback.o trajet.o main.o
+OBJECTS=robotdiag.o callback.o state.o trajet.o main.o
 
 all: $(TRAJET_TARGET)
 
@@ -16,6 +16,11 @@ callback.o: $(INC)/buzzer.h \
             $(INC)/timer.h  \
             $(INC)/utils.h  \
             callback.h
+
+state.o: $(INC)/timer.h \
+         $(INC)/utils.h \
+         robot.h        \
+         state.h
 
 install: $(TRAJET_TARGET)
 	$(AVRDUDE) -c $(PROGRAMMERID) -p $(MCU) -P -e -U flash:w:$(TRAJET_TARGET)

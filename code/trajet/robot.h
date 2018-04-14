@@ -1,6 +1,8 @@
 #ifndef INCLUDE_ROBOT_H
 #define INCLUDE_ROBOT_H
 
+#include <sensor.h>
+
 /**
  * Cette énumération définie les états possibles du robot.
  */
