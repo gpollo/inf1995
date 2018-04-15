@@ -73,6 +73,7 @@ void couleur_base(void) {
 }
 
 void button(uint8_t bouton, void* data) {
+    /* cette variable est inutilisée */
 	UNUSED(data);
 	
     /* on écrit l'état du bouton (1 octet) */
@@ -81,80 +82,99 @@ void button(uint8_t bouton, void* data) {
 }
 
 void distance_capteur(struct capteurs* capteurs) {
-    /* on désire les distances en cm détectées par le capteur gauche et droit (1 octet) */
-    uint8_t distanceG, distanceD;
-    distanceG = (uint8_t) ((capteurs->gauche.value) / 10);
-    distanceD = (uint8_t) ((capteurs->droit.value) / 10);
-    /* on affiche la distance du capteur gauche */
+    /* on obtient la distance des capteurs en centimètres (1 octet) */
+    uint8_t distanceG = (uint8_t) ((capteurs->gauche.value) / 10);
+    uint8_t distanceD = (uint8_t) ((capteurs->droit.value) / 10);
+
+    /* on envoie la distance du capteur gauche */
     uart_putchar(MSG_DISTANCE_GAUCHE);
     uart_putchar(distanceG);
-    /*on affiche la distance du capteur droit */
+
+    /* on envoie la distance du capteur droit */
     uart_putchar(MSG_DISTANCE_DROIT);
     uart_putchar(distanceD);
  }   
 
 void couleur_del(uint8_t couleur) {
     switch (couleur) {
+    /* on ferme la del */
 	case MSG_DEL_ETEINT:
-        /* on ferme la DEL */
 	    del_off(LED_OFF);
 	    break;
+
+    /* on met la del verte */
 	case MSG_DEL_VERTE:
-        /* on met la DEL verte */
 	    del_green();
 	    break;
+
+    /* on met la del rouge */
 	case MSG_DEL_ROUGE:
-        /* on met la DEL rouge */
 	    del_red();
 	    break;
     }
 }
 
 void requete_info() {
-    /* le robot envoye les infos d'identification au logiciel */
+    /* on envoie le nom du robot */
     nom_robot();
+
+    /* on envoit le numéro de l'équipe */
     numero_equipe();
+
+    /* on envoit le numéro de section */
     numero_section();
+
+    /* on envoit la session */
     session();
+
+    /* on envoit la couleur de la base */
     couleur_base();
 }
 
 void listen(void) {
-    /* selon les données reçues */
-    while(1) {        
-        uint8_t id =  uart_receive();
-        uint8_t data = uart_receive();
-            switch(id) {
-	        case MSG_VITESSE_GAUCHE: 
-	         /* le robot exécutera une rotation à la roue gauche */
-		    moteur_controler_gauche(data);
-		    break;
-	        case MSG_VITESSE_DROITE:
-		 /* le robot exécutera une rotation à la roue droite */
-		    moteur_controler_droite(data);
-		    break;
-	        case MSG_COULEUR_DEL:
-                /* le robot changera la couleur de sa del libre */
-		    couleur_del(data);
-		    break;
-	        case MSG_REQUETE_INFO:
-                /* le robot envoie ses informations sur le logiciel */
-		    requete_info();
-		    break;
-        }
+    /* on obtient l'ID du message */
+    uint8_t id =  uart_receive();
+
+    /* on obtient le paramètre du message */
+    uint8_t data = uart_receive();
+
+    switch(id) {
+    /* on controle la roue gauche */
+    case MSG_VITESSE_GAUCHE: 
+        moteur_controler_gauche(data);
+        break;
+
+    /* on controle la roue droite */
+    case MSG_VITESSE_DROITE:
+        moteur_controler_droite(data);
+        break;
+
+    /* on change la couleur de la del */
+    case MSG_COULEUR_DEL:
+        couleur_del(data);
+        break;
+
+    /* on envoit les données sur le robot */
+    case MSG_REQUETE_INFO:
+        requete_info();
+        break;
     }
 }
 
 void send_capteurs(void* data) {
+    /* cette variable est inutilisée */
     UNUSED(data);
 
-    /* on initialise les capteurs */	
+    /* on initialise les capteurs */
     struct capteurs capteurs =  CAPTEURS_INIT(0,1);
+
     /* on lit les deux capteurs */
     sensor_read(&capteurs);
+
     /* on obtient la distance des capteurs */
     sensor_get_value(&(capteurs.gauche));
     sensor_get_value(&(capteurs.droit));
+
     /* on affiche la distance dans le logiciel */
     distance_capteur(&capteurs);
 }
@@ -178,5 +198,5 @@ void robotdiag_main(void) {
     adc_init();
     timer_init();
     timer_start(&capteur_callback, NULL);
-    listen();
+    while(1) listen();
 }
