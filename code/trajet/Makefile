@@ -30,9 +30,13 @@ buzz.o: $(INC)/buzzer.h \
         $(INC)/utils.h  \
         buzz.h
 
-state.o: $(INC)/timer.h \
-         $(INC)/utils.h \
-         robot.h        \
+state.o: $(INC)/timer.h  \
+         $(INC)/sensor.h \
+         $(INC)/uart.h   \
+         $(INC)/moteur.h \
+         $(INC)/utils.h  \
+         robot.h         \
+         obstacle.h      \
          state.h
 
 trajet.o: $(INC)/uart.h      \
@@ -46,6 +50,7 @@ trajet.o: $(INC)/uart.h      \
           robot.h            \
           buzz.h             \
           obstacle.h         \
+          state.h            \
           trajet.h
 
 obstacle.o: $(INC)/sensor.h \
