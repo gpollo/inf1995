@@ -1,6 +1,13 @@
 include ../Makefile.common
 
-OBJECTS=robotdiag.o callback.o state.o trajet.o main.o
+CFLAGS += -DDELAY=20
+
+OBJECTS=robotdiag.o \
+        buzz.o      \
+        obstacle.o  \
+        state.o     \
+        trajet.o    \
+        main.o
 
 all: $(TRAJET_TARGET)
 
@@ -12,15 +19,20 @@ main.o: $(INC)/memory.h \
         trajet.h        \
         robotdiag.h
 
-callback.o: $(INC)/buzzer.h \
-            $(INC)/timer.h  \
-            $(INC)/utils.h  \
-            callback.h
+buzz.o: $(INC)/buzzer.h \
+        $(INC)/timer.h  \
+        $(INC)/utils.h  \
+        buzz.h
 
 state.o: $(INC)/timer.h \
          $(INC)/utils.h \
          robot.h        \
          state.h
+
+obstacle.o: $(INC)/sensor.h \
+            robot.h         \
+            buzz.h          \
+            obstacle.h
 
 install: $(TRAJET_TARGET)
 	$(AVRDUDE) -c $(PROGRAMMERID) -p $(MCU) -P -e -U flash:w:$(TRAJET_TARGET)

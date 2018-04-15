@@ -12,9 +12,8 @@
 #include <buzzer.h>
 
 #include "robot.h"
-#include "callback.h"
-
-#define DELAY 10
+#include "buzz.h"
+#include "obstacle.h"
 
 #define TIME_LIMIT 5000
 #define TIME_MIN 300
@@ -30,50 +29,6 @@ void interrupteur(uint8_t button, void* data) {
 
     /* TODO: faire une rotation 180 et mettre l'état à RESET */
     UNUSED(robot);
-}
-
-enum obstacle detect(struct robot* robot) {
-    struct capteurs* capteurs = &(robot->capteurs);
-
-    /* par défaut, on assume qu'on ne sait pas c'est quoi l'obstacle */
-    enum obstacle obstacle = UNKNOWN;
-
-    /* on regarde quel coté qu'on cherche un obstacle */
-    switch(robot->mur) {
-    case DROITE:
-        if(capteurs->gauche.capting) {
-            robot->time = LIMIT(robot->time+DELAY, TIME_LIMIT);
-            if(robot->time > TIME_MUR) {
-                obstacle = MUR;
-            }
-        } else {
-            /* si on ne capte plus rien, on regarde si le temps est un poteau */
-            if((TIME_MIN < robot->time) && (robot->time < TIME_MAX)) {
-                obstacle = POTEAU;
-                buzz();
-            }
-            robot->time = 0;
-        }
-        break;
-    case GAUCHE:
-        if(capteurs->droit.capting) {
-            robot->time = LIMIT(robot->time+DELAY, TIME_LIMIT);
-            if(robot->time > TIME_MUR) {
-                obstacle = MUR;
-            }
-        } else {
-            if((TIME_MIN < robot->time) && (robot->time < TIME_MAX)) {
-                obstacle = POTEAU;
-                buzz();
-            }
-            robot->time = 0;
-        }
-        break;
-    default:
-        break;
-    }
-
-    return obstacle;
 }
 
 #define CHECK_OBSTACLE(obs,robot,avancer,changer) { \

@@ -1,7 +1,7 @@
 #include <memory.h>
+
 #include "trajet.h"
 #include "robotdiag.h"
-
 
 int main(void) {
     /* on a besoins de la mémoire */

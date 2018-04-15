@@ -3,8 +3,8 @@
 #include <timer.h>
 #include <utils.h>
 
-#include "state.h"
 #include "robot.h"
+#include "state.h"
 
 /**
  * Cette fonction actualise l'état du robot. Elle est appelée par un timer.
@@ -16,7 +16,7 @@ void update_state(void* data);
 /** Cette structure configure le callback pour le timer du state. */
 struct callback state_timer = {
     .func = &update_state,
-    .time = 20,
+    .time = DELAY,
     .repeat = 1,
     .data = NULL,
 };

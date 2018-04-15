@@ -37,15 +37,6 @@ struct robot {
 };
 
 /**
- * Cette énumération définie un obstacle.
- */
-enum obstacle {
-    UNKNOWN,
-    MUR,
-    POTEAU,
-};
-
-/**
  * Cette macro initialise une structure pour le robot.
  *
  * @param ping La pin ADC du capteur gauche.

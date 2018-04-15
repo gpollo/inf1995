@@ -3,7 +3,7 @@
 #include <timer.h>
 #include <utils.h>
 
-#include "callback.h"
+#include "buzz.h"
 
 /**
  * Cette fonction est appelée par un timer pour effectuer les 3 sons.
