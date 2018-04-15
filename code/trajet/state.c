@@ -33,20 +33,6 @@ void state_start_timer(struct robot* robot) {
     timer_start(&CALLBACK_IGNORE, &state_timer);
 }
 
-#define CHECK_OBSTACLE(obs,robot,avancer,changer) { \
-    switch((obs)) {                                 \
-    case POTEAU:                                    \
-        (robot)->state = AVANCER_##avancer;         \
-        break;                                      \
-    case MUR:                                       \
-        (robot)->state= CHANGER_MUR_##changer;      \
-        moteur_tourner((robot)->mur);               \
-        break;                                      \
-    default:                                        \
-        break;                                      \
-    }                                               \
-}
-
 void update_state(void* data) {
     /* on obtient le robot */
     struct robot* robot = (struct robot*) data;
@@ -183,6 +169,18 @@ void update_state(void* data) {
         /* on s'ajuste par rapport au mur gauche */
         moteur_ajustement(capteurs, robot->mur);
 
+        /* on ignore les poteaux */
+        if(obstacle == POTEAU) {
+            robot->state = AVANCER_DROITE;
+            break;
+        }
+
+        /* on change de mur si possible */
+        if(obstacle == MUR) {
+            robot->state = CHANGER_MUR_GAUCHE;
+            break;
+        }
+
         /* on change d'état selon l'obstacle */
         CHECK_OBSTACLE(obstacle, robot, DROITE, GAUCHE);
         break;
@@ -194,8 +192,17 @@ void update_state(void* data) {
         /* on s'ajuste par rapport au mur droite */
         moteur_ajustement(capteurs, robot->mur);
 
-        /* on change d'état selon l'obstacle */
-        CHECK_OBSTACLE(obstacle, robot, GAUCHE, DROITE);
+        /* on ignore les poteaux */
+        if(obstacle == POTEAU) {
+            robot->state = AVANCER_GAUCHE;
+            break;
+        }
+
+        /* on change de mur si possible */
+        if(obstacle == MUR) {
+            robot->state = CHANGER_MUR_DROITE;
+            break;
+        }
         break;
 
     case VERIFIER_GAUCHE_ROTATION:
