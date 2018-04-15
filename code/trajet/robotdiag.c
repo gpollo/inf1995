@@ -166,7 +166,7 @@ void capteurs_callback(void* data) {
     UNUSED(data);
 
     /* on initialise les capteurs */
-    struct capteurs capteurs =  CAPTEURS_INIT(0,1);
+    static struct capteurs capteurs =  CAPTEURS_INIT(0,1);
 
     /* on lit les deux capteurs */
     sensor_read(&capteurs);
