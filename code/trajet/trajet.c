@@ -15,11 +15,6 @@
 #include "buzz.h"
 #include "obstacle.h"
 
-#define TIME_LIMIT 5000
-#define TIME_MIN 300
-#define TIME_MAX 600
-#define TIME_MUR 1000
-
 void interrupteur(uint8_t button, void* data) {
     /* on obtient le robot en paramètre */
     struct robot* robot = (struct robot*) data;
@@ -266,7 +261,7 @@ void trajet_main(void) {
     /* pour le debugging */
     uart_init();
 
-    /* Del init */
+    /* pour la del */
     del_init();
 
     /* pour les moteurs */
