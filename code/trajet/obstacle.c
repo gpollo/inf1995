@@ -5,6 +5,11 @@
 #include "buzz.h"
 #include "obstacle.h"
 
+/* on s'assure que la macro délai est définie */
+#ifndef DELAY
+    #error "La macro #DELAY n'est pas définie."
+#endif
+
 /* le temps minimum qu'un capteur devrait capter un poteau */
 #ifndef TIME_POTEAU_MIN
     #define TIME_POTEAU_MIN 300
@@ -20,11 +25,20 @@
     #define TIME_MUR_MIN 1000
 #endif
 
-/* le temps limit pour empêcher un overflow au compteur*/
+/* le temps limit pour empêcher un overflow au compteur */
 #ifndef TIME_LIMIT
     #define TIME_LIMIT 5000
 #endif
 
+/**
+ * Cette macro regarde si un poteau est détecté par l'autre capteur. Pour ce
+ * faire, elle calcule le temps de captage que devrait durer la détection d'un
+ * poteau.
+ *
+ * @param other    L'autre capteur qui tente de détecter un poteau.
+ * @param time     La variable contenant le temps de captage.
+ * @param obstacle La variable à utiliser pour l'obstacle détecté.
+ */
 #define IS_POTEAU(other, time, obstacle) {                              \
     if((other).capting) {                                               \
         /* si l'autre capteur capte, on augmente le temps de captage */ \
