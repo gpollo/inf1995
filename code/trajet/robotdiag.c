@@ -72,15 +72,6 @@ void send_couleur_base(void) {
     uart_putchar(COULEUR_BASE);
 }
 
-void button(uint8_t bouton, void* data) {
-    /* cette variable est inutilisée */
-	UNUSED(data);
-	
-    /* on écrit l'état du bouton (1 octet) */
-    uart_putchar(MSG_ETAT_INTERRUPT);
-    uart_putchar(bouton);
-}
-
 void send_capteurs(struct capteurs* capteurs) {
     /* on obtient la distance des capteurs en centimètres (1 octet) */
     uint8_t distanceG = (uint8_t) ((capteurs->gauche.value) / 10);
@@ -161,6 +152,15 @@ void listen(void) {
     }
 }
 
+void button_callback(uint8_t bouton, void* data) {
+    /* cette variable est inutilisée */
+	UNUSED(data);
+	
+    /* on écrit l'état du bouton (1 octet) */
+    uart_putchar(MSG_ETAT_INTERRUPT);
+    uart_putchar(bouton);
+}
+
 void capteurs_callback(void* data) {
     /* cette variable est inutilisée */
     UNUSED(data);
@@ -180,13 +180,9 @@ void capteurs_callback(void* data) {
 }
 
 struct callback capteur_callback = {
-    /* la fonction à appeler */
     .func = &capteurs_callback,
-    /* le temps d'attente en millisecondes */
     .time = DELAY_SENSOR,
-    /* le nombre de fois que le timer doit être répété */
     .repeat = REPEAT_1,
-    /* aucun pointeur à envoyer à la fonction */
     .data = NULL,
 };
 
@@ -203,14 +199,14 @@ void robotdiag_main(void) {
     /* pour la lecture des senseurs */
     adc_init();
 
+    /* on active le bouton en interruption */
+    interruption_init(&button_callback, NULL);
+
     /* pour les timers */
     timer_init();
 
     /* on démarre le timer qui envoit les capteurs */
     timer_start(&capteur_callback, NULL);
-
-    /* on active le bouton en interruption */
-    interruption_init(&button, NULL);
 
     /* on écoute ce que le logiciel envoit */
     while(1) listen();
