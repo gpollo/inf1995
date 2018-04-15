@@ -42,31 +42,31 @@
 /** Cette macro définie que le timer est répété une seule fois. */
 #define REPEAT_1 1
 
-void nom_robot(void) {
+void send_nom_robot(void) {
     /* on écrit le nom du robot (13 octets) */
     uart_putchar(MSG_NOM_ROBOT);
     uart_printf(NOM_ROBOT);
 }
 
-void numero_equipe(void) {
+void send_numero_equipe(void) {
     /* on écrit le numéro de l'équipe (9 octets) */
     uart_putchar(MSG_NUMERO_EQUIPE);
     uart_printf(NUMERO_EQUIPE);
 }
 	
-void numero_section(void) {
+void send_numero_section(void) {
     /* on écrit la section (1 octet) */
     uart_putchar(MSG_NUMERO_SECTION);
     uart_putchar(NUMERO_SECTION);
 }
 
-void session(void) {
+void send_session(void) {
     /* on écrit la session (4 octets) */
     uart_putchar(MSG_SESSION);
     uart_printf(SESSION);
 } 
  
-void couleur_base(void) {
+void send_couleur_base(void) {
     /* on écrit la couleur de la base (1 octet) */
     uart_putchar(MSG_COULEUR_BASE);
     uart_putchar(COULEUR_BASE);
@@ -81,7 +81,7 @@ void button(uint8_t bouton, void* data) {
     uart_putchar(bouton);
 }
 
-void distance_capteur(struct capteurs* capteurs) {
+void send_capteurs(struct capteurs* capteurs) {
     /* on obtient la distance des capteurs en centimètres (1 octet) */
     uint8_t distanceG = (uint8_t) ((capteurs->gauche.value) / 10);
     uint8_t distanceD = (uint8_t) ((capteurs->droit.value) / 10);
@@ -95,7 +95,7 @@ void distance_capteur(struct capteurs* capteurs) {
     uart_putchar(distanceD);
  }   
 
-void couleur_del(uint8_t couleur) {
+void control_del(uint8_t couleur) {
     switch (couleur) {
     /* on ferme la del */
 	case MSG_DEL_ETEINT:
@@ -114,21 +114,21 @@ void couleur_del(uint8_t couleur) {
     }
 }
 
-void requete_info() {
+void send_info() {
     /* on envoie le nom du robot */
-    nom_robot();
+    send_nom_robot();
 
     /* on envoit le numéro de l'équipe */
-    numero_equipe();
+    send_numero_equipe();
 
     /* on envoit le numéro de section */
-    numero_section();
+    send_numero_section();
 
     /* on envoit la session */
-    session();
+    send_session();
 
     /* on envoit la couleur de la base */
-    couleur_base();
+    send_couleur_base();
 }
 
 void listen(void) {
@@ -151,17 +151,17 @@ void listen(void) {
 
     /* on change la couleur de la del */
     case MSG_COULEUR_DEL:
-        couleur_del(data);
+        control_del(data);
         break;
 
     /* on envoit les données sur le robot */
     case MSG_REQUETE_INFO:
-        requete_info();
+        send_info();
         break;
     }
 }
 
-void send_capteurs(void* data) {
+void capteurs_callback(void* data) {
     /* cette variable est inutilisée */
     UNUSED(data);
 
@@ -176,12 +176,12 @@ void send_capteurs(void* data) {
     sensor_get_value(&(capteurs.droit));
 
     /* on affiche la distance dans le logiciel */
-    distance_capteur(&capteurs);
+    send_capteurs(&capteurs);
 }
 
 struct callback capteur_callback = {
     /* la fonction à appeler */
-    .func = &send_capteurs,
+    .func = &capteurs_callback,
     /* le temps d'attente en millisecondes */
     .time = DELAY_SENSOR,
     /* le nombre de fois que le timer doit être répété */
@@ -191,12 +191,27 @@ struct callback capteur_callback = {
 };
 
 void robotdiag_main(void) {
+    /* pour la communication UART */
     uart_init();
+
+    /* pour le controle de la del */
     del_init();
-    moteur_init();	
-    interruption_init(&button, NULL);
+
+    /* pour le controle des moteurs */
+    moteur_init();
+
+    /* pour la lecture des senseurs */
     adc_init();
+
+    /* pour les timers */
     timer_init();
+
+    /* on démarre le timer qui envoit les capteurs */
     timer_start(&capteur_callback, NULL);
+
+    /* on active le bouton en interruption */
+    interruption_init(&button, NULL);
+
+    /* on écoute ce que le logiciel envoit */
     while(1) listen();
 }
