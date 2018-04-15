@@ -14,6 +14,7 @@
 #include "robot.h"
 #include "buzz.h"
 #include "obstacle.h"
+#include "trajet.h"
 
 void interrupteur(uint8_t button, void* data) {
     /* on obtient le robot en paramètre */

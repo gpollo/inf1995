@@ -15,9 +15,15 @@ $(TRAJET_NAME).out: $(OBJECTS)
 	@(cd ../$(LIB_DIR) && $(MAKE))
 	$(CC) $(LDFLAGS) -o $(TRAJET_NAME).out $^ $(LDLIBS)
 
-main.o: $(INC)/memory.h \
-        trajet.h        \
-        robotdiag.h
+robotdiag.o: $(INC)/uart.h      \
+             $(INC)/timer.h     \
+             $(INC)/adc.h       \
+             $(INC)/interrupt.h \
+             $(INC)/del.h       \
+             $(INC)/moteur.h    \
+             $(INC)/sensor.h    \
+             message.h          \
+             robotdiag.h
 
 buzz.o: $(INC)/buzzer.h \
         $(INC)/timer.h  \
@@ -29,10 +35,27 @@ state.o: $(INC)/timer.h \
          robot.h        \
          state.h
 
+trajet.o: $(INC)/uart.h      \
+          $(INC)/utils.h     \
+          $(INC)/interrupt.h \
+          $(INC)/sensor.h    \
+          $(INC)/moteur.h    \
+          $(INC)/timer.h     \
+          $(INC)/del.h       \
+          $(INC)/buzzer.h    \
+          robot.h            \
+          buzz.h             \
+          obstacle.h         \
+          trajet.h
+
 obstacle.o: $(INC)/sensor.h \
             robot.h         \
             buzz.h          \
             obstacle.h
+
+main.o: $(INC)/memory.h \
+        trajet.h        \
+        robotdiag.h
 
 install: $(TRAJET_TARGET)
 	$(AVRDUDE) -c $(PROGRAMMERID) -p $(MCU) -P -e -U flash:w:$(TRAJET_TARGET)

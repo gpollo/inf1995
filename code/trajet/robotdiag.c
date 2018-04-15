@@ -1,13 +1,15 @@
+#include <stdlib.h>
+#include <util/delay.h>
 #include <uart.h>
 #include <timer.h>
 #include <adc.h>
-#include <util/delay.h>
 #include <interrupt.h>
-#include <stdlib.h>
 #include <del.h>
 #include <moteur.h>
 #include <sensor.h>
+
 #include "message.h"
+#include "robotdiag.h"
 
 /** Cette macro définie le nom du robot. */
 #define NOM_ROBOT "FireFightingB\0"
