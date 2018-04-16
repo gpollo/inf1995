@@ -10,6 +10,9 @@
 #include "obstacle.h"
 #include "state.h"
 
+#define TIMEOUT_ROTATION45 900
+#define CHANGER_MUR_STOP_DISTANCE 140
+
 /**
  * Cette fonction actualise l'état du robot. Elle est appelée par un timer.
  *
@@ -29,8 +32,21 @@ void state_start_timer(struct robot* robot) {
     /* on envoie le robot au callback */
     state_timer.data = (void*) robot;
 
+//    robot->timeout = TIMEOUT_ROTATION45;
+//    robot->state = ROTATION45_DROITE;
+
     /* on active le callback */
     timer_start(&CALLBACK_IGNORE, &state_timer);
+}
+
+#define TRANSITION_ROTATION45(robot, direction) { \
+    (robot)->timeout = TIMEOUT_ROTATION45;        \
+    (robot)->state = ROTATION45_##direction;      \
+}
+
+#define TRANSITION_ROTATION45_UNDO(robot, direction) { \
+    (robot)->timeout = TIMEOUT_ROTATION45;             \
+    (robot)->state = ROTATION45_UNDO_##direction;      \
 }
 
 void update_state(void* data) {
@@ -49,8 +65,13 @@ void update_state(void* data) {
     enum obstacle obstacle = detect(robot);
 
     /* on écrit l'état */
-    uart_debug("%d ", robot->state);
-
+//    uart_printf("%d ", robot->state);
+/*
+    uart_printf("%d %d\n\r",
+        capteurs->gauche.value,
+        capteurs->droit.value
+    );
+*/
     /* on change d'état si possible */
     switch(robot->state) {
     case RESET:
@@ -85,7 +106,7 @@ void update_state(void* data) {
         robot->mur = GAUCHE;
 
         /* on s'ajuste par rapport au mur gauche */
-        moteur_ajustement(capteurs, robot->mur);
+        robot_ajustement(robot);
 
         /* on regarde si on capte quelque chose à droite */
         if(capteurs->droit.capting) {
@@ -95,7 +116,7 @@ void update_state(void* data) {
 
         /* on regarde si on capte encore vers la gauche */
         if(!capteurs->gauche.capting) {
-            robot->state = TOURNER_GAUCHE;
+            //robot->state = TOURNER_GAUCHE;
             break;
         }
         break;
@@ -105,7 +126,7 @@ void update_state(void* data) {
         robot->mur = DROITE;
 
         /* on s'ajuste par rapport au mur droite */
-        moteur_ajustement(capteurs, robot->mur);
+        robot_ajustement(robot);
 
         /* on regarde si on capte quelque chose à gauche */
         if(capteurs->gauche.capting) {
@@ -115,7 +136,7 @@ void update_state(void* data) {
 
         /* on regarde si on capte encore vers la droite */
         if(!capteurs->droit.capting) {
-            robot->state = TOURNER_DROITE;
+            //robot->state = TOURNER_DROITE;
             break;
         }
         break;
@@ -125,7 +146,7 @@ void update_state(void* data) {
         robot->mur = GAUCHE;
 
         /* on s'ajuste par rapport au mur gauche */
-        moteur_ajustement(capteurs, robot->mur);
+        robot_ajustement(robot);
 
         /* le robot peut changer de bord si on ne capte rien à droite */
         if(!capteurs->droit.capting) {
@@ -146,7 +167,7 @@ void update_state(void* data) {
         robot->mur = DROITE;
 
         /* on s'ajuste par rapport au mur droite */
-        moteur_ajustement(capteurs, robot->mur);
+        robot_ajustement(robot);
 
         /* le robot peut changer de bord si on ne capte rien à gauche */
         if(!capteurs->gauche.capting) {
@@ -167,7 +188,7 @@ void update_state(void* data) {
         robot->mur = GAUCHE;
 
         /* on s'ajuste par rapport au mur gauche */
-        moteur_ajustement(capteurs, robot->mur);
+        robot_ajustement(robot);
 
         /* on ignore les poteaux */
         if(obstacle == POTEAU) {
@@ -177,12 +198,9 @@ void update_state(void* data) {
 
         /* on change de mur si possible */
         if(obstacle == MUR) {
-            robot->state = CHANGER_MUR_GAUCHE;
+            TRANSITION_ROTATION45(robot, GAUCHE);
             break;
         }
-
-        /* on change d'état selon l'obstacle */
-        CHECK_OBSTACLE(obstacle, robot, DROITE, GAUCHE);
         break;
 
     case VERIFIER_DROITE:
@@ -190,7 +208,7 @@ void update_state(void* data) {
         robot->mur = DROITE;
 
         /* on s'ajuste par rapport au mur droite */
-        moteur_ajustement(capteurs, robot->mur);
+        robot_ajustement(robot);
 
         /* on ignore les poteaux */
         if(obstacle == POTEAU) {
@@ -200,7 +218,7 @@ void update_state(void* data) {
 
         /* on change de mur si possible */
         if(obstacle == MUR) {
-            robot->state = CHANGER_MUR_DROITE;
+            TRANSITION_ROTATION45(robot, DROITE);
             break;
         }
         break;
@@ -240,6 +258,9 @@ void update_state(void* data) {
         break;
 
     case TOURNER_GAUCHE:
+        /* on s'assure que le moteur est en rotation vers la gauche */
+        moteur_tourner(GAUCHE);
+
         /* on regarde si on capte quelque chose vers la gauche */
         if(capteurs->gauche.capting) {
             robot->state = AVANCER_GAUCHE;
@@ -254,6 +275,9 @@ void update_state(void* data) {
         break;
 
     case TOURNER_DROITE:
+        /* on s'assure que le moteur est en rotation vers la droite */
+        moteur_tourner(DROITE);
+
         /* on regarde si on capte quelque chose vers la droite */
         if(capteurs->droit.capting) {
             robot->state = AVANCER_DROITE;
@@ -267,16 +291,88 @@ void update_state(void* data) {
         }
         break;
 
+    case ROTATION45_GAUCHE:
+        /* on actualise le timeout */
+        robot->timeout -= DELAY;
+
+        /* on change de mur */
+        if(robot->timeout < 0) {
+            robot->state = CHANGER_MUR_GAUCHE;
+            break;
+        }
+
+        /* on active les roues en rotation */
+        moteur_tourner_surplace(GAUCHE);
+        break;
+
+    case ROTATION45_DROITE:
+        /* on actualise le timeout */
+        robot->timeout -= DELAY;
+
+        /* on change de mur */
+        if(robot->timeout < 0) {
+            robot->state = CHANGER_MUR_DROITE;
+            break;
+        }
+
+        /* on active les roues en rotation */
+        moteur_tourner_surplace(DROITE);
+        break;
+
     case CHANGER_MUR_GAUCHE:
-        uart_printf("gauche\n\r");
-        changement_coter(capteurs, 0);
-        robot->state = AVANCER_GAUCHE_ATTENDRE;
+        /* on va vers le mur gauche */
+        robot->mur = GAUCHE;
+
+        /* on arrête d'avancer lorsqu'on est assez près */
+        if(capteurs->gauche.value < CHANGER_MUR_STOP_DISTANCE) {
+            TRANSITION_ROTATION45_UNDO(robot, GAUCHE);
+            break;
+        }
+
+        /* on avance */
+        moteur_avancer(128);
         break;
 
     case CHANGER_MUR_DROITE:
-        uart_printf("droit\n\r");
-        changement_coter(capteurs, 1);
-        robot->state = AVANCER_DROITE_ATTENDRE;
+        /* on va vers le mur droite */
+        robot->mur = DROITE;
+
+        /* on arrête d'avancer lorsqu'on est assez près */
+        if(capteurs->droit.value < CHANGER_MUR_STOP_DISTANCE) {
+            TRANSITION_ROTATION45_UNDO(robot, DROITE);
+            break;
+        }
+
+        /* on avance */
+        moteur_avancer(128);
+        break;
+
+    case ROTATION45_UNDO_GAUCHE:
+        /* on actualise le timeout */
+        robot->timeout -= DELAY;
+
+        /* on change de mur */
+        if(robot->timeout < 0) {
+            robot->state = AVANCER_GAUCHE_ATTENDRE;
+            break;
+        }
+
+        /* on active les roues en rotation */
+        moteur_tourner_surplace(DROITE);
+        break;
+
+    case ROTATION45_UNDO_DROITE:
+        /* on actualise le timeout */
+        robot->timeout -= DELAY;
+
+        /* on change de mur */
+        if(robot->timeout < 0) {
+            robot->state = AVANCER_DROITE_ATTENDRE;
+            break;
+        }
+
+        /* on active les roues en rotation */
+        moteur_tourner_surplace(GAUCHE);
         break;
     }
 }

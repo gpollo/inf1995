@@ -41,6 +41,9 @@ void buzzer_callback(void* data) {
 }
 
 void buzz() {
+    /* on réinitialise le temps */
+    buzzer_timer.time = 100;
+
     /* on réinitialise les répétitions */
     buzzer_timer.repeat = 9;
 

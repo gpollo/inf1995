@@ -29,7 +29,7 @@ void interrupteur(uint8_t button, void* data) {
 }
 
 void trajet_main(void) {
-	struct robot robot = ROBOT_INIT(0, 1);
+	struct robot robot = ROBOT_INIT(6, 1);
 	
     /* pour le debugging */
     uart_init();

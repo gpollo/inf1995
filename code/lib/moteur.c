@@ -5,29 +5,14 @@
 #include <utils.h>
 #include <uart.h>
 
-#define DISTANCE_SOUHAITE 150
 #define DISTANCE_MINIMALE_CROISSIERE 200
-#define CORRECTION_DOUCE 2
 #define DELAY_ROTATION90 1750
 #define DELAY_TOURNANT180 3000
 #define DELAY_FIN180 1000
 
-/* vitesse exprimer en mm par sec */
-#define VITESSE_50PWM 70
-
 /* valeur par défaut du prescaler */
 #ifndef MOTEUR_PRESCALER
     #define MOTEUR_PRESCALER 64
-#endif
-
-/* vitesse de rotation par défaut */
-#ifndef ROTATION_SPEED
-    #define ROTATION_SPEED 128
-#endif
-
-/* vitesse maximale lors de l'ajustement à un mur */
-#ifndef MAX_SPEED
-    #define MAX_SPEED 200
 #endif
 
 void moteur_init() {
@@ -152,6 +137,28 @@ void moteur_tourner_gauche() {
     moteur_arreter();
 }
 
+void moteur_tourner_surplace(enum direction direction) {
+    /* on configure la direction des moteurs */
+    switch(direction) {
+    case GAUCHE:
+        /* on tourne à gauche */
+        SET_DIRECTION_RECULER(GAUCHE);
+        SET_DIRECTION_AVANCER(DROITE);
+        break;
+    case DROITE:
+        /* on tourne à droite */
+        SET_DIRECTION_AVANCER(GAUCHE);
+        SET_DIRECTION_RECULER(DROITE);
+        break;
+    default:
+        return;
+    }
+
+    /* on ajuste la force des moteurs  */
+    SET_SPEED(GAUCHE, ROTATION_SPEED);
+    SET_SPEED(DROITE, ROTATION_SPEED);
+}
+
 void moteur_tourner(enum direction direction) {
     struct moteurs moteurs;
 
@@ -159,13 +166,13 @@ void moteur_tourner(enum direction direction) {
     switch(direction) {
     case DROITE:
         /* seulement la roue de gauche bouge */
-        moteurs.gauche.speed = ROTATION_SPEED;
-        moteurs.droit.speed  = 0;
+        moteurs.gauche.speed = ROTATION_SPEED+80;
+        moteurs.droit.speed  = ROTATION_SPEED+50;
         break;
     case GAUCHE:
         /* seulement la roue de droite bouge */
-        moteurs.gauche.speed = 0;
-        moteurs.droit.speed  = ROTATION_SPEED;
+        moteurs.gauche.speed = ROTATION_SPEED+50;
+        moteurs.droit.speed  = ROTATION_SPEED+80;
         break;
     default:
         return;
@@ -208,109 +215,4 @@ void moteur_config(struct moteurs* moteurs) {
     /* on set la vitesse des deux roues */
     SET_SPEED(DROITE, moteurs->droit.speed);
     SET_SPEED(GAUCHE, moteurs->gauche.speed);
-}
-
-void moteur_ajustement(struct capteurs* capteurs, enum direction direction) {
-    /* on obtient l'erreur */
-    int16_t erreur = sensor_diff_dist(capteurs, direction);
-
-    /* Iniatialise le facteur de correction */
-    int16_t correction = CORRECTION_DOUCE;
-
-    /* on calcule les vitesses à envoyer aux moteurs */
-    struct moteurs moteurs;
-    switch(direction) {
-    case GAUCHE:
-        if(erreur > 0) {
-            /* on s'éloigne rapidement du mur */
-            moteurs.gauche.speed = LIMIT(ROTATION_SPEED, MAX_SPEED);
-            moteurs.droit.speed  = LIMIT(ROTATION_SPEED, MAX_SPEED);
-            moteurs.gauche.avancer = 0;
-            moteurs.droit.avancer  = 1;
-        } else {
-            uint16_t ajustement = ROTATION_SPEED - erreur/correction;
-
-            /* on s'approche tranquillement du mur */
-            moteurs.gauche.speed = LIMIT(ROTATION_SPEED, MAX_SPEED);
-            moteurs.droit.speed  = LIMIT(ajustement, MAX_SPEED);
-            moteurs.gauche.avancer = 1;
-            moteurs.droit.avancer  = 1;
-        }
-        break;
-    case DROITE:
-        if(erreur > 0) {
-            /* on s'éloigne rapidement du mur */
-            moteurs.gauche.speed = LIMIT(ROTATION_SPEED, MAX_SPEED);
-            moteurs.droit.speed  = LIMIT(ROTATION_SPEED, MAX_SPEED);
-            moteurs.gauche.avancer = 1;
-            moteurs.droit.avancer  = 0;
-        } else {
-            uint16_t ajustement = ROTATION_SPEED - erreur/correction;
-
-            /* on s'approche tranquillement du mur */
-            moteurs.gauche.speed = LIMIT(ajustement, MAX_SPEED);
-            moteurs.droit.speed  = LIMIT(ROTATION_SPEED, MAX_SPEED);
-            moteurs.gauche.avancer = 1;
-            moteurs.droit.avancer  = 1;
-        }
-        break;
-    default:
-        break;
-    }
-
-    /* on ajuste les roues */
-    moteur_config(&moteurs);
-
-    /* information pour debug */
-    uart_debug("%d %d %d\n\r",
-        capteurs->gauche.value,
-        capteurs->droit.value,
-        direction
-    );
-}
-
-void changement_coter(struct capteurs* capteurs, enum direction direction) {
-    /* Chercher les valeurs des capteurs*/
-    uint16_t dist_gauche = capteurs->gauche.value;
-    uint16_t dist_droite = capteurs->droit.value;
-    
-    /* On commencer par savoir qu'elle direction est présentement suivi */
-    if(direction == GAUCHE) {
-        if(dist_droite < DISTANCE_MINIMALE_CROISSIERE) {return;}
-        /* Initialise le changement en orientant le robot */
-        moteur_tourner_droite();
-
-        /* S'approche du nouveau mur suivi */
-        uint16_t temps_croissiere1 = temps_croissiere(dist_droite);
-        moteur_avancer(ROTATION_SPEED);
-        for(uint16_t i = 0; i< temps_croissiere1;i++) {       
-            _delay_ms(1000);
-        }
-
-        /* Puis on réoriente le robot pour continuer le suivi du nouveau mur */
-        moteur_tourner_gauche();
-    } else if(direction == DROITE) {
-        if(dist_gauche < DISTANCE_MINIMALE_CROISSIERE) {return;}
-        /* Initialise le changement en orientant le robot */
-        moteur_tourner_gauche();
-
-        /* S'approche du nouveau mur suivi */
-        uint16_t temps_croissiere1 = temps_croissiere(dist_gauche);
-        moteur_avancer(ROTATION_SPEED);
-        for(uint16_t i = 0; i< temps_croissiere1;i++) {
-            _delay_ms(1000);
-        }
-        
-        /* Puis on réoriente le robot pour continuer le suivi du nouveau mur */
-        moteur_tourner_droite();
-    }
-}
-
-uint16_t temps_croissiere(uint16_t distance_a_faire) {
-    /* 
-     * Vitesse du robot à 50 PWM delay en milisecond donc multiplier par 1000 et
-     * divise. La distance à faire est en mm et la vitesse est en mm/s donc il
-     * reste des secondes.
-     **/
-    return  (distance_a_faire-DISTANCE_SOUHAITE)/VITESSE_50PWM;
 }

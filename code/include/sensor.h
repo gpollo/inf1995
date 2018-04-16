@@ -1,6 +1,7 @@
 #ifndef INCLUDE_SENSOR_H
 #define INCLUDE_SENSOR_H
 
+#include <stdint.h>
 #include <utils.h>
 
 #ifdef __cplusplus
@@ -92,15 +93,6 @@ void sensor_update_capting(struct capteur* capteur, uint8_t capting);
  * @return Si la conversion fut effectuée, alors #OK, sinon #FAIL.
  */
 uint8_t sensor_get_value(struct capteur* capteur);
-
-/**
- * Cette fonction compare la distance cpaté à la distance de 15 cm souhaité.
- * 
- * @param capteur Un pointeur vers une structure d'un capteur et direction.
- * 
- * @return La différence entre la distance capté et la distance souhaité.
- */
-int16_t sensor_diff_dist(struct capteurs* capteurs, enum direction direction);
 
 #ifdef __cplusplus
 }

@@ -1,12 +1,13 @@
 include ../Makefile.common
 
-CFLAGS += -DDELAY=20
+CFLAGS += -DDELAY=40
 
 OBJECTS=robotdiag.o \
         buzz.o      \
         obstacle.o  \
         state.o     \
         trajet.o    \
+        robot.o     \
         main.o
 
 all: $(TRAJET_TARGET)
@@ -57,6 +58,11 @@ obstacle.o: $(INC)/sensor.h \
             robot.h         \
             buzz.h          \
             obstacle.h
+
+robot.o: $(INC)/moteur.h \
+         $(INC)/sensor.h \
+         $(INC)/utils.h  \
+         robot.h
 
 main.o: $(INC)/memory.h \
         trajet.h        \

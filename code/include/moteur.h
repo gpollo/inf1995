@@ -14,7 +14,7 @@ extern "C" {
 #endif
 
 #ifndef DIR_DROITE_BIT
-    #define DIR_DROITE_BIT 2
+    #define DIR_DROITE_BIT 5
 #endif
 
 #ifndef DIR_DROITE_DDR
@@ -31,7 +31,7 @@ extern "C" {
 #endif
 
 #ifndef DIR_GAUCHE_BIT
-    #define DIR_GAUCHE_BIT 5
+    #define DIR_GAUCHE_BIT 2
 #endif
 
 #ifndef DIR_GAUCHE_DDR
@@ -112,6 +112,16 @@ extern "C" {
     SPEED_##roue = (speed);      \
 }
 
+/* la vitesse de rotation des roues par défaut */
+#ifndef ROTATION_SPEED
+    #define ROTATION_SPEED 128
+#endif
+
+/* vitesse à 50% du PWM [mm/s] */
+#ifndef MOTEUR_VITESSE_50
+    #define MOTEUR_VITESSE_50 70
+#endif
+
 /**
  * Cette structure définie un moteur.
  */
@@ -189,6 +199,13 @@ void moteur_tourner_droite();
 void moteur_tourner_gauche();
 
 /**
+ * Cette méthode active les roues en rotation surplace.
+ *
+ * @param direction La direction de la rotation.
+ */
+void moteur_tourner_surplace(enum direction direction);
+
+/**
  * Cette méthode active les roues en rotation vers une direction.
  *
  * @param direction La direction du robot.
@@ -208,21 +225,6 @@ void moteur_tourner180(enum direction);
  * @param moteurs Un pointeur vers la configuration des deux moteurs.
  */
 void moteur_config(struct moteurs* moteurs);
-
-/**
- * Cette méthode s'assure de conserver une distance de 15 cm du mur
- */
-void moteur_ajustement(struct capteurs* capteurs, enum direction direction);
-
-/**
- * Cette méthode effectue le déplacement pour commencer à suivre l'autre mur
- */
-void changement_coter(struct capteurs* capteurs, enum direction direction);
-
-/**
- * Cette méthode effectue le déplacement pour commencer à suivre l'autre mur
- */
-uint16_t temps_croissiere(uint16_t distance_a_faire);
 
 #ifdef __cplusplus
 }

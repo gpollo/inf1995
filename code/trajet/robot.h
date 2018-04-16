@@ -18,8 +18,15 @@ enum state {
     VERIFIER_DROITE_ROTATION, /*  8 */
     TOURNER_GAUCHE,           /*  9 */
     TOURNER_DROITE,           /* 10 */
-    CHANGER_MUR_GAUCHE,       /* 11 */
-    CHANGER_MUR_DROITE,       /* 12 */
+
+    ROTATION45_GAUCHE,        /* 11 */
+    ROTATION45_DROITE,        /* 12 */
+
+    CHANGER_MUR_GAUCHE,       /* 13 */
+    CHANGER_MUR_DROITE,       /* 14 */
+
+    ROTATION45_UNDO_GAUCHE,   /* 15 */
+    ROTATION45_UNDO_DROITE,   /* 16 */
 };
 
 /**
@@ -34,6 +41,8 @@ struct robot {
     enum direction mur;
     /** L'état du robot. */
     enum state state;
+
+    int16_t timeout;
 };
 
 /**
@@ -48,6 +57,24 @@ struct robot {
     .mur = AUCUNE,                         \
     .state = RESET,                        \
 }
+
+/**
+ * Cette fonction retourne l'erreur de la distance souhaitée du robot par
+ * rapport au mur.
+ *
+ * @param robot Un pointeur vers le robot.
+ *
+ * @return L'erreur par rapport à la distance souhaitée.
+ */
+int16_t robot_get_erreur(struct robot* robot);
+
+/**
+ * Cette fonction ajuste les moteurs du robot pour conserver une distance au
+ * mur.
+ *
+ * @param robot Un pointeur vers un robot.
+ */
+void robot_ajustement(struct robot* robot);
 
 #endif
 
