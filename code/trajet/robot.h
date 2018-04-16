@@ -43,6 +43,8 @@ struct robot {
     enum state state;
 
     int16_t timeout;
+
+    uint16_t distance;
 };
 
 /**

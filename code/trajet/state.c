@@ -32,16 +32,19 @@ void state_start_timer(struct robot* robot) {
     /* on envoie le robot au callback */
     state_timer.data = (void*) robot;
 
-//    robot->timeout = TIMEOUT_ROTATION45;
-//    robot->state = ROTATION45_DROITE;
-
     /* on active le callback */
     timer_start(&CALLBACK_IGNORE, &state_timer);
 }
 
-#define TRANSITION_ROTATION45(robot, direction) { \
-    (robot)->timeout = TIMEOUT_ROTATION45;        \
-    (robot)->state = ROTATION45_##direction;      \
+#define TRANSITION_ROTATION45(robot, direction, distance) { \
+    (robot)->distance = distance;                           \
+    (robot)->timeout = TIMEOUT_ROTATION45;                  \
+    (robot)->state = ROTATION45_##direction;                \
+}
+
+#define TRANSITION_CHANGER_MUR(robot, direction) {        \
+    (robot)->timeout = GET_TRAVEL_TIME((robot)->distance) \
+    (robot)->state = CHANGER_MUR_##direction;             \
 }
 
 #define TRANSITION_ROTATION45_UNDO(robot, direction) { \
@@ -65,7 +68,7 @@ void update_state(void* data) {
     enum obstacle obstacle = detect(robot);
 
     /* on écrit l'état */
-//    uart_printf("%d ", robot->state);
+    uart_printf("%d ", robot->state);
 /*
     uart_printf("%d %d\n\r",
         capteurs->gauche.value,
@@ -198,7 +201,7 @@ void update_state(void* data) {
 
         /* on change de mur si possible */
         if(obstacle == MUR) {
-            TRANSITION_ROTATION45(robot, GAUCHE);
+            TRANSITION_ROTATION45(robot, GAUCHE, capteurs->gauche.value);
             break;
         }
         break;
@@ -218,7 +221,7 @@ void update_state(void* data) {
 
         /* on change de mur si possible */
         if(obstacle == MUR) {
-            TRANSITION_ROTATION45(robot, DROITE);
+            TRANSITION_ROTATION45(robot, DROITE, capteurs->droit.value);
             break;
         }
         break;
@@ -297,6 +300,7 @@ void update_state(void* data) {
 
         /* on change de mur */
         if(robot->timeout < 0) {
+            robot->timeout
             robot->state = CHANGER_MUR_GAUCHE;
             break;
         }
@@ -320,11 +324,14 @@ void update_state(void* data) {
         break;
 
     case CHANGER_MUR_GAUCHE:
+        /* on actualise le timeout */
+        robot->timeout -= DELAY;
+
         /* on va vers le mur gauche */
         robot->mur = GAUCHE;
 
-        /* on arrête d'avancer lorsqu'on est assez près */
-        if(capteurs->gauche.value < CHANGER_MUR_STOP_DISTANCE) {
+        /* on arrête d'avancer lorsque le timeout est finit */
+        if(robot->timeout < 0) {
             TRANSITION_ROTATION45_UNDO(robot, GAUCHE);
             break;
         }
@@ -334,11 +341,14 @@ void update_state(void* data) {
         break;
 
     case CHANGER_MUR_DROITE:
+        /* on actualise le timeout */
+        robot->timeout -= DELAY;
+
         /* on va vers le mur droite */
         robot->mur = DROITE;
 
-        /* on arrête d'avancer lorsqu'on est assez près */
-        if(capteurs->droit.value < CHANGER_MUR_STOP_DISTANCE) {
+        /* on arrête d'avancer lorsque le timeout est finit */
+        if(robot->timeout < 0) {
             TRANSITION_ROTATION45_UNDO(robot, DROITE);
             break;
         }
