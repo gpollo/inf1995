@@ -3,6 +3,16 @@
 
 #include <sensor.h>
 
+/* La distance a conserver */
+#ifndef DISTANCE_SOUHAITEE
+    #define DISTANCE_SOUHAITEE 150
+#endif
+
+/* La vitesse a 50 PWM */
+#ifndef VITESSE_50PWM
+    #define VITESSE_50PWM 65
+#endif
+
 /**
  * Cette énumération définie les états possibles du robot.
  */
@@ -59,6 +69,8 @@ struct robot {
     .mur = AUCUNE,                         \
     .state = RESET,                        \
 }
+
+#define GET_TRAVEL_TIME(distance) (((distance)-DISTANCE_SOUHAITEE)\VITESSE_50PWM)
 
 /**
  * Cette fonction retourne l'erreur de la distance souhaitée du robot par
