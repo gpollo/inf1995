@@ -5,11 +5,6 @@
 
 #include "robot.h"
 
-/* la distance souhaitée du mur */
-#ifndef DISTANCE_SOUHAITEE
-    #define DISTANCE_SOUHAITEE 150
-#endif
-
 /* le facteur de correction */
 #ifndef CORRECTION
     #define CORRECTION 2
