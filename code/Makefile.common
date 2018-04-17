@@ -29,11 +29,6 @@ OPTLEVEL=s
 INC=../include
 
 # configuration pour la cible principale
-MAIN_NAME=robot
-MAIN_TARGET=$(MAIN_NAME).hex
-MAIN_DIR=exec
-
-# configuration pour la cible principale
 TRAJET_NAME=trajet
 TRAJET_TARGET=$(TRAJET_NAME).hex
 TRAJET_DIR=trajet
@@ -52,11 +47,6 @@ INTERPRETER_DIR=interpreter
 FLASHER_NAME=flasher
 FLASHER_TARGET=$(FLASHER_NAME).hex
 FLASHER_DIR=flasher
-
-# configuration pour le programme qui interface avec le logiciel
-ROBOTDIAG_NAME=robotdiag
-ROBOTDIAG_TARGET=$(ROBOTDIAG_NAME).hex
-ROBOTDIAG_DIR=robotdiag
 
 # configuration pour la librarie
 LIB_NAME=statique

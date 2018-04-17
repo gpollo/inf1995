@@ -441,6 +441,7 @@ void test(void* data) {
     /* on écrit l'état */
     uart_printf("%d ", robot->state);
 
+    /* on obtient l'adresse de l'état */
     void* state = states[robot->state];
     if(state != NULL) goto *state;
     
