@@ -27,12 +27,15 @@ void interruption_init(void (*cb)(uint8_t, void*), void* cbdata) {
 }
 
 /* par défaut, on assume que le bouton est relâché */
-volatile uint8_t bouton = 0;
+volatile uint8_t bouton = 1;
     
 ISR(INT0_vect) {
     /* on désactive les interruptions */
     cli();
     
+    /*on détermine l'état du bouton */
+    bouton = (bouton == 0) ? 1 : 0;
+
     /* on détermine l'orientation du 180 */
     if(callback != NULL) (*callback)((uint8_t) bouton, data);
     
