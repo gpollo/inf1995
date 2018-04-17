@@ -17,26 +17,23 @@
  * Cette énumération définie les états possibles du robot.
  */
 enum state {
-    RESET,                    /*  0 */
-    AVANCER_GAUCHE,           /*  1 */
-    AVANCER_DROITE,           /*  2 */
-    AVANCER_GAUCHE_ATTENDRE,  /*  3 */
-    AVANCER_DROITE_ATTENDRE,  /*  4 */
-    VERIFIER_GAUCHE,          /*  5 */
-    VERIFIER_DROITE,          /*  6 */
-    VERIFIER_GAUCHE_ROTATION, /*  7 */
-    VERIFIER_DROITE_ROTATION, /*  8 */
-    TOURNER_GAUCHE,           /*  9 */
-    TOURNER_DROITE,           /* 10 */
-
-    ROTATION45_GAUCHE,        /* 11 */
-    ROTATION45_DROITE,        /* 12 */
-
-    CHANGER_MUR_GAUCHE,       /* 13 */
-    CHANGER_MUR_DROITE,       /* 14 */
-
-    ROTATION45_UNDO_GAUCHE,   /* 15 */
-    ROTATION45_UNDO_DROITE,   /* 16 */
+    AVANCER_GAUCHE           =  0,
+    AVANCER_DROITE           =  1,
+    AVANCER_GAUCHE_ATTENDRE  =  2,
+    AVANCER_DROITE_ATTENDRE  =  3,
+    VERIFIER_GAUCHE          =  4,
+    VERIFIER_DROITE          =  5,
+    VERIFIER_GAUCHE_ROTATION =  6,
+    VERIFIER_DROITE_ROTATION =  7,
+    TOURNER_GAUCHE           =  8,
+    TOURNER_DROITE           =  9,
+    ROTATION45_GAUCHE        = 10,
+    ROTATION45_DROITE        = 11,
+    CHANGER_MUR_GAUCHE       = 12,
+    CHANGER_MUR_DROITE       = 13,
+    ROTATION45_UNDO_GAUCHE   = 14,
+    ROTATION45_UNDO_DROITE   = 15,
+    RESET                    = 16,
 };
 
 /**
@@ -51,9 +48,9 @@ struct robot {
     enum direction mur;
     /** L'état du robot. */
     enum state state;
-
+    /* Un timeout pour certains états. */
     int16_t timeout;
-
+    /* Une variable pour enregistrer une distance entre les états. */
     uint16_t distance;
 };
 
