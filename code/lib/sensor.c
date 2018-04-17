@@ -10,7 +10,7 @@
 
 /* combien de données il faut pour pouvoir capter */
 #ifndef CAPTING_LIMIT
-    #define CAPTING_LIMIT 10
+    #define CAPTING_LIMIT 8
 #endif
 
 /** La table des distances. */

@@ -10,7 +10,7 @@
 
 /* La vitesse a 50 PWM */
 #ifndef VITESSE_50PWM
-    #define VITESSE_50PWM 65
+    #define VITESSE_50PWM 10
 #endif
 
 /**
@@ -68,9 +68,11 @@ struct robot {
     .time = 0,                             \
     .mur = AUCUNE,                         \
     .state = RESET,                        \
+    .timeout = 0,                          \
+    .distance = 0,                         \
 }
 
-#define GET_TRAVEL_TIME(distance) (((distance)-DISTANCE_SOUHAITEE)\VITESSE_50PWM)
+#define GET_TRAVEL_TIME(distance) ((1000*((distance)-DISTANCE_SOUHAITEE))/VITESSE_50PWM)
 
 /**
  * Cette fonction retourne l'erreur de la distance souhaitée du robot par

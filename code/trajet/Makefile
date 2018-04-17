@@ -1,6 +1,6 @@
 include ../Makefile.common
 
-CFLAGS += -DDELAY=40
+CFLAGS += -DDELAY=20
 
 OBJECTS=robotdiag.o \
         buzz.o      \

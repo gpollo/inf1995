@@ -24,12 +24,23 @@ void interrupteur(uint8_t button, void* data) {
     /* on s'assure que le bouton est appuyé */
     if(button) return;
 
-    /* TODO: faire une rotation 180 et mettre l'état à RESET */
-    UNUSED(robot);
+    /* on change de mur pour effectuer une bonne rotation */
+    robot->mur = (robot->mur == DROITE) ? GAUCHE : DROITE;
+
+    /* on effectue une rotation */
+    moteur_tourner180(robot->mur);
+
+    /* on réinitialise des valeurs */
+    robot->state = RESET;
+    robot->mur = AUCUNE;
+    robot->timeout = 0;
+    robot->time = 0;
+    robot->capteurs.gauche.value = 0;
+    robot->capteurs.droit.value = 0;
 }
 
 void trajet_main(void) {
-	struct robot robot = ROBOT_INIT(0, 1);
+	struct robot robot = ROBOT_INIT(4, 3);
 	
     /* pour le debugging */
     uart_init();

@@ -6,7 +6,7 @@
 #include <uart.h>
 
 #define DISTANCE_MINIMALE_CROISSIERE 200
-#define DELAY_ROTATION90 1750
+#define DELAY_ROTATION90 950
 #define DELAY_TOURNANT180 3000
 #define DELAY_FIN180 1000
 
@@ -57,7 +57,7 @@ void moteur_avancer(uint8_t speed) {
     SET_DIRECTION_AVANCER(GAUCHE);
 
     /* on active la vitesse */
-    SET_SPEED(DROITE, speed);
+    SET_SPEED(DROITE, speed-20);
     SET_SPEED(GAUCHE, speed);
 }
 
@@ -115,8 +115,8 @@ void moteur_tourner_droite() {
     SET_DIRECTION_RECULER(GAUCHE);
 
     /* on active la vitesse pour roue de gauche seulement */
-    SET_SPEED(DROITE, ROTATION_SPEED);
-    SET_SPEED(GAUCHE, ROTATION_SPEED);
+    SET_SPEED(DROITE, ROTATION_SPEED+50);
+    SET_SPEED(GAUCHE, ROTATION_SPEED+50);
 
     /* on attend un certain délais avant d'arrêter les moteurs */
     _delay_ms(DELAY_ROTATION90);
@@ -129,8 +129,8 @@ void moteur_tourner_gauche() {
     SET_DIRECTION_AVANCER(GAUCHE);
 
     /* on active la vitesse pour roue de droite seulement */
-    SET_SPEED(DROITE, ROTATION_SPEED);
-    SET_SPEED(GAUCHE, ROTATION_SPEED);
+    SET_SPEED(DROITE, ROTATION_SPEED+50);
+    SET_SPEED(GAUCHE, ROTATION_SPEED+50);
 
     /* on attend un certain délais avant d'arrêter les moteurs */
     _delay_ms(DELAY_ROTATION90);
@@ -166,13 +166,13 @@ void moteur_tourner(enum direction direction) {
     switch(direction) {
     case DROITE:
         /* seulement la roue de gauche bouge */
-        moteurs.gauche.speed = ROTATION_SPEED+80;
-        moteurs.droit.speed  = ROTATION_SPEED+50;
+        moteurs.gauche.speed = ROTATION_SPEED+70;
+        moteurs.droit.speed  = ROTATION_SPEED+20;
         break;
     case GAUCHE:
         /* seulement la roue de droite bouge */
-        moteurs.gauche.speed = ROTATION_SPEED+50;
-        moteurs.droit.speed  = ROTATION_SPEED+80;
+        moteurs.gauche.speed = ROTATION_SPEED+20;
+        moteurs.droit.speed  = ROTATION_SPEED+70;
         break;
     default:
         return;
@@ -213,6 +213,6 @@ void moteur_config(struct moteurs* moteurs) {
     }
 
     /* on set la vitesse des deux roues */
-    SET_SPEED(DROITE, moteurs->droit.speed);
+    SET_SPEED(DROITE, moteurs->droit.speed-20);
     SET_SPEED(GAUCHE, moteurs->gauche.speed);
 }
