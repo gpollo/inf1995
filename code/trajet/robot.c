@@ -7,7 +7,7 @@
 
 /* le facteur de correction */
 #ifndef CORRECTION
-    #define CORRECTION 2
+    #define CORRECTION 4
 #endif
 
 /* la vitesse maximale qu'on envoit aux roues */
@@ -62,13 +62,23 @@ void robot_ajustement(struct robot* robot) {
     robot_ajust_del(erreur);
 
     /* on calcule les vitesses à envoyer aux moteurs */
-    struct moteurs moteurs;
+    struct moteurs moteurs = {
+        .gauche = {
+            .speed = ROTATION_SPEED,
+            .avancer = 1,
+        },
+        .droit = {
+            .speed = ROTATION_SPEED,
+            .avancer = 1,
+        }
+    };
+
     switch(robot->mur) {
     case GAUCHE:
         if(erreur > 0) {
             /* on s'éloigne rapidement du mur */
-            moteurs.gauche.speed = LIMIT(ROTATION_SPEED, MAX_SPEED);
-            moteurs.droit.speed  = LIMIT(ROTATION_SPEED, MAX_SPEED);
+            moteurs.gauche.speed = LIMIT(ROTATION_SPEED-20, MAX_SPEED);
+            moteurs.droit.speed  = LIMIT(ROTATION_SPEED-20, MAX_SPEED);
             moteurs.gauche.avancer = 1;
             moteurs.droit.avancer  = 0;
         } else {
@@ -84,8 +94,8 @@ void robot_ajustement(struct robot* robot) {
     case DROITE:
         if(erreur > 0) {
             /* on s'éloigne rapidement du mur */
-            moteurs.gauche.speed = LIMIT(ROTATION_SPEED, MAX_SPEED);
-            moteurs.droit.speed  = LIMIT(ROTATION_SPEED, MAX_SPEED);
+            moteurs.gauche.speed = LIMIT(ROTATION_SPEED-20, MAX_SPEED);
+            moteurs.droit.speed  = LIMIT(ROTATION_SPEED-20, MAX_SPEED);
             moteurs.gauche.avancer = 0;
             moteurs.droit.avancer  = 1;
         } else {

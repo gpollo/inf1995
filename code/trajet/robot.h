@@ -33,7 +33,8 @@ enum state {
     CHANGER_MUR_DROITE       = 13,
     ROTATION45_UNDO_GAUCHE   = 14,
     ROTATION45_UNDO_DROITE   = 15,
-    RESET                    = 16,
+    WAIT                     = 16,
+    RESET                    = 17,
 };
 
 /**
@@ -48,9 +49,13 @@ struct robot {
     enum direction mur;
     /** L'état du robot. */
     enum state state;
-    /* Un timeout pour certains états. */
+    /** Le prochain état après l'état WAIT. */
+    enum state next;
+    /** Le timeout pour l'état WAIT. */
+    int16_t wait;
+    /** Un timeout pour certains états. */
     int16_t timeout;
-    /* Une variable pour enregistrer une distance entre les états. */
+    /** Une variable pour enregistrer une distance entre les états. */
     uint16_t distance;
 };
 
@@ -69,7 +74,7 @@ struct robot {
     .distance = 0,                         \
 }
 
-#define GET_TRAVEL_TIME(distance) ((1000*((distance)-DISTANCE_SOUHAITEE))/VITESSE_50PWM)
+#define GET_TRAVEL_TIME(distance) ((2000*((distance)))/VITESSE_50PWM)
 
 /**
  * Cette fonction retourne l'erreur de la distance souhaitée du robot par

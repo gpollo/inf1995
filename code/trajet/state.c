@@ -116,6 +116,12 @@ void update_state(void* data) {
             break;
         }
 
+        if(capteurs->gauche.value > 230) {
+            uint16_t distance = capteurs->gauche.value;
+            TRANSITION_ROTATION45(robot, GAUCHE, distance);
+            break;
+        }
+
         /* on regarde si on capte encore vers la gauche */
         if(!capteurs->gauche.capting) {
             robot->state = TOURNER_GAUCHE;
@@ -133,6 +139,12 @@ void update_state(void* data) {
         /* on regarde si on capte quelque chose à gauche */
         if(capteurs->gauche.capting) {
             robot->state = VERIFIER_GAUCHE;
+            break;
+        }
+
+        if(capteurs->droit.value > 230) {
+            uint16_t distance = capteurs->droit.value;
+            TRANSITION_ROTATION45(robot, DROITE, distance);
             break;
         }
 
@@ -338,14 +350,14 @@ void update_state(void* data) {
         /* on va vers le mur gauche */
         robot->mur = GAUCHE;
 
+        /* on avance */
+        moteur_avancer(128);
+
         /* on arrête d'avancer lorsque le timeout est finit */
-        if((robot->timeout < 0) || (capteurs->gauche.value < 250)) {
+        if((robot->timeout < 0) || ((100 < capteurs->gauche.value) && (capteurs->gauche.value < 180))) {
             TRANSITION_ROTATION45_UNDO(robot, GAUCHE);
             break;
         }
-
-        /* on avance */
-        moteur_avancer(128);
         break;
 
     case CHANGER_MUR_DROITE:
@@ -355,14 +367,14 @@ void update_state(void* data) {
         /* on va vers le mur droite */
         robot->mur = DROITE;
 
+        /* on avance */
+        moteur_avancer(128);
+
         /* on arrête d'avancer lorsque le timeout est finit */
-        if((robot->timeout < 0) || (capteurs->droit.value < 250)) {
+        if((robot->timeout < 0) || ((100 < capteurs->droit.value) && (capteurs->droit.value < 180))) {
             TRANSITION_ROTATION45_UNDO(robot, DROITE);
             break;
         }
-
-        /* on avance */
-        moteur_avancer(128);
         break;
 
     case ROTATION45_UNDO_GAUCHE:
@@ -371,7 +383,9 @@ void update_state(void* data) {
 
         /* on change de mur */
         if(robot->timeout < 0) {
-            robot->state = AVANCER_GAUCHE_ATTENDRE;
+            robot->next = AVANCER_GAUCHE_ATTENDRE;
+            robot->state = WAIT;
+            robot->wait = 0;
             break;
         }
 
@@ -385,12 +399,28 @@ void update_state(void* data) {
 
         /* on change de mur */
         if(robot->timeout < 0) {
-            robot->state = AVANCER_DROITE_ATTENDRE;
+            robot->next = AVANCER_DROITE_ATTENDRE;
+            robot->state = WAIT;
+            robot->wait = 0;
             break;
         }
 
         /* on active les roues en rotation */
         moteur_tourner_surplace(GAUCHE);
+        break;
+
+    case WAIT:
+        /* on actualise le timeout */
+        robot->wait -= DELAY;
+
+        /* on arrête les moteurs dans cet état */
+        moteur_arreter();
+
+        /* on change d'état à la fin du timeout */
+        if(robot->wait < 0) {
+            robot->state = robot->next;
+            break;
+        }
         break;
 
     default:
@@ -716,7 +746,7 @@ STATE_CHANGER_MUR_GAUCHE:
     robot->mur = GAUCHE;
 
     /* on arrête d'avancer lorsque le timeout est finit */
-    if((robot->timeout < 0) || (capteurs->gauche.value < 250)) {
+    if((robot->timeout < 0) || (100 < capteurs->gauche.value) || (capteurs->gauche.value < 180)) {
         TRANSITION_ROTATION45_UNDO(robot, GAUCHE);
         return;
     }
@@ -733,7 +763,7 @@ STATE_CHANGER_MUR_DROITE:
     robot->mur = DROITE;
 
     /* on arrête d'avancer lorsque le timeout est finit */
-    if((robot->timeout < 0) || (capteurs->droit.value < 250)) {
+    if((robot->timeout < 0) || (100 < capteurs->droit.value) || (capteurs->droit.value < 180)) {
         TRANSITION_ROTATION45_UNDO(robot, DROITE);
         return;
     }
