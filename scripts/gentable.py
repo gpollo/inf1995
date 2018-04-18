@@ -44,7 +44,7 @@ def get_maps():
         voltage = get_voltage(invdistance)
         
         # on calcule la distance à partir de l'inverse de la distance
-        distance = get_distance(invdistance, -20)
+        distance = get_distance(invdistance, 0)
         
         # on calcule la valeur 10 bits à partir du voltage
         value = get_value(voltage, 5.0)
@@ -54,7 +54,7 @@ def get_maps():
             continue
 
         # on ignore les valeurs au-dessus de 600mm
-        if distance > 600:
+        if distance > 700:
             continue
 
         # le voltage ne devrait pas dépasser cette valeur
