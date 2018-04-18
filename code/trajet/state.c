@@ -10,8 +10,8 @@
 #include "obstacle.h"
 #include "state.h"
 
-#define TIMEOUT_ROTATION45_GAUCHE 350
-#define TIMEOUT_ROTATION45_DROITE 350
+#define TIMEOUT_ROTATION45_GAUCHE 460
+#define TIMEOUT_ROTATION45_DROITE 370
 
 /**
  * Cette fonction actualise l'état du robot. Elle est appelée par un timer.
@@ -69,7 +69,7 @@ void update_state(void* data) {
     enum obstacle obstacle = detect(robot);
 
     /* on écrit l'état */
-    uart_printf("%d ", robot->state);
+//    uart_printf("%d ", robot->state);
 /*
     uart_printf("%d %d\n\r",
         capteurs->gauche.value,

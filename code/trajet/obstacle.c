@@ -12,17 +12,17 @@
 
 /* le temps minimum qu'un capteur devrait capter un poteau */
 #ifndef TIME_POTEAU_MIN
-    #define TIME_POTEAU_MIN 300
+    #define TIME_POTEAU_MIN 250
 #endif
 
 /* le temps maximum qu'un capteur devrait capter un poteau */
 #ifndef TIME_POTEAU_MAX
-    #define TIME_POTEAU_MAX 1400
+    #define TIME_POTEAU_MAX 1200
 #endif
 
 /* le temps minimum que devrait durer un mur */
 #ifndef TIME_MUR_MIN
-    #define TIME_MUR_MIN 1400
+    #define TIME_MUR_MIN 1200
 #endif
 
 /* le temps limit pour empêcher un overflow au compteur */
