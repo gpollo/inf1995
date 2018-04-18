@@ -52,11 +52,11 @@ struct robot {
     /** Le prochain état après l'état WAIT. */
     enum state next;
     /** Le timeout pour l'état WAIT. */
-    int16_t wait;
+    int32_t wait;
     /** Un timeout pour certains états. */
-    int16_t timeout;
+    int32_t timeout;
     /** Une variable pour enregistrer une distance entre les états. */
-    uint16_t distance;
+    uint32_t distance;
 };
 
 /**
@@ -74,7 +74,7 @@ struct robot {
     .distance = 0,                         \
 }
 
-#define GET_TRAVEL_TIME(distance) ((2000*((distance)))/VITESSE_50PWM)
+#define GET_TRAVEL_TIME(distance) ((100*((distance))))
 
 /**
  * Cette fonction retourne l'erreur de la distance souhaitée du robot par

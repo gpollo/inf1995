@@ -114,7 +114,7 @@ extern "C" {
 
 /* la vitesse de rotation des roues par défaut */
 #ifndef ROTATION_SPEED
-    #define ROTATION_SPEED 110
+    #define ROTATION_SPEED 125
 #endif
 
 /* vitesse à 50% du PWM [mm/s] */

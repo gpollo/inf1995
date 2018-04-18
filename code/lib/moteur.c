@@ -6,8 +6,8 @@
 #include <uart.h>
 
 #define DISTANCE_MINIMALE_CROISSIERE 200
-#define DELAY_ROTATION90 950
-#define DELAY_TOURNANT180 3000
+#define DELAY_ROTATION90 620
+#define DELAY_TOURNANT180 800
 #define DELAY_FIN180 1000
 
 /* valeur par défaut du prescaler */
@@ -138,25 +138,28 @@ void moteur_tourner_gauche() {
 }
 
 void moteur_tourner_surplace(enum direction direction) {
+    struct moteurs moteurs;
+    moteurs.gauche.speed = ROTATION_SPEED;
+    moteurs.droit.speed = ROTATION_SPEED;
+
     /* on configure la direction des moteurs */
     switch(direction) {
     case GAUCHE:
         /* on tourne à gauche */
-        SET_DIRECTION_RECULER(GAUCHE);
-        SET_DIRECTION_AVANCER(DROITE);
+        moteurs.gauche.avancer = FALSE;
+        moteurs.droit.avancer = TRUE;
         break;
     case DROITE:
         /* on tourne à droite */
-        SET_DIRECTION_AVANCER(GAUCHE);
-        SET_DIRECTION_RECULER(DROITE);
+        moteurs.gauche.avancer = TRUE;
+        moteurs.droit.avancer = FALSE;
         break;
     default:
         return;
     }
 
-    /* on ajuste la force des moteurs  */
-    SET_SPEED(GAUCHE, ROTATION_SPEED);
-    SET_SPEED(DROITE, ROTATION_SPEED);
+    /* on control les moteurs */
+    moteur_config(&moteurs);
 }
 
 void moteur_tourner(enum direction direction) {
@@ -166,13 +169,13 @@ void moteur_tourner(enum direction direction) {
     switch(direction) {
     case DROITE:
         /* seulement la roue de gauche bouge */
-        moteurs.gauche.speed = ROTATION_SPEED+70;
-        moteurs.droit.speed  = ROTATION_SPEED+20;
+        moteurs.gauche.speed = ROTATION_SPEED+80;
+        moteurs.droit.speed  = ROTATION_SPEED+30;
         break;
     case GAUCHE:
         /* seulement la roue de droite bouge */
-        moteurs.gauche.speed = ROTATION_SPEED+20;
-        moteurs.droit.speed  = ROTATION_SPEED+70;
+        moteurs.gauche.speed = ROTATION_SPEED+30;
+        moteurs.droit.speed  = ROTATION_SPEED+80;
         break;
     default:
         return;
@@ -213,6 +216,7 @@ void moteur_config(struct moteurs* moteurs) {
     }
 
     /* on set la vitesse des deux roues */
+
     SET_SPEED(DROITE, moteurs->droit.speed-20);
     SET_SPEED(GAUCHE, moteurs->gauche.speed);
 }

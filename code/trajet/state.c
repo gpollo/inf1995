@@ -10,7 +10,8 @@
 #include "obstacle.h"
 #include "state.h"
 
-#define TIMEOUT_ROTATION45 550
+#define TIMEOUT_ROTATION45_GAUCHE 350
+#define TIMEOUT_ROTATION45_DROITE 350
 
 /**
  * Cette fonction actualise l'état du robot. Elle est appelée par un timer.
@@ -37,17 +38,18 @@ void state_start_timer(struct robot* robot) {
 
 #define TRANSITION_ROTATION45(robot, direction, distance) { \
     (robot)->distance = (distance);                         \
-    (robot)->timeout = TIMEOUT_ROTATION45;                  \
+    (robot)->timeout = TIMEOUT_ROTATION45_##direction;      \
     (robot)->state = ROTATION45_##direction;                \
 }
 
 #define TRANSITION_CHANGER_MUR(robot, direction) {         \
     (robot)->timeout = GET_TRAVEL_TIME((robot)->distance); \
+    uart_printf("%d %d\n\r", (robot)->distance, (robot)->timeout); \
     (robot)->state = CHANGER_MUR_##direction;              \
 }
 
 #define TRANSITION_ROTATION45_UNDO(robot, direction) { \
-    (robot)->timeout = TIMEOUT_ROTATION45;             \
+    (robot)->timeout = TIMEOUT_ROTATION45_##direction; \
     (robot)->state = ROTATION45_UNDO_##direction;      \
 }
 
@@ -116,17 +118,17 @@ void update_state(void* data) {
             break;
         }
 
-        if(capteurs->gauche.value > 230) {
-            uint16_t distance = capteurs->gauche.value;
-            TRANSITION_ROTATION45(robot, GAUCHE, distance);
-            break;
-        }
+//        if(capteurs->gauche.value > 230) {
+//            uint16_t distance = capteurs->gauche.value;
+//            TRANSITION_ROTATION45(robot, GAUCHE, distance);
+//            break;
+//        }
 
-        /* on regarde si on capte encore vers la gauche */
-        if(!capteurs->gauche.capting) {
-            robot->state = TOURNER_GAUCHE;
-            break;
-        }
+//        /* on regarde si on capte encore vers la gauche */
+//        if(!capteurs->gauche.capting) {
+//            robot->state = TOURNER_GAUCHE;
+//            break;
+//        }
         break;
 
     case AVANCER_DROITE:
@@ -142,17 +144,17 @@ void update_state(void* data) {
             break;
         }
 
-        if(capteurs->droit.value > 230) {
-            uint16_t distance = capteurs->droit.value;
-            TRANSITION_ROTATION45(robot, DROITE, distance);
-            break;
-        }
+//        if(capteurs->droit.value > 230) {
+//            uint16_t distance = capteurs->droit.value;
+//            TRANSITION_ROTATION45(robot, DROITE, distance);
+//            break;
+//        }
 
-        /* on regarde si on capte encore vers la droite */
-        if(!capteurs->droit.capting) {
-            robot->state = TOURNER_DROITE;
-            break;
-        }
+//        /* on regarde si on capte encore vers la droite */
+//        if(!capteurs->droit.capting) {
+//            robot->state = TOURNER_DROITE;
+//            break;
+//        }
         break;
 
     case AVANCER_GAUCHE_ATTENDRE:
@@ -354,7 +356,7 @@ void update_state(void* data) {
         moteur_avancer(128);
 
         /* on arrête d'avancer lorsque le timeout est finit */
-        if((robot->timeout < 0) || ((100 < capteurs->gauche.value) && (capteurs->gauche.value < 180))) {
+        if((robot->timeout < 0) || ((90 < capteurs->gauche.value) && (capteurs->gauche.value < 140))) {
             TRANSITION_ROTATION45_UNDO(robot, GAUCHE);
             break;
         }
@@ -371,7 +373,7 @@ void update_state(void* data) {
         moteur_avancer(128);
 
         /* on arrête d'avancer lorsque le timeout est finit */
-        if((robot->timeout < 0) || ((100 < capteurs->droit.value) && (capteurs->droit.value < 180))) {
+        if((robot->timeout < 0) || ((90 < capteurs->droit.value) && (capteurs->droit.value < 140))) {
             TRANSITION_ROTATION45_UNDO(robot, DROITE);
             break;
         }
@@ -385,7 +387,7 @@ void update_state(void* data) {
         if(robot->timeout < 0) {
             robot->next = AVANCER_GAUCHE_ATTENDRE;
             robot->state = WAIT;
-            robot->wait = 0;
+            robot->wait = 1000;
             break;
         }
 
@@ -401,7 +403,7 @@ void update_state(void* data) {
         if(robot->timeout < 0) {
             robot->next = AVANCER_DROITE_ATTENDRE;
             robot->state = WAIT;
-            robot->wait = 0;
+            robot->wait = 1000;
             break;
         }
 
