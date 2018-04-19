@@ -17,24 +17,20 @@
  * Cette énumération définie les états possibles du robot.
  */
 enum state {
-    AVANCER_GAUCHE           =  0,
-    AVANCER_DROITE           =  1,
-    AVANCER_GAUCHE_ATTENDRE  =  2,
-    AVANCER_DROITE_ATTENDRE  =  3,
-    VERIFIER_GAUCHE          =  4,
-    VERIFIER_DROITE          =  5,
-    VERIFIER_GAUCHE_ROTATION =  6,
-    VERIFIER_DROITE_ROTATION =  7,
-    TOURNER_GAUCHE           =  8,
-    TOURNER_DROITE           =  9,
-    ROTATION45_GAUCHE        = 10,
-    ROTATION45_DROITE        = 11,
-    CHANGER_MUR_GAUCHE       = 12,
-    CHANGER_MUR_DROITE       = 13,
-    ROTATION45_UNDO_GAUCHE   = 14,
-    ROTATION45_UNDO_DROITE   = 15,
-    WAIT                     = 16,
-    RESET                    = 17,
+    RESET                    =  0,
+    AVANCER_GAUCHE           =  1,
+    AVANCER_DROITE           =  2,
+    AVANCER_GAUCHE_ATTENDRE  =  3,
+    AVANCER_DROITE_ATTENDRE  =  4,
+    VERIFIER_GAUCHE          =  5,
+    VERIFIER_DROITE          =  6,
+    ROTATION45_GAUCHE        =  7,
+    ROTATION45_DROITE        =  8,
+    CHANGER_MUR_GAUCHE       =  9,
+    CHANGER_MUR_DROITE       = 10,
+    ROTATION45_UNDO_GAUCHE   = 11,
+    ROTATION45_UNDO_DROITE   = 12,
+    WAIT                     = 13,
 };
 
 /**
